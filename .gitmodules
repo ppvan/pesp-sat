@@ -1,0 +1,3 @@
+[submodule "third-party/kissat"]
+	path = third-party/kissat
+	url = https://github.com/arminbiere/kissat

@@ -1,0 +1,3 @@
+{
+    "typst-lsp.rootPath": "${workspaceFolder}/docs"
+}
