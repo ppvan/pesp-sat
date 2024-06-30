@@ -1,7 +1,8 @@
 #include<stdio.h>
+#include "../third-party/kissat/src/kissat.h"
 
 int main(int argc, char* argv[]) {
-    for (size_t i = 0; i < argc; i++) {
-        printf("%s\n", argv[i]);
-    }
+    const char* version = kissat_version();
+
+    printf("%s\n", version);
 }
