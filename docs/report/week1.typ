@@ -97,12 +97,54 @@ $ [a, b] = {a, a +1, ..., b - 1, b} $
 
 Khoảng đồng dư $T$ (Interval modulo $t$): Cho $a, b in ZZ, t in NN^+$
 
-$ [a, b]_t = union_(z in ZZ) [a + z t, b + z t] $
+$ [a, b]_t = union.big_(z in ZZ) [a + z t, b + z t] $
+
+Mạng sự kiện chu kỳ (Periodic Event Network): Một mạng sự kiện chu kỳ $Nu = (nu, A, t_T)$ bao gồm: $nu$ sự kiện,  chu kì $t_T$ và tập hợp các ràng buộc $a in A$:
+
+$ a = ((i, j), [l_a, u_a]_(t_T)) in (nu times nu) times 2^ZZ $
+
+- $a$ ràng buộc giữa hai sự kiện $i "và" j$. Có thể hình dung đây là ràng buộc để có thể đi từ sự kiện $i$ đến sự kiện $j$
+- $(i, j)$ sự kiện $i, j$
+- $[l_a, u_a]_(t_T)$ khoảng thời gian giới hạn tuân theo chu kì $t_T$ (lower bound and upper bound).
+
+- $(nu times nu) times 2^ZZ$ là tập hợp tất cả khả năng của ràng buộc. Tương tự $n in NN$
+- $2^ZZ$ tập hợp tất cả các tập con của Z. Ví dụ: ${1,2,3}, {-1, 0, 10}...$
+
+
+Có hai loại ràng buộc: ràng buộc thời gian và ràng buộc đối xứng, lần lượt là các tập hợp $S$ và $C$. Ta luôn có $A = S union C$ và $S sect C = emptyset$
 
 
 
+Tiềm năng sự kiện(Event potential): Cho $Nu = (nu, A, t_T)$. $pi^n$ được gọi là tiềm năng của sự kiện $n in nu$.
 
-#lorem(30)
+- Nếu hình dung trục số nguyên là thời gian, thì các sự kiện có thể xảy ra ở các điểm số nguyên, và sự kiện n có thể xảy ra nhiều lần (do hệ tuần hoàn). Mỗi điểm như vậy được xem là một _tiềm năng sự kiện_.
+
+Lịch trình (Schedule): Lịch trình là một ánh xạ từ sự kiện thành tiềm năng sự kiện (mốc thời gian).
+
+$
+Pi_nu &: nu -> ZZ \
+     &: n |-> pi_n
+$
+
+Ràng buộc thời gian: Cho ràng buộc $a = ((i, j), [l_a, u_a]_(t_T))$. Hai tiềm năng sự kiện $pi_a "và" pi_b$ thỏa mãn ràng buộc thời gian $a$ khi và chỉ khi:
+
+$ pi_a - pi_b in [l_a, u_a]_(t_T) $
+
+Ràng buộc đối xứng: Cho ràng buộc $a = ((i, j), [l_a, u_a]_(t_T))$. Hai tiềm năng sự kiện $pi_a "và" pi_b$ thỏa mãn ràng buộc đối xứng $a$ khi và chỉ khi:
+
+$ pi_a + pi_b in [l_a, u_a]_(t_T) $
+
+
+Lịch trình hợp lệ (Valid schedule): Cho $Nu = (nu, A, t_T)$. Lịch trình $Pi_nu$ là hợp lệ khi và chỉ khi tất cả ràng buộc đều thỏa mãn
+
+Lịch trình tương đương:  Cho $Nu = (nu, A, t_T)$. Lịch trình $Pi_nu$ và $Phi_nu$ là đương đương khi và chỉ khi 
+
+$ Pi_nu equiv Phi_nu <=> forall n in nu, Pi_n mod t_T = Phi_n mod t_T $
+
+Nếu hai lịch trình  $Pi_nu$ và $Phi_nu$ tương đương và $Pi_nu$ hợp lệ thì $Phi_nu$ cũng hợp lệ.
+
+Nếu tồn lại một lịch trình hợp lệ thì tồn tại một lịch trình tương đương trong khoảng $[0, t_T - 1]$
+
 
 
 

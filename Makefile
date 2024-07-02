@@ -1,12 +1,19 @@
 CC = clang
-CFLAGS = -Wall -Wextra -static
+CFLAGS = -Wall -Wextra -static -g
 TARGET = pesp-sat.out
 INSTALL_DIR = /usr/local/bin
 KISSAT_DIR = ./third-party/kissat
 KISSAT_LIB = $(KISSAT_DIR)/build/libkissat.a
 
-$(TARGET): src/main.c $(KISSAT_LIB)
-	$(CC) $(CFLAGS) -o $(TARGET) src/main.c $(KISSAT_LIB)
+
+SRCS = src/main.c src/types/vec.c
+OBJS = $(SRCS:.c=.o)
+
+$(TARGET): $(OBJS) $(KISSAT_LIB)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(KISSAT_LIB) -lm
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(KISSAT_LIB):
 	cd $(KISSAT_DIR) && ./configure && make kissat
