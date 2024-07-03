@@ -17,6 +17,10 @@
 */
 //
 
+int cantor_pairing(int x, int y);
+int cantor_pairing_inv(int z, int* x, int* y);
+
+
 void direct_potential(kissat *solver, int period, int start) {
 
     for (size_t i = 0; i < period; i++) {
