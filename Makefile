@@ -6,7 +6,7 @@ KISSAT_DIR = ./third-party/kissat
 KISSAT_LIB = $(KISSAT_DIR)/build/libkissat.a
 
 
-SRCS = src/main.c src/types/vec.c
+SRCS = src/main.c src/types/vec.c src/types/pesp.c
 OBJS = $(SRCS:.c=.o)
 
 $(TARGET): $(OBJS) $(KISSAT_LIB)

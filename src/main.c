@@ -1,4 +1,5 @@
 #include "../third-party/kissat/src/kissat.h"
+#include "types/pesp.h"
 #include <stdio.h>
 
 #include <math.h>
@@ -108,6 +109,38 @@ int *naiive_solve(int n, int T, contraint_t *cons, int len) {
     return NULL;
 }
 
+bool valid_solution(int *arr, int T, contraint_t *cons, int len) {
+
+    for (int k = 0; k < len; k++) {
+        int i = cons[k].i;
+        int j = cons[k].j;
+        int a = cons[k].a;
+        int b = cons[k].b;
+
+        int temp = arr[j] - arr[i];
+
+        int low = (temp - b) / T;
+        int high = (temp - a) / T;
+        bool has_chance = false;
+
+        for (int jj = low; jj <= high; jj++) {
+            int a_delta = a + jj * T;
+            int b_delta = b + jj * T;
+
+            if (temp >= a_delta && temp <= b_delta) {
+                has_chance = true;
+                break;
+            }
+        }
+
+        if (!has_chance) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 int decode_bound(kissat *s, int var, int bound) {
     for (int i = 0; i < bound; i++) {
         int index = pair(var, i);
@@ -133,78 +166,96 @@ int main(int argc, char *argv[]) {
     a2 = ((B, C), [2, 2])
     a3 = ((C, A), [2, 4])
     */
-    kissat *s = kissat_init();
-    kissat_set_option(s, "quiet", 1);
-    kissat_set_option(s, "sat", 1);
-    // kissat_set_option(kissat, "seed", rand());
-    int n = 3;
-    int T = 60;
-    int cons = 3;
-    contraint_t contraints[] = {
-        {0, 1, 50, 55},
-        {1, 2, 40, 50},
-        {0, 2, 30, 40},
-    };
+    // kissat *s = kissat_init();
+    // kissat_set_option(s, "quiet", 1);
+    // kissat_set_option(s, "sat", 1);
+    // // kissat_set_option(kissat, "seed", rand());
+    // int n = 3;
+    // int T = 60;
+    // int len = 3;
+    // contraint_t contraints[] = {
+    //     {0, 1, 50, 55},
+    //     {1, 2, 40, 50},
+    //     {0, 2, 30, 40},
+    // };
 
-    // Encode potentials
-    for (int i = 0; i < n; i++) {
-        encode_bound(s, i, T);
-    }
+    // // Encode potentials
+    // for (int i = 0; i < n; i++) {
+    //     encode_bound(s, i, T);
+    // }
 
-    // // Encode contraints
+    // // // Encode contraints
 
-    for (int k = 0; k < cons; k++) {
+    // for (int k = 0; k < len; k++) {
 
-        for (int i = 0; i < T; i++) {
-            for (int j = 0; j < T; j++) {
+    //     for (int i = 0; i < T; i++) {
+    //         for (int j = 0; j < T; j++) {
 
-                int temp = j - i;
-                int low = (temp - contraints[k].b) / T;
-                int high = (temp - contraints[k].a) / T;
-                bool has_chance = false;
+    //             int temp = j - i;
+    //             int low = (temp - contraints[k].b) / T;
+    //             int high = (temp - contraints[k].a) / T;
+    //             bool has_chance = false;
 
-                for (int jj = low; jj <= high; jj++) {
-                    int a = contraints[k].a + jj * T;
-                    int b = contraints[k].b + jj * T;
+    //             for (int jj = low; jj <= high; jj++) {
+    //                 int a = contraints[k].a + jj * T;
+    //                 int b = contraints[k].b + jj * T;
 
-                    if (temp >= a && temp <= b) {
-                        has_chance = true;
-                        break;
-                    }
-                }
+    //                 if (temp >= a && temp <= b) {
+    //                     has_chance = true;
+    //                     break;
+    //                 }
+    //             }
 
-                if (has_chance)
-                    continue;
+    //             if (has_chance)
+    //                 continue;
 
-                int index1 = pair(contraints[k].i, i);
-                int index2 = pair(contraints[k].j, j);
+    //             int index1 = pair(contraints[k].i, i);
+    //             int index2 = pair(contraints[k].j, j);
 
-                kissat_add(s, -index1);
-                kissat_add(s, -index2);
-                kissat_add(s, 0);
-            }
-        }
-    }
+    //             kissat_add(s, -index1);
+    //             kissat_add(s, -index2);
+    //             kissat_add(s, 0);
+    //         }
+    //     }
+    // }
 
-    int sat = kissat_solve(s);
+    // int sat = kissat_solve(s);
 
-    if (sat == SATISFIABLE) {
-        for (int i = 0; i < n; i++) {
-            int value = decode_bound(s, i, T);
-            printf("p[%d] = %d\n", i, value);
-        }
-    } else {
-        printf("sat: %d\n", sat);
-    }
+    // if (sat == SATISFIABLE) {
+    //     for (int i = 0; i < n; i++) {
+    //         int value = decode_bound(s, i, T);
+    //         printf("p[%d] = %d\n", i, value);
+    //     }
+    // } else {
+    //     printf("sat: %d\n", sat);
+    // }
 
-    int *result = naiive_solve(n, T, contraints, cons);
+    // int *result = naiive_solve(n, T, contraints, len);
 
-    if (result != NULL) {
-        for (int i = 0; i < n; i++) {
-            printf("%d ", result[i]);
-        }
-    }
-    printf("\n");
+    // if (result != NULL) {
+    //     for (int i = 0; i < n; i++) {
+    //         printf("%d ", result[i]);
+    //     }
+    // }
+    // printf("\n");
+
+    // if (valid_solution(result, T, contraints, len)) {
+    //     printf("OK\n");
+    // }
 
     // P_a = {(pa, pb) for }
+
+    char *path = "./data/set-01/R1L1.txt";
+    constraint_t sample[] = {
+        {1, 2, 50, 55},
+        {2, 3, 40, 50},
+        {1, 3, 30, 40},
+    };
+    pesp_t *pesp = pesp_parse_file(path);
+
+    char *str = pesp_to_str(pesp);
+    printf("%s\n", str);
+
+    free(str);
+    pesp_free(pesp);
 }
