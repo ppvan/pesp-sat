@@ -1,6 +1,6 @@
 
 #set align(center)
-#set text(font: "Roboto Serif", size: 12.5pt)
+#set text(font: "Roboto Serif", size: 12.5pt, lang: "vi")
 
 #upper(text("Đại học quốc gia Hà Nội", size: 20pt))
 
@@ -43,6 +43,14 @@
 ): it => block(width: 100%)[
   #set align(left)
   #set text(14pt, weight: "regular")
+  #pad(block(smallcaps(it.body)), y: 6pt)
+]
+
+#show heading.where(
+  level: 4
+): it => block(width: 100%)[
+  #set align(left)
+  #set text(13pt, weight: "regular")
   #pad(block(smallcaps(it.body)), y: 6pt)
 ]
 
@@ -90,7 +98,7 @@ Mô hình đưa ra khái niệm sự kiện, chu kỳ T và các ràng buộc v�
 
 PESP được chứng minh là NP-Complete với $T >= 3$
 
-==== Khái niệm
+==== Khái niệm <defs>
 
 Khoảng (Interval): Cho $a, b in Z.$ Định nghĩa: 
 $ [a, b] = {a, a +1, ..., b - 1, b} $
@@ -153,6 +161,45 @@ Nếu tồn lại một lịch trình hợp lệ thì tồn tại một lịch t
 #lorem(30)
 
 === Solve PESP with SAT
+
+==== Direct encoding
+
+Cho bài toán PESP $(nu, A, T)$ với các ràng buộc:
+$ a = ((i, j), [l_a, u_a]_(t_T)) in A $
+
+Ta cần tìm $nu$ tiềm năng sự kiện: $pi_i, i in v$ sao cho thỏa tất cả ràng buộc $a$.
+
+Để đơn giản, ta đánh số các sự kiện từ $0 -> n, n = |nu|$. Bài toán trở thành tìm n số $pi_i, 0 <= i < n$ sao cho thỏa tất cả ràng buộc $a in A$. Để chuyển bài toán PESP #sym.arrow SAT., ta cần định nghĩa hình thức các sự kiện $p_i$ và các ràng buộc $a$.
+
+
+_Hình thức hoá sự kiện_ $pi_i$:
+
+Theo @defs, ta có $0<=p_i<T$ hay $p_i in {0, 1, 2, ..., T - 1}$. Dễ thấy
+
+#table(
+  columns: (1fr, 1fr),
+  inset: 10pt,
+  align: horizon + center,
+  table.header(
+    [*Math*], [*SAT*],
+  ),
+  $ pi_i = m, m in [0, T - 1]
+  
+   pi_i in ZZ, m in ZZ $,
+  $ pi h (D^2 - d^2) / 4 $,
+  [
+    $h$: height \
+    $D$: outer radius \
+    $d$: inner radius
+  ],
+  [],
+  $ sqrt(2) / 12 a^3 $,
+  [$a$: edge length]
+)
+
+
+
+==== Order encoding
 
 #lorem(30)
 
