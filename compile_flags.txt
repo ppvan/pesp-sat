@@ -1,0 +1,7 @@
+-Ithird-party/kissat/src
+-Wall
+-Wextra
+-fblocks
+-static
+-g
+-lm

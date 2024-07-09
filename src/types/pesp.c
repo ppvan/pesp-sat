@@ -42,6 +42,33 @@ pesp_t *pesp_init(int period, int n, constraint_t *cons, int len) {
     return self;
 }
 
+pesp_result_t* pesp_result_init(int* array, int n) {
+    pesp_result_t* self = malloc(sizeof(pesp_result_t));
+    self->potentials = array;
+    self->potential_len = n;
+
+    return self;
+}
+
+char* pesp_result_to_str(pesp_result_t* self) {
+    char* str = malloc(BUF_LIMIT);
+    int offset = 0;
+    offset += sprintf(str + offset, "[");
+    for(int i = 0; i < self->potential_len - 1; i++) {
+        offset += sprintf(str + offset, "%d, ", self->potentials[i]);
+    }
+
+    offset += sprintf(str + offset, "%d", self->potentials[self->potential_len - 1]);
+    sprintf(str + offset, "]");
+
+    return str;
+}
+
+void pesp_result_free(pesp_result_t* self) {
+    free(self->potentials);
+    free(self);
+}
+
 char *constaint_to_str(constraint_t *self) {
     char *buf = malloc(BUF_LIMIT * sizeof(char));
     // memset(buf, 0, BUF_LIMIT);

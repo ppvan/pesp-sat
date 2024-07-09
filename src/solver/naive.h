@@ -1,8 +1,9 @@
 #ifndef NAIVE_H
 #define NAIVE_H
 
-bool next_shuffle(int *a, int n, int T);
+#include "../types/pesp.h"
 
+pesp_result_t* naive_solve(pesp_t* payload);
 
 
 

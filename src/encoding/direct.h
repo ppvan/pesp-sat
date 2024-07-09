@@ -1,6 +1,6 @@
-#include "../../third-party/kissat/src/kissat.h"
+#include <kissat.h>
 #include "../types/vec.h"
-#include <cstddef>
+#include <stdbool.h>
 
 /*
     x, 1 in [1, 2, 3] = direct_encode([1, 2, 3]) --- [lit1, lit2, ...., litn]
