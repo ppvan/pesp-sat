@@ -1,5 +1,6 @@
 import os
 import argparse
+from pathlib import Path
 
 
 def parse_file(filename):
@@ -23,32 +24,35 @@ def parse_file(filename):
     return constraints, len(origins.union(destinations)), data_lines
 
 
-def rewrite_file(filename, constraints, distinct_events, data_lines):
-    temp_filename = filename + ".temp"
+def rewrite_file(filename: Path, constraints, distinct_events, data_lines):
+    temp_filename = filename.name + ".temp"
+    temp_filepath = filename.parent / temp_filename
 
-    with open(temp_filename, "w") as temp_file:
+    with open(temp_filepath, "w") as temp_file:
         temp_file.write(f"{constraints} {distinct_events} 60\n")
         temp_file.writelines(data_lines)
 
-    os.replace(temp_filename, filename)
+    os.replace(temp_filepath, filename)
 
 
 def main():
     parser = argparse.ArgumentParser(
         description="Parse and update a file with constraint information."
     )
-    parser.add_argument("input_file", help="Path to the input file")
+    parser.add_argument("path", help="Path to find input file")
     args = parser.parse_args()
 
-    filename = args.input_file
+    filename = args.path
 
-    if not os.path.exists(filename):
-        print(f"Error: The file '{filename}' does not exist.")
-        return
+    dir_path = Path(filename).resolve()
 
-    constraints, distinct_events, data_lines = parse_file(filename)
-    rewrite_file(filename, constraints, distinct_events, data_lines)
-    print(f"File '{filename}' has been successfully updated.")
+    if not dir_path.exists():
+        print(f"Error: The directory '{dir_path}' does not exist.")
+
+    for filename in dir_path.glob("**/*.txt"):
+        constraints, distinct_events, data_lines = parse_file(filename)
+        rewrite_file(filename, constraints, distinct_events, data_lines)
+        print(f"File '{filename}' has been successfully updated.")
 
 
 if __name__ == "__main__":

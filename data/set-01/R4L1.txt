@@ -1,7 +1,4 @@
-# R4L1.txt
-# Set-01
-# part of PESPlib
-# http://num.math.uni-goettingen.de/~m.goerigk/pesplib/
+10262 4932 60
 1; 1; 2; 26; 26; 5696
 2; 2; 3; 1; 5; 5696
 3; 3; 4; 15; 15; 10127

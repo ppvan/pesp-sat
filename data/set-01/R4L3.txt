@@ -1,7 +1,4 @@
-# R4L3.txt
-# Set-01
-# part of PESPlib
-# http://num.math.uni-goettingen.de/~m.goerigk/pesplib/
+13238 6368 60
 1; 1; 2; 28; 28; 1854
 2; 2; 3; 1; 5; 1854
 3; 3; 4; 2; 2; 2718
