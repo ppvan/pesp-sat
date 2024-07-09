@@ -1,114 +1,12 @@
 #include "../third-party/kissat/src/kissat.h"
 #include "solver/binomial.h"
 #include "types/pesp.h"
+#include <assert.h>
 #include <stdio.h>
 
 #include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
-
-enum { UNSATISFIABLE = 20, SATISFIABLE = 10 };
-
-static int pair(int x, int y) {
-    if (x < y) {
-        return y * y + x + 1;
-    } else {
-        return x * x + x + y + 1;
-    }
-}
-
-static void unpair(int z, int *x, int *y) {
-    z = z - 1;
-    int tmp = floor(sqrt(z));
-
-    if (z < tmp * tmp + tmp) {
-        *x = z - tmp * tmp;
-        *y = tmp;
-    } else {
-        *x = tmp;
-        *y = z - tmp * tmp - tmp;
-    }
-}
-
-typedef struct {
-    int i;
-    int j;
-
-    int a;
-    int b;
-} contraint_t;
-
-// Direct encode 0 <= var < bound, var in Z
-void encode_bound(kissat *s, int var, int bound) {
-    for (int i = 0; i < bound; i++) {
-        int index = pair(var, i);
-        // printf("index = %d\n", index);
-        kissat_add(s, index);
-    }
-    kissat_add(s, 0);
-
-    for (int i = 0; i < bound; i++) {
-        for (int j = i + 1; j < bound; j++) {
-            int index1 = pair(var, i);
-            int index2 = pair(var, j);
-
-            kissat_add(s, -index1);
-            kissat_add(s, -index2);
-            kissat_add(s, 0);
-        }
-    }
-}
-
-bool next_shuffle(int *a, int n, int T) {
-    for (int i = n - 1; i >= 0; i--) {
-        if (a[i] < T - 1) {
-            a[i]++;
-            return true;
-        }
-        a[i] = 0;
-    }
-    return false;
-}
-
-int *naiive_solve(int n, int T, contraint_t *cons, int len) {
-
-    int *array = calloc(n, sizeof(int));
-    while (next_shuffle(array, n, T)) {
-        bool is_valid = true;
-        // for (int i = 0; i < n; i++) {
-        //     printf("%d ", array[i]);
-        // }
-        // printf("\n");
-
-        for (int i = 0; i < len; i++) {
-            int temp = array[cons[i].j] - array[cons[i].i];
-            int low = (temp - cons[i].b) / T;
-            int high = (temp - cons[i].a) / T;
-            bool has_chance = false;
-
-            for (int j = low; j <= high; j++) {
-                int a = cons[i].a + j * T;
-                int b = cons[i].b + j * T;
-
-                if (temp >= a && temp <= b) {
-                    has_chance = true;
-                    break;
-                }
-            }
-
-            if (!has_chance) {
-                is_valid = false;
-                break;
-            }
-        }
-
-        if (is_valid) {
-            return array;
-        }
-    }
-
-    return NULL;
-}
 
 bool is_valid_solution(pesp_t *pesp, pesp_result_t *solution) {
 
@@ -148,9 +46,14 @@ bool is_valid_solution(pesp_t *pesp, pesp_result_t *solution) {
     return true;
 }
 
-// int sat = kissat_solve(solver);
-// 10 => UNSAT
-// 20 => SAT
+char *shift_args(int *argc, char ***argv)
+{
+    assert(*argc > 0);
+    char *result = **argv;
+    *argc -= 1;
+    *argv += 1;
+    return result;
+}
 
 int main(int argc, char *argv[]) {
     /**
@@ -162,10 +65,17 @@ int main(int argc, char *argv[]) {
     a3 = ((C, A), [2, 4])
     */
 
-    char *path = "./data/simple/test1.txt";
+
+    char* program = shift_args(&argc, &argv);
+
+    if (argc <= 0) {
+        printf("%s <input_file>\n", program);
+        return 1;
+    }
+
+    char *path = shift_args(&argc, &argv);
+
     pesp_t *pesp = pesp_parse_file(path);
-    char *str = pesp_to_str(pesp);
-    printf("%s\n\n", str);
 
     pesp_result_t *solution = binominal_solve(pesp);
 
@@ -177,14 +87,14 @@ int main(int argc, char *argv[]) {
             printf("Invalid\n");
         }
 
-        char *str = pesp_result_to_str(solution);
-        printf("%s\n", str);
-        free(str);
-        pesp_result_free(solution);
+        // char *result_str = pesp_result_to_str(solution);
+        // printf("%s\n", result_str);
+        // free(result_str);
+        // pesp_result_free(solution);
     } else {
         printf("Failed\n");
     }
 
-    free(str);
+    // free(str);
     pesp_free(pesp);
 }
