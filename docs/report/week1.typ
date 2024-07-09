@@ -169,34 +169,45 @@ $ a = ((i, j), [l_a, u_a]_(t_T)) in A $
 
 Ta cần tìm $nu$ tiềm năng sự kiện: $pi_i, i in v$ sao cho thỏa tất cả ràng buộc $a$.
 
-Để đơn giản, ta đánh số các sự kiện từ $0 -> n, n = |nu|$. Bài toán trở thành tìm n số $pi_i, 0 <= i < n$ sao cho thỏa tất cả ràng buộc $a in A$. Để chuyển bài toán PESP #sym.arrow SAT., ta cần định nghĩa hình thức các sự kiện $p_i$ và các ràng buộc $a$.
+Để đơn giản, ta đánh số các sự kiện từ $0 -> n, n = |nu|$. Bài toán trở thành tìm n số $pi_i, 0 <= i < n$ sao cho thỏa tất cả ràng buộc $a in A$. Để chuyển bài toán PESP #sym.arrow SAT., ta cần định nghĩa hình thức các sự kiện $pi_i$ và các ràng buộc $a$.
 
 
-_Hình thức hoá sự kiện_ $pi_i$:
+_Hình thức hoá sự kiện_ $pi$:
 
-Theo @defs, ta có $0<=p_i<T$ hay $p_i in {0, 1, 2, ..., T - 1}$. Dễ thấy
+Theo @defs, ta có $0<=pi<T$ hay $pi_i in {0, 1, 2, ..., T - 1}$. Dễ thấy
 
 #table(
   columns: (1fr, 1fr),
   inset: 10pt,
   align: horizon + center,
   table.header(
-    [*Math*], [*SAT*],
+    [*Math*], [*SAT (direct)*],
   ),
-  $ pi_i = m, m in [0, T - 1]
-  
-   pi_i in ZZ, m in ZZ $,
-  $ pi h (D^2 - d^2) / 4 $,
-  [
-    $h$: height \
-    $D$: outer radius \
-    $d$: inner radius
-  ],
-  [],
-  $ sqrt(2) / 12 a^3 $,
-  [$a$: edge length]
+  $ pi = i, i in [0, T - 1], 
+   pi in ZZ, i in ZZ $,
+  $ p_(i) = #true, p_(j) = #false forall j != i, 0 <= j < T $,
+  $ pi = i, i in [0, T - 1], 
+   pi in ZZ, i in ZZ $,
+  $ (or.big_(i = 0)^(i < T) p_i ) and (and.big_(i=0)^(i < T) and.big_(j = 0, j != i)^(j < T) p_i => not p_j) $,
+  $ pi = i, i in [0, T - 1], 
+   pi in ZZ, i in ZZ $,
+  $ (or.big_(i = 0)^(i < T) p_i ) and (and.big_(i=0)^(i < T) and.big_(j = 0, j != i)^(j < T) not p_i or not p_j) $,
 )
 
+Áp dụng tương tự với tất cả các sự kiện.
+
+
+_Pairing function_
+
+Do tính chất của các SAT solver, ta phải tìm cách ánh xạ từ $(x, y) -> z$. Ví dụ để hình thức hóa $pi_i = j$, cần ánh xạ i và j thành một số duy nhất và có thể giải ngược lại sau khi giải SAT. Có một nhánh của toán học nghiên cứu các hàm số này, ở đây ta sử dụng hàm Szudzik pairing function:
+
+$
+"pair"(x, y) &= cases(y^2 + x &"if" x != max(x, y), x^2 + x + y &"if" x = max(x, y)) \
+
+"unpair"(z) &= cases({z - floor(sqrt(z))^2, floor(sqrt(z)) } &"if" z - floor(sqrt(z))^2 < floor(sqrt(z)), {floor(sqrt(z)), z - floor(sqrt(z))^2 - floor(z)} &"if" z - floor(sqrt(z))^2 >= floor(sqrt(z)) )
+$
+
+_Hình thức hoá các ràng buộc_ $a in A$:
 
 
 ==== Order encoding
