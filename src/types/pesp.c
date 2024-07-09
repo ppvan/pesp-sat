@@ -22,6 +22,8 @@ pesp_t *pesp_parse_file(char *file_path) {
         constraint_t con;
         sscanf(buf, "%d; %d; %d; %d; %d; %d", &con.id, &con.p_i, &con.p_j, &con.lower_bound, &con.upper_bound,
                &con.weight);
+        con.p_i--;
+        con.p_j--;
         cons[index++] = con;
     }
 

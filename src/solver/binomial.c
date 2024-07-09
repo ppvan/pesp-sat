@@ -11,13 +11,14 @@ enum { UNSATISFIABLE = 20, SATISFIABLE = 10 };
 
 static int pair(int x, int y) {
     if (x < y) {
-        return y * y + x;
+        return y * y + x + 1;
     } else {
-        return x * x + x + y;
+        return x * x + x + y + 1;
     }
 }
 
 static void unpair(int z, int *x, int *y) {
+    z -= 1;
     int tmp = floor(sqrt(z));
 
     if (z < tmp * tmp + tmp) {
@@ -54,16 +55,16 @@ static void encode_contraint(kissat *s, constraint_t *con, int T) {
     for (int i = 0; i < T; i++) {
         for (int j = 0; j < T; j++) {
 
-            int temp = j - i;
-            int low = (temp - con->upper_bound) / T;
-            int high = (temp - con->lower_bound) / T;
+            int time_contraint = j - i;
+            int low = (time_contraint - con->upper_bound) / T;
+            int high = (time_contraint - con->lower_bound) / T;
             bool has_chance = false;
 
             for (int jj = low; jj <= high; jj++) {
                 int a = con->lower_bound + jj * T;
                 int b = con->upper_bound + jj * T;
 
-                if (temp >= a && temp <= b) {
+                if (time_contraint >= a && time_contraint <= b) {
                     has_chance = true;
                     break;
                 }
@@ -105,7 +106,7 @@ pesp_result_t *binominal_solve(pesp_t *pesp) {
     kissat_set_option(s, "quiet", 1);
     kissat_set_option(s, "sat", 1);
 
-    for (int i = 1; i <= n; i++) {
+    for (int i = 0; i < n; i++) {
         encode_bound(s, i, T);
     }
 
