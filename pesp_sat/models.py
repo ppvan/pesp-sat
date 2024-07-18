@@ -1,7 +1,5 @@
 from typing import NamedTuple, List, Tuple, TextIO, Dict
 
-PERIOD = 60
-
 
 class Interval(NamedTuple):
     start: int
@@ -116,11 +114,13 @@ class PeriodicEventNetwork:
                 parts = list(map(int, parts))
                 _id, i, j, start, end, _weight = parts
                 con = Constraint(
-                    i=i, j=j, interval=Interval(start=start, end=end, period=period)
+                    i=i,
+                    j=j,
+                    interval=Interval(start=start, end=end, period=period),
                 )
 
                 constraints.append(con)
 
-        pen = PeriodicEventNetwork(T=PERIOD, constraints=constraints, n=potentials_len)
+        pen = PeriodicEventNetwork(T=period, constraints=constraints, n=potentials_len)
 
         return pen

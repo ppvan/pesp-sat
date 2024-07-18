@@ -1,26 +1,29 @@
-from typing import Tuple, List, Sequence
+from typing import Tuple, List, Sequence, Dict
 import math
 from pesp_sat.models import PeriodicEventNetwork, Constraint
 
 CNF = List[List[int]]
 
+pair_map: Dict[Tuple[int, int], int] = dict()
+rev_map: Dict[int, Tuple[int, int]] = dict()
+count = 0
+
 
 def pair(x: int, y: int) -> int:
-    if x < y:
-        return y * y + x
-    else:
-        return x * x + x + y
+
+    if pair_map.get((x, y), 0) != 0:
+        return pair_map[(x, y)]
+
+    global count
+    count += 1
+    pair_map[(x, y)] = count
+    rev_map[count] = (x, y)
+
+    return count
 
 
 def unpair(z: int) -> Tuple[int, int]:
-    tmp = math.floor(math.sqrt(z))
-    if z < tmp * tmp + tmp:
-        x = z - tmp * tmp
-        y = tmp
-    else:
-        x = tmp
-        y = z - tmp * tmp - tmp
-    return x, y
+    return rev_map[z]
 
 
 def encode_variable(index: int, bound: Sequence[int]) -> CNF:
@@ -33,6 +36,7 @@ def encode_variable(index: int, bound: Sequence[int]) -> CNF:
             if first_value == second_value:
                 continue
             cnf.append([-pair(index, first_value), -pair(index, second_value)])
+
 
     return cnf
 
@@ -53,9 +57,11 @@ def encode_constraint(contraint: Constraint) -> CNF:
 def direct_encode(pen: PeriodicEventNetwork) -> CNF:
     cnf = []
 
+    for val in range(1, pen.T):
+        cnf.append([pair(0, val)])
+
     for index in range(pen.n):
         cnf.extend(encode_variable(index=index + 1, bound=range(0, pen.T)))
-
 
     for con in pen.constraints:
         cnf.extend(encode_constraint(contraint=con))
