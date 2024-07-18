@@ -1,4 +1,4 @@
-from typing import NamedTuple, List, Tuple, TextIO
+from typing import NamedTuple, List, Tuple, TextIO, Dict
 
 PERIOD = 60
 
@@ -40,23 +40,28 @@ class Constraint(NamedTuple):
     i: int
     j: int
     interval: Interval
+    symmetry: bool = False
 
     def __str__(self) -> str:
         return f"(a[{self.i}], a[{self.j}]) in {self.interval}"
 
-    def is_satisfied(self, potentials: List[int]) -> bool:
+    def is_satisfied(self, potentials: Dict[int, int]) -> bool:
         """
         Check if the constraint is satisfied for the given list 'a'.
         """
-        if self.i >= len(potentials) or self.j >= len(potentials):
+        if self.i not in potentials.keys() or self.j not in potentials.keys():
             raise IndexError("Constraint indices out of range")
 
-        difference = potentials[self.j] - potentials[self.i]
-        sum_of_potentials = potentials[self.j] + potentials[self.i]
+        return self.hold(potentials[self.i], potentials[self.j])
 
-        return self.interval.contains(difference) and self.interval.contains(
-            sum_of_potentials
-        )
+    def hold(self, potential: int, other: int):
+        difference = other - potential
+        sum_of_potentials = other + potential
+
+        time_hold = self.interval.contains(difference)
+        symmetry_hold = self.interval.contains(sum_of_potentials)
+
+        return time_hold and (not self.symmetry or symmetry_hold)
 
 
 class PeriodicEventNetwork:
@@ -74,7 +79,7 @@ class PeriodicEventNetwork:
             f"Constraints:\n{constraints_str}"
         )
 
-    def is_feasible(self, schedule: List[int]) -> bool:
+    def is_feasible(self, schedule: Dict[int, int]) -> bool:
         """
         Check if a given schedule satisfies all constraints.
 
