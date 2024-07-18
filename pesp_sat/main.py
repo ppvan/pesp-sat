@@ -2,14 +2,11 @@ from pesp_sat.models import PeriodicEventNetwork
 from pesp_sat.encoding import direct_encode, unpair
 
 import pycosat
-import pprint
-import time
 
 
 def simple():
     with open("data/simple/test1.txt") as input_file:
         pen = PeriodicEventNetwork.parse(input_file)
-        print(pen)
         cnf = direct_encode(pen=pen)
 
         # return 

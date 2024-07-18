@@ -116,7 +116,7 @@ class PeriodicEventNetwork:
                 con = Constraint(
                     i=i,
                     j=j,
-                    interval=Interval(start=start, end=end, period=period),
+                    interval=Interval(start=start, end=end, period=period)
                 )
 
                 constraints.append(con)
