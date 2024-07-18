@@ -1,8 +1,7 @@
+from pesp_sat.models import PeriodicEventNetwork
 
-import pycosat
 
-cnf = [[1, -5, 4], [-1, 5, 3, 4], [-3, -4]]
+with open("data/simple/test1.txt") as input_file:
+    pen = PeriodicEventNetwork.parse(input_file)
 
-model = pycosat.solve(cnf)
-
-print(model)
+    print(pen)

@@ -1,4 +1,5 @@
 {
     "typst-lsp.rootPath": "${workspaceFolder}/docs",
-    "typst-lsp.exportPdf": "onType"
+    "typst-lsp.exportPdf": "onType",
+    "python.analysis.typeCheckingMode": "basic"
 }
