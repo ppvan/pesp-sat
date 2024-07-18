@@ -1,6 +1,6 @@
 
 #include "binomial.h"
-#include <assert.h>
+#include "sat.h"
 #include <kissat.h>
 
 #include <math.h>
@@ -31,27 +31,27 @@ static void unpair(int z, int *x, int *y) {
 }
 
 // Direct encode 0 <= var < bound, var in Z
-static void encode_bound(kissat *s, int var, int bound) {
+static void encode_bound(sat_t *s, int var, int bound) {
     for (int i = 0; i < bound; i++) {
         int index = pair(var, i);
         // printf("index = %d\n", index);
-        kissat_add(s, index);
+        sat_add(s, index);
     }
-    kissat_add(s, 0);
+    sat_add(s, 0);
 
     for (int i = 0; i < bound; i++) {
         for (int j = i + 1; j < bound; j++) {
             int index1 = pair(var, i);
             int index2 = pair(var, j);
 
-            kissat_add(s, -index1);
-            kissat_add(s, -index2);
-            kissat_add(s, 0);
+            sat_add(s, -index1);
+            sat_add(s, -index2);
+            sat_add(s, 0);
         }
     }
 }
 
-static void encode_contraint(kissat *s, constraint_t *con, int T) {
+static void encode_contraint(sat_t *s, constraint_t *con, int T) {
     for (int i = 0; i < T; i++) {
         for (int j = 0; j < T; j++) {
 
@@ -76,17 +76,17 @@ static void encode_contraint(kissat *s, constraint_t *con, int T) {
             int index1 = pair(con->p_i, i);
             int index2 = pair(con->p_j, j);
 
-            kissat_add(s, -index1);
-            kissat_add(s, -index2);
-            kissat_add(s, 0);
+            sat_add(s, -index1);
+            sat_add(s, -index2);
+            sat_add(s, 0);
         }
     }
 }
 
-static int decode_bound(kissat *s, int var, int bound) {
+static int decode_bound(sat_t *s, int var, int bound) {
     for (int i = 0; i < bound; i++) {
         int index = pair(var, i);
-        int value = kissat_value(s, index);
+        int value = sat_value(s, index);
         if (value == index) {
             return i;
         }
@@ -102,35 +102,31 @@ pesp_result_t *binominal_solve(pesp_t *pesp) {
     int T = pesp->period;
     int len = pesp->constaint_len;
     constraint_t *cons = pesp->constaints;
-    kissat *s = kissat_init();
-    kissat_set_option(s, "quiet", 1);
-    kissat_set_option(s, "sat", 1);
+    sat_t *solver = sat_init();
 
     for (int i = 0; i < n; i++) {
-        encode_bound(s, i, T);
+        encode_bound(solver, i, T);
     }
 
     // encode contraints
-
     for (int i = 0; i < len; i++) {
-        encode_contraint(s, &cons[i], T);
+        encode_contraint(solver, &cons[i], T);
     }
 
     // solve
-
-    int result = kissat_solve(s);
-    if (result == UNSATISFIABLE) {
-        kissat_terminate(s);
+    bool satisfiable = sat_solve(solver);
+    if (!satisfiable) {
+        sat_free(solver);
         return NULL;
     }
 
     // extract result
     int *ans = malloc(n * sizeof(int));
     for (int i = 0; i < n; i++) {
-        int value = decode_bound(s, i, T);
+        int value = decode_bound(solver, i, T);
         ans[i] = value;
     }
 
-    kissat_terminate(s);
+    sat_free(solver);
     return pesp_result_init(ans, n);
 }

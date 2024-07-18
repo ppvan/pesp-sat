@@ -7,7 +7,7 @@ KISSAT_DIR = ./third-party/kissat
 KISSAT_LIB = $(KISSAT_DIR)/build/libkissat.a
 
 
-SRCS = src/solver/binomial.c src/encoding/direct.c src/main.c src/solver/naive.c src/types/pesp.c src/types/vec.c
+SRCS = src/solver/binomial.c src/encoding/direct.c src/main.c src/solver/naive.c src/types/pesp.c src/types/vec.c src/solver/sat.c
 OBJS = $(SRCS:.c=.o)
 
 debug: $(OBJS) $(KISSAT_LIB)

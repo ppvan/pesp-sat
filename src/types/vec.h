@@ -7,10 +7,10 @@ typedef struct {
     int* data;
     size_t size;
     size_t capacity;
-} Vec;
+} vec_t;
 
 
-Vec vec_init(void);
-void vec_destroy(Vec vec);
-Vec vec_push_back(Vec vec, int value);
+vec_t* vec_init(void);
+void vec_destroy(vec_t* vec);
+void vec_push_back(vec_t* vec, int value);
 #endif // VEC_H
