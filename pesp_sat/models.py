@@ -67,14 +67,14 @@ class PeriodicEventNetwork:
     def __init__(self, n: int, constraints: List[Constraint], T: int):
         self.n = n  # number of events
         self.constraints = constraints
-        self.T = T  # period
+        self.period = T  # period
 
     def __str__(self):
         constraints_str = "\n".join(str(c) for c in self.constraints)
         return (
             f"Periodic Event Network:\n"
             f"Number of events: {self.n}\n"
-            f"Period: {self.T}\n"
+            f"Period: {self.period}\n"
             f"Constraints:\n{constraints_str}"
         )
 

@@ -9,7 +9,7 @@ def test_periodic_event_network_creation():
     ]
     pen = PeriodicEventNetwork(3, constraints, 10)
     assert pen.n == 3
-    assert pen.T == 10
+    assert pen.period == 10
     assert len(pen.constraints) == 2
 
 

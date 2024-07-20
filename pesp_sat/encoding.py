@@ -1,29 +1,11 @@
-from typing import Tuple, List, Sequence, Dict, TextIO
+from typing import Self, Tuple, List, Sequence, Dict, TextIO, Set
 from pesp_sat.models import PeriodicEventNetwork, Constraint
 import collections
+import math
 
 
 CNF = List[List[int]]
-
-pair_map: Dict[Tuple[int, int], int] = dict()
-rev_map: Dict[int, Tuple[int, int]] = dict()
-count = 0
-
-
-def pair(x: int, y: int) -> int:
-    if pair_map.get((x, y), 0) != 0:
-        return pair_map[(x, y)]
-
-    global count
-    count += 1
-    pair_map[(x, y)] = count
-    rev_map[count] = (x, y)
-
-    return count
-
-
-def unpair(z: int) -> Tuple[int, int]:
-    return rev_map[z]
+Rect = Tuple[Tuple[int, int], Tuple[int, int]]
 
 
 # Adapt from: https://github.com/pysathq/pysat/blob/db89c1b88fd20eeef0da9fd5a677cab508cf9979/pysat/formula.py
@@ -180,6 +162,64 @@ class IDPool(object):
         return self.top
 
 
+class DirectEncode(object):
+    period: int
+    pen: PeriodicEventNetwork
+
+    def __init__(self, pen: PeriodicEventNetwork) -> None:
+        self.pen = pen
+        self.vpool = IDPool()
+        self.period = pen.period
+
+        pass
+
+    def _encode_vars(self) -> CNF:
+        bound = range(self.period)
+        events = self.pen.n
+        cnf = []
+
+        for event in range(1, events + 1):
+            cnf.append([self.vpool.id(obj=(event, value)) for value in bound])
+            for first_value in bound:
+                for second_value in bound:
+                    if first_value == second_value:
+                        continue
+                    first_assign = self.vpool.id(obj=(event, first_value))
+                    second_assign = self.vpool.id(obj=(event, second_value))
+                    cnf.append([-first_assign, -second_assign])
+
+        return cnf
+
+    def _encode_constraints(self) -> CNF:
+        cnf = []
+        period = self.period
+
+        for contraint in self.pen.constraints:
+            unfeasible_pairs = [
+                (a, b)
+                for a in range(period)
+                for b in range(period)
+                if not contraint.hold(a, b)
+            ]
+            for p_i_val, p_j_val in unfeasible_pairs:
+                p_i_assign = self.vpool.id(obj=(contraint.i, p_i_val))
+                p_j_assign = self.vpool.id(obj=(contraint.j, p_j_val))
+
+                cnf.append([-p_i_assign, -p_j_assign])
+
+        return cnf
+
+    def encode(self) -> CNF:
+        return self._encode_constraints() + self._encode_vars()
+
+    def decode(self, model: List[int]) -> Dict[int, int]:
+        true_assigns = filter(None, (self.vpool.obj(x) for x in model if x > 0))
+
+        return {name: value for (name, value) in true_assigns}
+
+    pass
+
+
 def encode_variable(name: str, bound: Sequence[int], vpool=None) -> CNF:
     if not vpool:
         vpool = IDPool()
@@ -224,7 +264,7 @@ def direct_encode(pen: PeriodicEventNetwork) -> Tuple[IDPool, CNF]:
 
     for index in range(pen.n):
         name = f"p_{index + 1}"
-        cnf.extend(encode_variable(name=name, bound=range(0, pen.T), vpool=pool))
+        cnf.extend(encode_variable(name=name, bound=range(0, pen.period), vpool=pool))
 
     for con in pen.constraints:
         cnf.extend(encode_constraint(contraint=con, vpool=pool))
@@ -232,8 +272,45 @@ def direct_encode(pen: PeriodicEventNetwork) -> Tuple[IDPool, CNF]:
     return pool, cnf
 
 
-def order_encode(pen: PeriodicEventNetwork) -> CNF:
-    return [[1]]
+class OrderEncode:
+    pen: PeriodicEventNetwork
+    period: int
+
+    def __init__(self, pen: PeriodicEventNetwork) -> None:
+        self.pen = pen
+        self.period = pen.period
+        pass
+
+    def delta(self, low: int, high: int) -> int:
+        return low - high - 1
+
+    def delta_width(self, low: int, high: int) -> int:
+        return math.floor(0.5 * self.delta(low, high))
+
+    def delta_height(self, low: int, high: int) -> int:
+        return math.ceil(0.5 * self.delta(low, high)) - 1
+
+    def phi(self, low: int, high: int) -> Set[Rect]:
+        unfeasible_rects = set()
+
+        for x2 in range(-self.delta_height(low, high), self.period):
+            x1 = x2 - high - 1 - self.delta_width(low, high)
+            if x1 + self.delta_width(low, high) < 0 or x1 > self.period:
+                continue
+
+            unfeasible_rects.add(
+                (
+                    (x1, x1 + self.delta_width(low, high)),
+                    (x2, x2 + self.delta_height(low, high)),
+                )
+            )
+
+        return unfeasible_rects
+
+    def encode(self: Self) -> CNF:
+        return [[1]]
+
+    pass
 
 
 def export_cnf(file: TextIO, cnf: CNF):
