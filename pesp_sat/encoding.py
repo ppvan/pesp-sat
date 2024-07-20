@@ -220,65 +220,15 @@ class DirectEncode(object):
     pass
 
 
-def encode_variable(name: str, bound: Sequence[int], vpool=None) -> CNF:
-    if not vpool:
-        vpool = IDPool()
-
-    bound = sorted(bound)
-    cnf = []
-
-    cnf.append([vpool.id(obj=(name, value)) for value in bound])
-
-    for first_value in bound:
-        for second_value in bound:
-            if first_value == second_value:
-                continue
-            first_assign = vpool.id(obj=(name, first_value))
-            second_assign = vpool.id(obj=(name, second_value))
-            cnf.append([-first_assign, -second_assign])
-
-    return cnf
-
-
-def encode_constraint(contraint: Constraint, vpool=None) -> CNF:
-    if not vpool:
-        vpool = IDPool()
-
-    period = contraint.interval.period
-    unfeasible_pairs = [
-        (a, b) for a in range(period) for b in range(period) if not contraint.hold(a, b)
-    ]
-    cnf = []
-    for p_i_val, p_j_val in unfeasible_pairs:
-        p_i_assign = vpool.id(obj=(f"p_{contraint.i}", p_i_val))
-        p_j_assign = vpool.id(obj=(f"p_{contraint.j}", p_j_val))
-
-        cnf.append([-p_i_assign, -p_j_assign])
-
-    return cnf
-
-
-def direct_encode(pen: PeriodicEventNetwork) -> Tuple[IDPool, CNF]:
-    cnf = []
-    pool = IDPool()
-
-    for index in range(pen.n):
-        name = f"p_{index + 1}"
-        cnf.extend(encode_variable(name=name, bound=range(0, pen.period), vpool=pool))
-
-    for con in pen.constraints:
-        cnf.extend(encode_constraint(contraint=con, vpool=pool))
-
-    return pool, cnf
-
-
-class OrderEncode:
+class OrderEncode(object):
     pen: PeriodicEventNetwork
     period: int
+    vpool: IDPool
 
     def __init__(self, pen: PeriodicEventNetwork) -> None:
         self.pen = pen
         self.period = pen.period
+        self.vpool = IDPool()
         pass
 
     def delta(self, low: int, high: int) -> int:
@@ -307,8 +257,59 @@ class OrderEncode:
 
         return unfeasible_rects
 
+    def encode_vars(self) -> CNF:
+        events = self.pen.n
+        period = self.period
+        vpool = self.vpool
+
+        cnf = []
+        for var in range(1, events + 1):
+            for value in range(1, period):
+                var_lte_prev_value = vpool.id((var, value - 1))
+                var_lte_value = vpool.id((var, value))
+
+                cnf.append([-var_lte_prev_value, var_lte_value])
+
+        return cnf
+
+    def encode_constraint(self, constraint: Constraint) -> CNF:
+        l = constraint.interval.start
+        u = constraint.interval.end
+        x = constraint.i
+        y = constraint.j
+        cnf = []
+
+        for rect in self.phi(l, u):
+            ((x1, x2), (y1, y2)) = rect
+
+            x_lte_x1_prev = self.vpool.id((x, x1 - 1))
+            x_lte_x2 = self.vpool.id((x, x2))
+            y_lte_y1_prev = self.vpool.id((y, y1 - 1))
+            y_lte_y2 = self.vpool.id((y, y2))
+
+            cnf.append([-x_lte_x2, x_lte_x1_prev, -y_lte_y2, y_lte_y1_prev])
+
+        return cnf
+
+    def encode_constraints(self) -> CNF:
+        cnf = []
+        for con in self.pen.constraints:
+            cnf.extend(self.encode_constraint(con))
+
+        return cnf
+
     def encode(self: Self) -> CNF:
-        return [[1]]
+        return self.encode_vars() + self.encode_constraints()
+
+    def decode(self: Self, model: List[int]) -> Dict[int, int]:
+        true_lte = list(filter(None, (self.vpool.obj(x) for x in model if x > 0)))
+
+        ans = {}
+        for name, value in true_lte:
+            if (name, value - 1) not in true_lte:
+                ans[name] = value
+
+        return ans
 
     pass
 
