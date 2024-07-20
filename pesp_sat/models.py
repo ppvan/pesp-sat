@@ -1,3 +1,4 @@
+import collections
 from typing import NamedTuple, List, Tuple, TextIO, Dict
 
 
@@ -124,3 +125,4 @@ class PeriodicEventNetwork:
         pen = PeriodicEventNetwork(T=period, constraints=constraints, n=potentials_len)
 
         return pen
+
