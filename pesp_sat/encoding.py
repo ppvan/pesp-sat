@@ -234,28 +234,51 @@ class OrderEncode(object):
     def delta(self, low: int, high: int) -> int:
         return low - high - 1
 
-    def delta_width(self, low: int, high: int) -> int:
+    def delta_x(self, low: int, high: int) -> int:
+        return math.ceil(0.5 * self.delta(low, high)) - 1
+
+    def delta_y(self, low: int, high: int) -> int:
         return math.floor(0.5 * self.delta(low, high))
 
-    def delta_height(self, low: int, high: int) -> int:
-        return math.ceil(0.5 * self.delta(low, high)) - 1
+    def corie(self, num: int):
+        return num
+
+        if num < 0:
+            return 0
+        elif num > self.period - 1:
+            return self.period - 1
+        else:
+            return num
 
     def phi(self, low: int, high: int) -> Set[Rect]:
         unfeasible_rects = set()
 
-        for x2 in range(-self.delta_height(low, high), self.period):
-            x1 = x2 - high - 1 - self.delta_width(low, high)
-            if x1 + self.delta_width(low, high) < 0 or x1 > self.period:
+        for y1 in range(-self.delta_y(low, high), self.period):
+            x1 = y1 - high - 1 - self.delta_x(low, high)
+            if x1 + self.delta_x(low, high) < 0 or x1 > self.period - 1:
                 continue
-
+            x2 = x1 + self.delta_x(low, high)
+            y2 = y1 + self.delta_y(low, high)
             unfeasible_rects.add(
                 (
-                    (x1, x1 + self.delta_width(low, high)),
-                    (x2, x2 + self.delta_height(low, high)),
+                    (self.corie(x1), self.corie(x2)),
+                    (self.corie(y1), self.corie(y2)),
                 )
             )
 
         return unfeasible_rects
+
+    def unfeasible_region(self, cons: Constraint) -> Set[Rect]:
+        l = cons.interval.start
+        u = cons.interval.end
+        k = 0 if 0 in list(range(l, u + 1)) else -1
+
+        regions = set()
+        for i in range(k, 2):
+            rects = self.phi(l + i * self.period, u + (i - 1) * self.period)
+            regions = regions.union(regions, rects)
+
+        return regions
 
     def encode_vars(self) -> CNF:
         events = self.pen.n
@@ -264,7 +287,7 @@ class OrderEncode(object):
 
         cnf = []
         for var in range(1, events + 1):
-            for value in range(1, period):
+            for value in range(1, period - 1):
                 var_lte_prev_value = vpool.id((var, value - 1))
                 var_lte_value = vpool.id((var, value))
 
@@ -273,21 +296,40 @@ class OrderEncode(object):
         return cnf
 
     def encode_constraint(self, constraint: Constraint) -> CNF:
-        l = constraint.interval.start
-        u = constraint.interval.end
         x = constraint.i
         y = constraint.j
         cnf = []
 
-        for rect in self.phi(l, u):
+        unfeasibles = self.unfeasible_region(cons=constraint)
+
+        for rect in unfeasibles:
             ((x1, x2), (y1, y2)) = rect
 
-            x_lte_x1_prev = self.vpool.id((x, x1 - 1))
-            x_lte_x2 = self.vpool.id((x, x2))
-            y_lte_y1_prev = self.vpool.id((y, y1 - 1))
-            y_lte_y2 = self.vpool.id((y, y2))
+            x_lte_x1_prev = self.vpool.id((x, x1 - 1)) if x1 > 0 else 0
+            x_lte_x2 = self.vpool.id((x, x2)) if x2 < self.period - 1 else 0
+            y_lte_y1_prev = self.vpool.id((y, y1 - 1)) if y1 > 0 else 0
+            y_lte_y2 = self.vpool.id((y, y2)) if y2 < self.period - 1 else 0
 
-            cnf.append([-x_lte_x2, x_lte_x1_prev, -y_lte_y2, y_lte_y1_prev])
+            clause = list(
+                filter(
+                    lambda x: x != 0,
+                    [-x_lte_x2, x_lte_x1_prev, -y_lte_y2, y_lte_y1_prev],
+                )
+            )
+
+            # 9, 1
+
+            print("--------------------------")
+            for c in clause:
+                if c > 0:
+                    index, value = self.vpool.obj(c)
+                    print(f"p_{index} <= {value}")
+                else:
+                    index, value = self.vpool.obj(-c)
+                    print(f"p_{index} >= {value + 1}")
+            print(clause)
+
+            cnf.append(clause)
 
         return cnf
 
@@ -302,12 +344,24 @@ class OrderEncode(object):
         return self.encode_vars() + self.encode_constraints()
 
     def decode(self: Self, model: List[int]) -> Dict[int, int]:
-        true_lte = list(filter(None, (self.vpool.obj(x) for x in model if x > 0)))
-
         ans = {}
-        for name, value in true_lte:
-            if (name, value - 1) not in true_lte:
-                ans[name] = value
+        for lit in model:
+            if lit > 0:
+                pair: Tuple[int, int] = self.vpool.obj(lit)  # type: ignore
+                name, value = pair
+                if value == 0:
+                    ans[name] = value
+                    continue
+
+                other = self.vpool.id((name, value - 1))
+                if -other in model:
+                    ans[name] = value
+            else:
+                pair: Tuple[int, int] = self.vpool.obj(-lit)  # type: ignore
+                name, value = pair
+
+                if value == self.period - 2:
+                    ans[name] = self.period - 1
 
         return ans
 

@@ -32,12 +32,13 @@ def simple():
                 #     print(cleaned_data)
 
 def order_simple():
-    with open("data/simple/test2.txt") as input_file:
+    with open("data/simple/test3.txt") as input_file:
         pen = PeriodicEventNetwork.parse(input_file)
         # pool, cnf = direct_encode(pen=pen)
 
         encoding = OrderEncode(pen=pen)
         cnf = encoding.encode()
+        count = 0
 
         for model in pycosat.itersolve(cnf):
             if isinstance(model, str):
@@ -47,11 +48,18 @@ def order_simple():
 
                 # print(model)
                 # print(result)
+                count += 1
+                # continue
+                # break
+                # print(result)
+
                 if pen.is_feasible(result):
                     print(result)
                 else:
-                    print("Verification failed.")
+                    print("Verification failed.", result)
+                    print(model)
                 # break
+    print(count)
     pass
 
 if __name__ == "__main__":

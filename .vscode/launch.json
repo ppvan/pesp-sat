@@ -2,12 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "lldb",
+            "name": "Python Debugger: Module",
+            "type": "debugpy",
             "request": "launch",
-            "name": "Debug",
-            "program": "${workspaceFolder}/pesp-sat.out",
-            "args": [],
-            "cwd": "${workspaceFolder}"
+            "module": "pesp_sat.main"
         }
     ]
 }
