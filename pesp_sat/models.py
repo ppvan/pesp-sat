@@ -1,4 +1,3 @@
-import collections
 from typing import NamedTuple, List, Tuple, TextIO, Dict
 
 
@@ -6,6 +5,12 @@ class Interval(NamedTuple):
     start: int
     end: int
     period: int = 0
+
+    def __contains__(self, key: object) -> bool:
+        if not isinstance(key, int):
+            return False
+
+        return self.contains(key)
 
     def contains(self, value: int) -> bool:
         if self.period == 0:
@@ -60,7 +65,7 @@ class Constraint(NamedTuple):
         time_hold = self.interval.contains(difference)
         symmetry_hold = self.interval.contains(sum_of_potentials)
 
-        return time_hold and (not self.symmetry or symmetry_hold)
+        return (self.symmetry or time_hold) and (not self.symmetry or symmetry_hold)
 
 
 class PeriodicEventNetwork:
@@ -117,7 +122,8 @@ class PeriodicEventNetwork:
                 con = Constraint(
                     i=i,
                     j=j,
-                    interval=Interval(start=start, end=end, period=period)
+                    interval=Interval(start=start, end=end, period=period),
+                    symmetry=True,
                 )
 
                 constraints.append(con)
@@ -125,4 +131,3 @@ class PeriodicEventNetwork:
         pen = PeriodicEventNetwork(T=period, constraints=constraints, n=potentials_len)
 
         return pen
-

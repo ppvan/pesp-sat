@@ -32,7 +32,7 @@ def simple():
                 #     print(cleaned_data)
 
 def order_simple():
-    with open("data/simple/test3.txt") as input_file:
+    with open("data/simple/test2.txt") as input_file:
         pen = PeriodicEventNetwork.parse(input_file)
         # pool, cnf = direct_encode(pen=pen)
 
@@ -63,9 +63,9 @@ def order_simple():
     pass
 
 if __name__ == "__main__":
-    # simple()
+    simple()
 
-    order_simple()
+    # order_simple()
 
     # for model in pycosat.itersolve([[1, 3]]):
     #     print(model)

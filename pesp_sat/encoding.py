@@ -1,4 +1,4 @@
-from typing import Self, Tuple, List, Sequence, Dict, TextIO, Set
+from typing import Self, Tuple, List, Dict, TextIO, Set
 from pesp_sat.models import PeriodicEventNetwork, Constraint
 import collections
 import math
@@ -8,7 +8,6 @@ CNF = List[List[int]]
 Rect = Tuple[Tuple[int, int], Tuple[int, int]]
 
 
-# Adapt from: https://github.com/pysathq/pysat/blob/db89c1b88fd20eeef0da9fd5a677cab508cf9979/pysat/formula.py
 class IDPool(object):
     def __init__(self, start_from=1):
         """
@@ -217,8 +216,6 @@ class DirectEncode(object):
 
         return {name: value for (name, value) in true_assigns}
 
-    pass
-
 
 class OrderEncode(object):
     pen: PeriodicEventNetwork
@@ -240,17 +237,7 @@ class OrderEncode(object):
     def delta_y(self, low: int, high: int) -> int:
         return math.floor(0.5 * self.delta(low, high))
 
-    def corie(self, num: int):
-        return num
-
-        if num < 0:
-            return 0
-        elif num > self.period - 1:
-            return self.period - 1
-        else:
-            return num
-
-    def phi(self, low: int, high: int) -> Set[Rect]:
+    def time_phi(self, low: int, high: int) -> Set[Rect]:
         unfeasible_rects = set()
 
         for y1 in range(-self.delta_y(low, high), self.period):
@@ -259,23 +246,45 @@ class OrderEncode(object):
                 continue
             x2 = x1 + self.delta_x(low, high)
             y2 = y1 + self.delta_y(low, high)
-            unfeasible_rects.add(
-                (
-                    (self.corie(x1), self.corie(x2)),
-                    (self.corie(y1), self.corie(y2)),
-                )
-            )
+            unfeasible_rects.add(((x1, x2), (y1, y2)))
 
         return unfeasible_rects
 
-    def unfeasible_region(self, cons: Constraint) -> Set[Rect]:
-        l = cons.interval.start
-        u = cons.interval.end
-        k = 0 if 0 in list(range(l, u + 1)) else -1
+    def symetry_phi(self, low: int, high: int) -> Set[Rect]:
+        unfeasible_rects = set()
+
+        for y1 in range(-self.delta_y(low, high), self.period):
+            x1 = -y1 + low - 1 - self.delta_x(low, high)
+            if x1 + self.delta_x(low, high) < 0 or x1 > self.period - 1:
+                continue
+            x2 = x1 + self.delta_x(low, high)
+            y2 = y1 + self.delta_y(low, high)
+            unfeasible_rects.add(((x1, x2), (y1, y2)))
+
+        return unfeasible_rects
+
+    def _time_unfeasible_region(self, cons: Constraint) -> Set[Rect]:
+        low = cons.interval.start
+        high = cons.interval.end
+        k = 0 if 0 in list(range(low, high + 1)) else -1
 
         regions = set()
         for i in range(k, 2):
-            rects = self.phi(l + i * self.period, u + (i - 1) * self.period)
+            rects = self.time_phi(low + i * self.period, high + (i - 1) * self.period)
+            regions = regions.union(regions, rects)
+
+        return regions
+
+    def _symetry_unfeasible_region(self, cons: Constraint) -> Set[Rect]:
+        low = cons.interval.start
+        high = cons.interval.end
+        k = 1 if 0 in list(range(low, high + 1)) else 2
+
+        regions = set()
+        for i in range(k + 1):
+            rects = self.symetry_phi(
+                low + i * self.period, high + (i - 1) * self.period
+            )
             regions = regions.union(regions, rects)
 
         return regions
@@ -295,16 +304,17 @@ class OrderEncode(object):
 
         return cnf
 
-    def encode_constraint(self, constraint: Constraint) -> CNF:
+    def _encode_time_constraint(self, constraint: Constraint) -> CNF:
         x = constraint.i
         y = constraint.j
         cnf = []
 
-        unfeasibles = self.unfeasible_region(cons=constraint)
+        unfeasibles = self._time_unfeasible_region(cons=constraint)
 
         for rect in unfeasibles:
             ((x1, x2), (y1, y2)) = rect
 
+            # (x, y) not in (x1, x2), (y1, y2), if x1,x2, y1, y2 not in [0, T-1] than no need to include them in clause
             x_lte_x1_prev = self.vpool.id((x, x1 - 1)) if x1 > 0 else 0
             x_lte_x2 = self.vpool.id((x, x2)) if x2 < self.period - 1 else 0
             y_lte_y1_prev = self.vpool.id((y, y1 - 1)) if y1 > 0 else 0
@@ -316,19 +326,32 @@ class OrderEncode(object):
                     [-x_lte_x2, x_lte_x1_prev, -y_lte_y2, y_lte_y1_prev],
                 )
             )
+            cnf.append(clause)
 
-            # 9, 1
+        return cnf
 
-            print("--------------------------")
-            for c in clause:
-                if c > 0:
-                    index, value = self.vpool.obj(c)
-                    print(f"p_{index} <= {value}")
-                else:
-                    index, value = self.vpool.obj(-c)
-                    print(f"p_{index} >= {value + 1}")
-            print(clause)
+    def _encode_sysmetry_constraint(self, constraint: Constraint) -> CNF:
+        x = constraint.i
+        y = constraint.j
+        cnf = []
 
+        unfeasibles = self._symetry_unfeasible_region(cons=constraint)
+
+        for rect in unfeasibles:
+            ((x1, x2), (y1, y2)) = rect
+
+            # (x, y) not in (x1, x2), (y1, y2), if x1,x2, y1, y2 not in [0, T-1] than no need to include them in clause
+            x_lte_x1_prev = self.vpool.id((x, x1 - 1)) if x1 > 0 else 0
+            x_lte_x2 = self.vpool.id((x, x2)) if x2 < self.period - 1 else 0
+            y_lte_y1_prev = self.vpool.id((y, y1 - 1)) if y1 > 0 else 0
+            y_lte_y2 = self.vpool.id((y, y2)) if y2 < self.period - 1 else 0
+
+            clause = list(
+                filter(
+                    lambda x: x != 0,
+                    [-x_lte_x2, x_lte_x1_prev, -y_lte_y2, y_lte_y1_prev],
+                )
+            )
             cnf.append(clause)
 
         return cnf
@@ -336,7 +359,10 @@ class OrderEncode(object):
     def encode_constraints(self) -> CNF:
         cnf = []
         for con in self.pen.constraints:
-            cnf.extend(self.encode_constraint(con))
+            if con.symmetry:
+                cnf.extend(self._encode_sysmetry_constraint(con))
+            else:
+                cnf.extend(self._encode_time_constraint(con))
 
         return cnf
 
@@ -347,7 +373,7 @@ class OrderEncode(object):
         ans = {}
         for lit in model:
             if lit > 0:
-                pair: Tuple[int, int] = self.vpool.obj(lit)  # type: ignore
+                pair: Tuple[int, int] = self.vpool.obj(lit)
                 name, value = pair
                 if value == 0:
                     ans[name] = value
@@ -357,7 +383,7 @@ class OrderEncode(object):
                 if -other in model:
                     ans[name] = value
             else:
-                pair: Tuple[int, int] = self.vpool.obj(-lit)  # type: ignore
+                pair: Tuple[int, int] = self.vpool.obj(-lit)
                 name, value = pair
 
                 if value == self.period - 2:
