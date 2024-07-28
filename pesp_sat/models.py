@@ -123,7 +123,6 @@ class PeriodicEventNetwork:
                     i=i,
                     j=j,
                     interval=Interval(start=start, end=end, period=period),
-                    symmetry=True,
                 )
 
                 constraints.append(con)

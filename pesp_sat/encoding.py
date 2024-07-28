@@ -3,18 +3,24 @@ from pesp_sat.models import PeriodicEventNetwork, Constraint
 import collections
 import math
 
+from functools import cache
+
 
 CNF = List[List[int]]
 Rect = Tuple[Tuple[int, int], Tuple[int, int]]
 
 
 class IDPool(object):
-    def __init__(self, start_from=1):
+    def __init__(self, start_from=1, n_events=None, period=None):
         """
         Constructor.
         """
-
-        self.restart(start_from=start_from)
+        self.start_from = start_from
+        self.next_id = start_from
+        self.n_events = n_events
+        self.period = period
+        if n_events is not None and period is not None:
+            self.id_matrix = [[0 for _ in range(period)] for _ in range(n_events + 1)]
 
     def __repr__(self):
         """
@@ -36,65 +42,23 @@ class IDPool(object):
         self._occupied = sorted(occupied, key=lambda x: x[0])
 
         # main dictionary storing the mapping from objects to variable IDs
-        self.obj2id = collections.defaultdict(lambda: self._next())
+        self.obj2id = dict()
 
         # mapping back from variable IDs to objects
         # (if for whatever reason necessary)
         self.id2obj = {}
 
     def id(self, obj=None):
-        """
-        The method is to be used to assign an integer variable ID for a
-        given new object. If the object already has an ID, no new ID is
-        created and the old one is returned instead.
-
-        An object can be anything. In some cases it is convenient to use
-        string variable names. Note that if the object is not provided,
-        the method will return a new id unassigned to any object.
-
-        :param obj: an object to assign an ID to.
-
-        :rtype: int.
-
-        Example:
-
-        .. code-block:: python
-
-            >>> from pysat.formula import IDPool
-            >>> vpool = IDPool(occupied=[[12, 18], [3, 10]])
-            >>>
-            >>> # creating 5 unique variables for the following strings
-            >>> for i in range(5):
-            ...    print(vpool.id('v{0}'.format(i + 1)))
-            1
-            2
-            11
-            19
-            20
-
-        In some cases, it makes sense to create an external function for
-        accessing IDPool, e.g.:
-
-        .. code-block:: python
-
-            >>> # continuing the previous example
-            >>> var = lambda i: vpool.id('var{0}'.format(i))
-            >>> var(5)
-            20
-            >>> var('hello_world!')
-            21
-        """
-
         if obj is not None:
-            vid = self.obj2id[obj]
-
-            if vid not in self.id2obj:
-                self.id2obj[vid] = obj
+            event, value = obj
+            if self.id_matrix[event][value] == 0:
+                self.id_matrix[event][value] = self.next_id
+                self.next_id += 1
+            return self.id_matrix[event][value]
         else:
-            # no object is provided => simply return a new ID
-            vid = self._next()
-
-        return vid
+            vid = self.next_id
+            self.next_id += 1
+            return vid
 
     def obj(self, vid):
         """
@@ -167,10 +131,8 @@ class DirectEncode(object):
 
     def __init__(self, pen: PeriodicEventNetwork) -> None:
         self.pen = pen
-        self.vpool = IDPool()
+        self.vpool = IDPool(n_events=pen.n, period=pen.period)
         self.period = pen.period
-
-        pass
 
     def _encode_vars(self) -> CNF:
         bound = range(self.period)
@@ -225,30 +187,27 @@ class OrderEncode(object):
     def __init__(self, pen: PeriodicEventNetwork) -> None:
         self.pen = pen
         self.period = pen.period
-        self.vpool = IDPool()
-        pass
-
-    def delta(self, low: int, high: int) -> int:
-        return low - high - 1
+        self.vpool = IDPool(n_events=pen.n, period=pen.period)
 
     def delta_x(self, low: int, high: int) -> int:
-        return math.ceil(0.5 * self.delta(low, high)) - 1
+        return math.ceil(0.5 * (low - high - 1)) - 1
 
     def delta_y(self, low: int, high: int) -> int:
-        return math.floor(0.5 * self.delta(low, high))
+        return math.floor(0.5 * (low - high - 1))
 
-    def time_phi(self, low: int, high: int) -> Set[Rect]:
-        unfeasible_rects = set()
+    def time_phi(self, low: int, high: int) -> List[Rect]:
+        delta_x = self.delta_x(low, high)
+        delta_y = self.delta_y(low, high)
+        period = self.period
+        high_plus_1 = high + 1
+        period_minus_1 = period - 1
 
-        for y1 in range(-self.delta_y(low, high), self.period):
-            x1 = y1 - high - 1 - self.delta_x(low, high)
-            if x1 + self.delta_x(low, high) < 0 or x1 > self.period - 1:
-                continue
-            x2 = x1 + self.delta_x(low, high)
-            y2 = y1 + self.delta_y(low, high)
-            unfeasible_rects.add(((x1, x2), (y1, y2)))
-
-        return unfeasible_rects
+        return [
+            ((x1, x1 + delta_x), (y1, y1 + delta_y))
+            for y1 in range(-delta_y, period)
+            if (x1 := y1 - high_plus_1 - delta_x) + delta_x >= 0
+            and x1 <= period_minus_1
+        ]
 
     def symetry_phi(self, low: int, high: int) -> Set[Rect]:
         unfeasible_rects = set()
@@ -263,17 +222,15 @@ class OrderEncode(object):
 
         return unfeasible_rects
 
-    def _time_unfeasible_region(self, cons: Constraint) -> Set[Rect]:
-        low = cons.interval.start
-        high = cons.interval.end
-        k = 0 if 0 in list(range(low, high + 1)) else -1
+    def _time_unfeasible_region(self, cons: Constraint) -> List[Rect]:
+        low, high, period = cons.interval.start, cons.interval.end, self.period
+        k = 0 if low * (high + 1) < 0 else -1
 
-        regions = set()
-        for i in range(k, 2):
-            rects = self.time_phi(low + i * self.period, high + (i - 1) * self.period)
-            regions = regions.union(regions, rects)
+        def generate_regions():
+            for i in range(k, 2):
+                yield from self.time_phi(low + i * period, high + (i - 1) * period)
 
-        return regions
+        return list(generate_regions())
 
     def _symetry_unfeasible_region(self, cons: Constraint) -> Set[Rect]:
         low = cons.interval.start
@@ -305,28 +262,21 @@ class OrderEncode(object):
         return cnf
 
     def _encode_time_constraint(self, constraint: Constraint) -> CNF:
-        x = constraint.i
-        y = constraint.j
+        x, y = constraint.i, constraint.j
+        period = self.period
+        period_minus_one = period - 1
         cnf = []
-
         unfeasibles = self._time_unfeasible_region(cons=constraint)
+        # print(len(unfeasibles))
 
-        for rect in unfeasibles:
-            ((x1, x2), (y1, y2)) = rect
-
-            # (x, y) not in (x1, x2), (y1, y2), if x1,x2, y1, y2 not in [0, T-1] than no need to include them in clause
+        for (x1, x2), (y1, y2) in unfeasibles:
             x_lte_x1_prev = self.vpool.id((x, x1 - 1)) if x1 > 0 else 0
-            x_lte_x2 = self.vpool.id((x, x2)) if x2 < self.period - 1 else 0
+            x_lte_x2 = self.vpool.id((x, x2)) if x2 < period_minus_one else 0
             y_lte_y1_prev = self.vpool.id((y, y1 - 1)) if y1 > 0 else 0
-            y_lte_y2 = self.vpool.id((y, y2)) if y2 < self.period - 1 else 0
+            y_lte_y2 = self.vpool.id((y, y2)) if y2 < period_minus_one else 0
 
-            clause = list(
-                filter(
-                    lambda x: x != 0,
-                    [-x_lte_x2, x_lte_x1_prev, -y_lte_y2, y_lte_y1_prev],
-                )
-            )
-            cnf.append(clause)
+            clause = [-x_lte_x2, x_lte_x1_prev, -y_lte_y2, y_lte_y1_prev]
+            cnf.append([term for term in clause if term != 0])
 
         return cnf
 

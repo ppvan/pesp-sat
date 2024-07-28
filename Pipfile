@@ -9,6 +9,7 @@ pydantic = "*"
 pytest = "*"
 
 [dev-packages]
+gprof2dot = "*"
 
 [requires]
 python_version = "3.11"
