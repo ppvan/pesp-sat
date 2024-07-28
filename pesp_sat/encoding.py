@@ -1,131 +1,25 @@
 from typing import Self, Tuple, List, Dict, TextIO, Set
 from pesp_sat.models import PeriodicEventNetwork, Constraint
-import collections
 import math
-
-from functools import cache
+from pesp_sat.mappers import IDPool
+from abc import ABC, abstractmethod
 
 
 CNF = List[List[int]]
 Rect = Tuple[Tuple[int, int], Tuple[int, int]]
 
 
-class IDPool(object):
-    def __init__(self, start_from=1, n_events=None, period=None):
-        """
-        Constructor.
-        """
-        self.start_from = start_from
-        self.next_id = start_from
-        self.n_events = n_events
-        self.period = period
-        if n_events is not None and period is not None:
-            self.id_matrix = [[0 for _ in range(period)] for _ in range(n_events + 1)]
+class Encoder(ABC):
+    @abstractmethod
+    def encode(self, pen: PeriodicEventNetwork) -> CNF:
+        pass
 
-    def __repr__(self):
-        """
-        State reproducible string representaion of object.
-        """
-
-        return f"IDPool(start_from={self.top+1}, occupied={self._occupied})"
-
-    def restart(self, start_from=1, occupied=[]):
-        """
-        Restart the manager from scratch. The arguments replicate those of
-        the constructor of :class:`IDPool`.
-        """
-
-        # initial ID
-        self.top = start_from - 1
-
-        # occupied IDs
-        self._occupied = sorted(occupied, key=lambda x: x[0])
-
-        # main dictionary storing the mapping from objects to variable IDs
-        self.obj2id = dict()
-
-        # mapping back from variable IDs to objects
-        # (if for whatever reason necessary)
-        self.id2obj = {}
-
-    def id(self, obj=None):
-        if obj is not None:
-            event, value = obj
-            if self.id_matrix[event][value] == 0:
-                self.id_matrix[event][value] = self.next_id
-                self.next_id += 1
-            return self.id_matrix[event][value]
-        else:
-            vid = self.next_id
-            self.next_id += 1
-            return vid
-
-    def obj(self, vid):
-        """
-        The method can be used to map back a given variable identifier to
-        the original object labeled by the identifier.
-
-        :param vid: variable identifier.
-        :type vid: int
-
-        :return: an object corresponding to the given identifier.
-
-        Example:
-
-        .. code-block:: python
-
-            >>> vpool.obj(21)
-            'hello_world!'
-        """
-
-        if vid in self.id2obj:
-            return self.id2obj[vid]
-
-        return None
-
-    def occupy(self, start, stop):
-        """
-        Mark a given interval as occupied so that the manager could skip
-        the values from ``start`` to ``stop`` (**inclusive**).
-
-        :param start: beginning of the interval.
-        :param stop: end of the interval.
-
-        :type start: int
-        :type stop: int
-        """
-
-        if stop >= start:
-            # the following check serves to remove unnecessary interval
-            # spawning; since the intervals are sorted, we are checking
-            # if the previous interval is a (non-strict) subset of the new one
-            if (
-                len(self._occupied)
-                and self._occupied[-1][0] >= start
-                and self._occupied[-1][1] <= stop
-            ):
-                self._occupied.pop()
-
-            self._occupied.append([start, stop])
-            self._occupied.sort(key=lambda x: x[0])
-
-    def _next(self):
-        """
-        Get next variable ID. Skip occupied intervals if any.
-        """
-
-        self.top += 1
-
-        while self._occupied and self.top >= self._occupied[0][0]:
-            if self.top <= self._occupied[0][1]:
-                self.top = self._occupied[0][1] + 1
-
-            self._occupied.pop(0)
-
-        return self.top
+    @abstractmethod
+    def decode(self, model: List[int]) -> CNF:
+        pass
 
 
-class DirectEncode(object):
+class DirectEncode(Encoder):
     period: int
     pen: PeriodicEventNetwork
 
@@ -179,7 +73,7 @@ class DirectEncode(object):
         return {name: value for (name, value) in true_assigns}
 
 
-class OrderEncode(object):
+class OrderEncode(Encoder):
     pen: PeriodicEventNetwork
     period: int
     vpool: IDPool
@@ -321,6 +215,7 @@ class OrderEncode(object):
 
     def decode(self: Self, model: List[int]) -> Dict[int, int]:
         ans = {}
+        frozen_model = frozenset(model)
         for lit in model:
             if lit > 0:
                 pair: Tuple[int, int] = self.vpool.obj(lit)
@@ -330,7 +225,7 @@ class OrderEncode(object):
                     continue
 
                 other = self.vpool.id((name, value - 1))
-                if -other in model:
+                if -other in frozen_model:
                     ans[name] = value
             else:
                 pair: Tuple[int, int] = self.vpool.obj(-lit)
@@ -341,15 +236,10 @@ class OrderEncode(object):
 
         return ans
 
-    pass
+    def export_cnf(file: TextIO, cnf: CNF):
+        clauses = len(cnf)
+        variables = max(max(map(abs, clause)) for clause in cnf)
 
-
-def export_cnf(file: TextIO, cnf: CNF):
-    clauses = len(cnf)
-    variables = max(max(map(abs, clause)) for clause in cnf)
-
-    file.write(f"p cnf {variables} {clauses}\n")
-    lines = map(lambda clause: " ".join(map(str, clause)), cnf)
-    file.writelines(lines)
-
-    pass
+        file.write(f"p cnf {variables} {clauses}\n")
+        lines = map(lambda clause: " ".join(map(str, clause)), cnf)
+        file.writelines(lines)

@@ -11,3 +11,6 @@ def timing(f):
           (f.__name__, args, kw, te-ts))
         return result
     return wrap
+
+def run_benmark():
+    pass
