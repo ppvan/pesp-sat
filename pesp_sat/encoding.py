@@ -37,7 +37,7 @@ class DirectEncode(Encoder):
             cnf.append([self.vpool.id(obj=(event, value)) for value in bound])
             for first_value in bound:
                 for second_value in bound:
-                    if first_value == second_value:
+                    if first_value >= second_value:
                         continue
                     first_assign = self.vpool.id(obj=(event, first_value))
                     second_assign = self.vpool.id(obj=(event, second_value))
@@ -56,6 +56,8 @@ class DirectEncode(Encoder):
                 for b in range(period)
                 if not contraint.hold(a, b)
             ]
+
+
             for p_i_val, p_j_val in unfeasible_pairs:
                 p_i_assign = self.vpool.id(obj=(contraint.i, p_i_val))
                 p_j_assign = self.vpool.id(obj=(contraint.j, p_j_val))
@@ -65,7 +67,7 @@ class DirectEncode(Encoder):
         return cnf
 
     def encode(self) -> CNF:
-        return self._encode_constraints() + self._encode_vars()
+        return self._encode_vars() + self._encode_constraints()
 
     def decode(self, model: List[int]) -> Dict[int, int]:
         true_assigns = filter(None, (self.vpool.obj(x) for x in model if x > 0))

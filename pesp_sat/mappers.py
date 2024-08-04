@@ -9,8 +9,8 @@ class IDPool(object):
         self.n_events = n_events
         self.period = period
 
-    def id(self, pair: Tuple[int, int]) -> int:
-        index, value = pair
+    def id(self, obj: Tuple[int, int]) -> int:
+        index, value = obj
         return (index - 1) * self.period + value + 1
 
     def obj(self, vid) -> Tuple[int, int]:

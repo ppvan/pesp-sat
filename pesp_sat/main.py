@@ -6,12 +6,15 @@ import pycosat
 
 
 def simple():
-    with open("data/simple/test1.txt") as input_file:
+    with open("data/simple/test3.txt") as input_file:
         pen = PeriodicEventNetwork.parse(input_file)
         # pool, cnf = direct_encode(pen=pen)
 
         encoding = DirectEncode(pen=pen)
         cnf = encoding.encode()
+
+        print(cnf)
+
 
         for model in pycosat.itersolve(cnf):
             if isinstance(model, str):
@@ -52,9 +55,9 @@ def order_simple():
                 # break
 
 if __name__ == "__main__":
-    # simple()
+    simple()
 
-    order_simple()
+    # order_simple()
 
     # for model in pycosat.itersolve([[1, 3]]):
     #     print(model)
