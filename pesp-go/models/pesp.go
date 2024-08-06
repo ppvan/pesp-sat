@@ -24,7 +24,7 @@ func (pen PeriodicEventNetwork) String() string {
 	return result
 }
 
-func (pen PeriodicEventNetwork) IsFeasible(schedule []int) bool {
+func (pen PeriodicEventNetwork) IsFeasible(schedule Schedule) bool {
 	if len(schedule) != pen.Events+1 {
 		panic(fmt.Sprintf("Schedule must have exactly %d + 1 events", pen.Events))
 	}

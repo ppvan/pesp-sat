@@ -13,7 +13,7 @@ func (c Constraint) String() string {
 	return fmt.Sprintf("(a[%d], a[%d]) in %s", c.FirstEvent, c.SecondEvent, c.Interval)
 }
 
-func (c Constraint) IsSatisfied(potentials []int) bool {
+func (c Constraint) IsSatisfied(potentials Schedule) bool {
 	firstPotential := potentials[c.FirstEvent]
 	secondPotential := potentials[c.SecondEvent]
 
