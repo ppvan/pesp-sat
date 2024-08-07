@@ -35,7 +35,7 @@ def simple():
                 #     print(cleaned_data)
 
 def order_simple():
-    with open("data/set-02/BL1.txt") as input_file:
+    with open("data/simple/test3.txt") as input_file:
         pen = PeriodicEventNetwork.parse(input_file)
         encoding = OrderEncode(pen=pen)
         cnf = encoding.encode()
@@ -47,17 +47,17 @@ def order_simple():
                 result = encoding.decode(model=model)
 
                 if pen.is_feasible(result):
-                    print(result)
-                    break
+                    # print(f"[0 {result[1]} {result[2]}]")
+                    pass
                 else:
                     print("Verification failed.", result)
                     print(model)
                 # break
 
 if __name__ == "__main__":
-    simple()
+    # simple()
 
-    # order_simple()
+    order_simple()
 
     # for model in pycosat.itersolve([[1, 3]]):
     #     print(model)

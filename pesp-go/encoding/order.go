@@ -2,6 +2,7 @@ package encoding
 
 import (
 	"errors"
+	"fmt"
 	"math"
 
 	"github.com/go-air/gini"
@@ -27,6 +28,32 @@ func (e *OrderEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
 			g.Add(lit(event, value))
 			g.Add(0)
 		}
+	}
+
+	for _, con := range e.Pen.Constraints {
+		x, y := con.FirstEvent, con.SecondEvent
+		regions := unfeasibleRegion(con)
+		fmt.Println(regions)
+
+		for _, rect := range regions {
+			x1, x2, y1, y2 := rect[0], rect[1], rect[2], rect[3]
+			if x1 > 0 {
+				g.Add(lit(x, x1-1))
+			}
+			if x2 < e.Pen.Period-1 {
+				g.Add(lit(x, x2).Not())
+			}
+
+			if y1 > 0 {
+				g.Add(lit(y, y1-1))
+			}
+
+			if y2 < e.Pen.Period-1 {
+				g.Add(lit(y, y2).Not())
+			}
+			g.Add(0)
+		}
+
 	}
 
 	if sat := g.Solve(); sat != 1 {
@@ -92,20 +119,43 @@ func deltaY(l, u int) int {
 }
 
 func timePhi(l, u, period int) []Rect {
+	fmt.Println("/phi", l, u, period)
 	delta_x := deltaX(l, u)
 	delta_y := deltaY(l, u)
 	u_plus_1 := u + 1
 
-	rects := make([]Rect, 1)
+	fmt.Println(delta_x, delta_y)
+
+	rects := make([]Rect, 0)
 
 	for y1 := -delta_y; y1 < period; y1++ {
 		x1 := y1 - u_plus_1 - delta_x
+		fmt.Println("", Rect{x1, x1 + delta_x, y1, y1 + delta_y})
 		if x1+delta_x >= 0 && x1 < period {
 			rects = append(rects, Rect{x1, x1 + delta_x, y1, y1 + delta_y})
 		}
 	}
 
 	return rects
+}
+
+func unfeasibleRegion(con models.Constraint) []Rect {
+	low, high, period := con.Interval.Start, con.Interval.End, con.Interval.Period
+
+	fmt.Println("-", low, high, period)
+
+	k := 0
+	if low*(high+1) >= 0 {
+		k = -1
+	}
+
+	var regions []Rect
+
+	for i := k; i < 2; i++ {
+		regions = append(regions, timePhi(low+i*period, high+(i-1)*period, period)...)
+	}
+
+	return regions
 }
 
 func (e *OrderEncoding) infer(g *gini.Gini) models.Schedule {

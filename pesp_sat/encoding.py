@@ -57,7 +57,6 @@ class DirectEncode(Encoder):
                 if not contraint.hold(a, b)
             ]
 
-
             for p_i_val, p_j_val in unfeasible_pairs:
                 p_i_assign = self.vpool.id(obj=(contraint.i, p_i_val))
                 p_j_assign = self.vpool.id(obj=(contraint.j, p_j_val))
@@ -92,6 +91,7 @@ class OrderEncode(Encoder):
         return math.floor(0.5 * (low - high - 1))
 
     def time_phi(self, low: int, high: int) -> List[Rect]:
+        print("-", low, high)
         delta_x = self.delta_x(low, high)
         delta_y = self.delta_y(low, high)
         period = self.period
@@ -163,9 +163,9 @@ class OrderEncode(Encoder):
         period_minus_one = period - 1
         cnf = []
         unfeasibles = self._time_unfeasible_region(cons=constraint)
-        # print(len(unfeasibles))
 
         for (x1, x2), (y1, y2) in unfeasibles:
+            print(f"[{x1} {x2} {y1} {y2}]")
             x_lte_x1_prev = self.vpool.id((x, x1 - 1)) if x1 > 0 else 0
             x_lte_x2 = self.vpool.id((x, x2)) if x2 < period_minus_one else 0
             y_lte_y1_prev = self.vpool.id((y, y1 - 1)) if y1 > 0 else 0

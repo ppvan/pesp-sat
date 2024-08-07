@@ -27,7 +27,7 @@ func main() {
 	}
 
 	for ans := range order.SolveAll() {
-		fmt.Println(ans)
+		fmt.Println(ans, pen.IsFeasible(ans))
 	}
 
 }
