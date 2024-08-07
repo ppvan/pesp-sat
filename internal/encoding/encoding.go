@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-air/gini"
 	"github.com/go-air/gini/z"
-	"github.com/ppvan/pesp-sat/pesp-go/models"
+	"github.com/ppvan/pesp-sat/internal/models"
 )
 
 type CNF [][]int

@@ -2,12 +2,11 @@ package encoding
 
 import (
 	"errors"
-	"fmt"
 	"math"
 
 	"github.com/go-air/gini"
 	"github.com/go-air/gini/z"
-	"github.com/ppvan/pesp-sat/pesp-go/models"
+	"github.com/ppvan/pesp-sat/internal/models"
 )
 
 type Rect [4]int
@@ -33,7 +32,6 @@ func (e *OrderEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
 	for _, con := range e.Pen.Constraints {
 		x, y := con.FirstEvent, con.SecondEvent
 		regions := unfeasibleRegion(con)
-		fmt.Println(regions)
 
 		for _, rect := range regions {
 			x1, x2, y1, y2 := rect[0], rect[1], rect[2], rect[3]
@@ -119,18 +117,14 @@ func deltaY(l, u int) int {
 }
 
 func timePhi(l, u, period int) []Rect {
-	fmt.Println("/phi", l, u, period)
 	delta_x := deltaX(l, u)
 	delta_y := deltaY(l, u)
 	u_plus_1 := u + 1
-
-	fmt.Println(delta_x, delta_y)
 
 	rects := make([]Rect, 0)
 
 	for y1 := -delta_y; y1 < period; y1++ {
 		x1 := y1 - u_plus_1 - delta_x
-		fmt.Println("", Rect{x1, x1 + delta_x, y1, y1 + delta_y})
 		if x1+delta_x >= 0 && x1 < period {
 			rects = append(rects, Rect{x1, x1 + delta_x, y1, y1 + delta_y})
 		}
@@ -141,9 +135,6 @@ func timePhi(l, u, period int) []Rect {
 
 func unfeasibleRegion(con models.Constraint) []Rect {
 	low, high, period := con.Interval.Start, con.Interval.End, con.Interval.Period
-
-	fmt.Println("-", low, high, period)
-
 	k := 0
 	if low*(high+1) >= 0 {
 		k = -1

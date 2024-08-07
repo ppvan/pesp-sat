@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/ppvan/pesp-sat/pesp-go/encoding"
-	"github.com/ppvan/pesp-sat/pesp-go/models"
+	"github.com/ppvan/pesp-sat/internal/encoding"
+	"github.com/ppvan/pesp-sat/internal/models"
 )
 
 func main() {
