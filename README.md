@@ -55,5 +55,3 @@ $ pesp-sat solve data/simple/test3.txt
 ## Version
 
 v0.1.0
-
-Is there anything else you'd like me to add or modify in the README?
