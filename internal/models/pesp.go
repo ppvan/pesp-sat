@@ -31,10 +31,22 @@ func (pen PeriodicEventNetwork) IsFeasible(schedule Schedule) bool {
 
 	for _, constraint := range pen.Constraints {
 		if !constraint.IsSatisfied(schedule) {
+			fmt.Println(constraint)
 			return false
 		}
 	}
 	return true
+}
+
+func (pen *PeriodicEventNetwork) Objective(schedule Schedule) uint64 {
+
+	sum := uint64(0)
+
+	for _, con := range pen.Constraints {
+		sum += uint64(con.Weight) * uint64(schedule[con.SecondEvent]-schedule[con.FirstEvent]-con.Interval.Start)
+	}
+
+	return sum
 }
 
 func ParsePeriodEventNetwork(file io.Reader) (*PeriodicEventNetwork, error) {
@@ -66,7 +78,7 @@ func ParsePeriodEventNetwork(file io.Reader) (*PeriodicEventNetwork, error) {
 
 		parts := strings.Split(line, "; ")
 		if len(parts) == 6 {
-			first, second, start, end, _, err := parseInts(parts)
+			first, second, start, end, weight, err := parseInts(parts)
 
 			if err != nil {
 				return nil, err
@@ -79,6 +91,7 @@ func ParsePeriodEventNetwork(file io.Reader) (*PeriodicEventNetwork, error) {
 					End:    end,
 					Period: period,
 				},
+				Weight: weight,
 			}
 			constraints = append(constraints, con)
 		}

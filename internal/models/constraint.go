@@ -7,6 +7,7 @@ type Constraint struct {
 	SecondEvent int
 	Interval    Interval
 	Symmetry    bool
+	Weight      int
 }
 
 func (c Constraint) String() string {
