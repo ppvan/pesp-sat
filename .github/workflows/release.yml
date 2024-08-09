@@ -32,8 +32,8 @@ jobs:
         with:
           title: elease ${{ github.ref }}
         permissions:
-        packages: write
-        contents: write
+          packages: write
+          contents: write
 
       - name: Upload Linux Asset
         uses: actions/upload-release-asset@v1
