@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -27,7 +28,22 @@ func main() {
 				Name:    "solve",
 				Aliases: []string{"s"},
 				Usage:   "Solve a PESP instance file",
-				Action:  solve,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "encoding",
+						Aliases: []string{"d"},
+						Usage:   "Specify encoding to use",
+						Value:   "order",
+						Action: func(ctx *cli.Context, s string) error {
+							if s != "order" && s != "direct" {
+								return fmt.Errorf("flag encoding unsupported encoding, expect [order, direct] got %v", s)
+							}
+
+							return nil
+						},
+					},
+				},
+				Action: solve,
 			},
 			{
 				Name:  "benmark",

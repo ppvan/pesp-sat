@@ -29,12 +29,20 @@ func solve(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	g := gini.New()
 
-	encode := encoding.OrderEncoding{
-		Pen: pen,
+	var encode encoding.Encoding
+
+	if ctx.String("encoding") == "order" {
+		encode = &encoding.OrderEncoding{
+			Pen: pen,
+		}
+	} else if ctx.String("encoding") == "direct" {
+		encode = &encoding.DirectEncoding{
+			Pen: pen,
+		}
 	}
 
-	g := gini.New()
 	schedule, err := encode.Solve(g)
 	if err != nil {
 		return err
