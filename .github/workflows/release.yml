@@ -24,40 +24,11 @@ jobs:
           GOOS=darwin GOARCH=amd64 go build -o pesp-sat-darwin-amd64 main.go commands.go
           GOOS=windows GOARCH=amd64 go build -o pesp-sat-windows-amd64.exe main.go commands.go
 
-      - name: Create Release
-        id: create_release
-        uses: elgohr/Github-Release-Action@v5
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          title: elease ${{ github.ref }}
-
-      - name: Upload Linux Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pesp-sat-linux-amd64
-          asset_name: pesp-sat-linux-amd64
-          asset_content_type: application/octet-stream
-
-      - name: Upload macOS Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pesp-sat-darwin-amd64
-          asset_name: pesp-sat-darwin-amd64
-          asset_content_type: application/octet-stream
-
-      - name: Upload Windows Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pesp-sat-windows-amd64.exe
-          asset_name: pesp-sat-windows-amd64.exe
-          asset_content_type: application/octet-stream
+          files: |
+            pesp-sat-linux-amd64
+            pesp-sat-darwin-amd64
+            pesp-sat-windows-amd64.exe
