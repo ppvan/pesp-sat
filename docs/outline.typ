@@ -1,28 +1,49 @@
 = Contents
 
+== Trang bìa & Tóm tắt & Lời cảm ơn và tuyên thệ
+
+- Trang bìa theo chuẩn của VNU, lời cảm ơn và tuyên thệ... thường có sẵn trong các template khóa luận của các cựu sinh viên
+
+- Riêng phần abstact trình bày sơ bộ vấn đề và nội dung của thesis, sẽ update nhiều lần khi xong demo
+
 == Introduction
 
-- Giới thiệu bài toán lập lịch tuần hoàn, ứng dụng trong lập lịch trình tàu chạy. Những nghiên cứu trước về cách mô hình hóa bài toán
+- Giới thiệu bài toán lập lịch tuần hoàn, ứng dụng trong lập lịch trình tàu chạy.
 
+- Những nghiên cứu trước về cách mô hình hóa bài toán
+
+- Thesis này constribute cái gì (hiện tại thì không gì cả :( )
 
 == Background and Related Work
 
 === Logic Mệnh đề
 
-- Định nghĩa logic mệnh đề, biểu thức logic, các kí hiệu (notation) sẽ dùng trong các chương sau
++ Định nghĩa logic mệnh đề
+
++ Sơ lược về đại số bool và các quy luật logic
+
++ Dạng chuẩn tắc hội
 
 === SAT Problem
 
-- Miêu tả về bài toán SAT và các khái niệm liên quan như NP-complete
-- Miêu tả thành tựu của các SAT solver hiện tại và ứng dụng trong giải quyết vấn đề thực tế
++ Miêu tả về bài toán SAT và các khái niệm liên quan như NP-complete
 
-- Hướng tiếp cận vấn đề sử dụng SAT-encoding (encode-> solve->decode).
++ SAT solver là gì, tiến độ nghiên cứu như thế nào
+
++ Hướng tiếp cận vấn đề sử dụng SAT-encoding (encode-> solve->decode).
 
 === Periodic event schedule network (PESP)
 
-- Giới thiệu bài toán PESP
-- Các hướng tiếp cận để giải bài toán PESP (Integer programing, constaint based...)
-- Vấn đề về hiệu năng của các phương pháp trên, nếu ra một số vấn đề khác có thể giải nhanh hơn dùng sat solver (nếu có)
++ Giới thiệu bài toán PESP, lần đầu tạo ra bởi ai, bài báo nào, giải quyết vấn đề gì
+  + Khái niệm interval
+  + constraint
+  + symetry
+  + periodic constraint network
+
++ Các hướng tiếp cận để giải bài toán PESP (Integer programing, constaint propagation...)
+
++ Vấn đề về hiệu năng của các phương pháp trên
+Nêu ra một số vấn đề khác có thể giải nhanh hơn dùng sat solver (nếu có)
 
 == Encoding bài toán PESP về bài toán SAT
 
@@ -40,6 +61,14 @@
 - Giới thiệu order encoding và cách encode variable trong miền order
 - Encode ràng buộc trong miền order
 
+=== Ước lượng và so sánh các phương pháp trên về lý thuyết (Big O notation, số mệnh đề, số biến ...)
+
+
+=== Mô hình bài toán lập lịch đường tàu sử dụng mô hình PESP 
+
+- Giới thiệu các yêu cầu nghiệp vụ của lập lịch tàu
+- Mô hình hóa các ràng buộc thành ràng buộc của bài toán PESP
+
 == Thực thi và kết quả đạt được
 
 === Dataset
@@ -48,7 +77,10 @@ https://timpasslib.aalto.fi/pesplib.html
 
 === Kết quả
 
-== Kết luận và dự định
++ Bảng so sánh thời gian + tài nguyên (số mệnh đề, số biến...) giải các bài toán PESP trong dataset với từng encoding và 1 phương pháp khác
+
+
+== Kết luận và dự định (future work)
 
 - Kết luận về cách tiếp cận SAT với vấn đề lập lịch trình tàu
 
