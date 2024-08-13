@@ -1,18 +1,18 @@
 package encoding
 
 import (
+	"errors"
 	"io"
 
-	"github.com/go-air/gini"
 	"github.com/go-air/gini/z"
 	"github.com/ppvan/pesp-sat/internal/models"
 )
 
 type CNF [][]int
 
+var ErrUnSatifiable = errors.New("unsat network")
+
 type Encoding interface {
-	Encode(pen *models.PeriodicEventNetwork) CNF
-	Decode(pen *models.PeriodicEventNetwork, g *gini.Gini) models.Schedule
 	Solve() models.Schedule
 	SolveAll() []models.Schedule
 	WriteCNF(dst io.Writer) error

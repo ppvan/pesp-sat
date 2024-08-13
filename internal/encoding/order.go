@@ -1,7 +1,6 @@
 package encoding
 
 import (
-	"errors"
 	"math"
 
 	"github.com/go-air/gini"
@@ -55,7 +54,7 @@ func (e *OrderEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
 	}
 
 	if sat := g.Solve(); sat != 1 {
-		return nil, errors.New("unsat network")
+		return nil, ErrUnSatifiable
 	}
 
 	schedule := make(models.Schedule, e.Pen.Events+1)
