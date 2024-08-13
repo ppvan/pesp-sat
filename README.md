@@ -1,8 +1,6 @@
-Certainly. I'll update the README with the GPLv3 license and include the example you provided. Here's the revised README:
+# PESP SAT
 
-# Pesp SAT
-
-> Try to solve PESP (Periodic Event Scheduling Problem) in SAT.
+> Try to solve PESP (Periodic Event Scheduling Problem) using sat solver.
 
 ## Description
 
@@ -38,7 +36,6 @@ pesp-sat [global options] command [command options] [arguments...]
 
 ### Global Options:
 
-[List any global options here]
 
 ## Examples
 
