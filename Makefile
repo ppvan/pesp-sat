@@ -5,7 +5,7 @@ run:
 	go run ./cmd/pesp/
 
 test:
-	go test -v ./cmd/pesp/...
+	go test -v ./...
 
 install:
 	go install github.com/ppvan/pesp-sat@latest
