@@ -36,6 +36,12 @@ func main() {
 					return nil
 				},
 			},
+			&cli.BoolFlag{
+				Name:    "stats",
+				Aliases: []string{"s"},
+				Usage:   "Statistics mode, output only statistics (not solution)",
+				Value:   false,
+			},
 		},
 		Action: solve,
 	}

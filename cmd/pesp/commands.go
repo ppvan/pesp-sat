@@ -52,15 +52,11 @@ func solve(ctx *cli.Context) error {
 		return errors.New("verification failed, solver made a mistake")
 	}
 
-	for index, value := range schedule {
-		if index == 0 {
-			continue
-		}
-
-		fmt.Printf("%d;%d\n", index, value)
+	if ctx.Bool("stats") {
+		fmt.Print(encode.Stats())
+	} else {
+		fmt.Print(schedule)
 	}
-
-	fmt.Println(encode.Stats())
 
 	return nil
 }

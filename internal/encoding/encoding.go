@@ -2,6 +2,7 @@ package encoding
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/go-air/gini"
@@ -16,6 +17,11 @@ type Statistics struct {
 	MaxVar    uint64
 	Clause    uint64
 	SolveTime time.Duration
+}
+
+func (s *Statistics) String() string {
+
+	return fmt.Sprintf("%v,%v,%v", s.MaxVar, s.Clause, s.SolveTime)
 }
 
 type Encoding interface {
