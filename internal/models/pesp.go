@@ -90,7 +90,7 @@ func ParsePeriodEventNetwork(file io.Reader) (*PeriodicEventNetwork, error) {
 					Start:  start,
 					End:    end,
 					Period: period,
-				},
+				}.Normalized(),
 				Weight: weight,
 			}
 			constraints = append(constraints, con)

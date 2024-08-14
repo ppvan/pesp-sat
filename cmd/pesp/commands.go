@@ -29,12 +29,20 @@ func solve(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	g := gini.New()
 
-	encode := encoding.OrderEncoding{
-		Pen: pen,
+	var encode encoding.Encoding
+
+	if ctx.String("encoding") == "order" {
+		encode = &encoding.OrderEncoding{
+			Pen: pen,
+		}
+	} else if ctx.String("encoding") == "direct" {
+		encode = &encoding.DirectEncoding{
+			Pen: pen,
+		}
 	}
 
-	g := gini.New()
 	schedule, err := encode.Solve(g)
 	if err != nil {
 		return err
@@ -44,12 +52,10 @@ func solve(ctx *cli.Context) error {
 		return errors.New("verification failed, solver made a mistake")
 	}
 
-	for index, value := range schedule {
-		if index == 0 {
-			continue
-		}
-
-		fmt.Printf("%d;%d\n", index, value)
+	if ctx.Bool("stats") {
+		fmt.Print(encode.Stats())
+	} else {
+		fmt.Print(schedule)
 	}
 
 	return nil
