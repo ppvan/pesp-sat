@@ -2,6 +2,7 @@ package encoding
 
 import (
 	"math"
+	"time"
 
 	"github.com/go-air/gini"
 	"github.com/go-air/gini/z"
@@ -11,10 +12,16 @@ import (
 type Rect [4]int
 
 type OrderEncoding struct {
-	Pen *models.PeriodicEventNetwork
+	Pen       *models.PeriodicEventNetwork
+	maxVar    uint64
+	clause    uint64
+	solveTime time.Duration
 }
 
 func (e *OrderEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
+	e.maxVar = uint64(e.Pen.Events) * uint64(e.Pen.Period-1)
+	e.clause = 0
+	start := time.Now()
 
 	lit := func(index, value int) z.Lit {
 		return z.Var((index-1)*(e.Pen.Period-1) + value + 1).Pos()
@@ -25,6 +32,7 @@ func (e *OrderEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
 			g.Add(lit(event, value-1).Not())
 			g.Add(lit(event, value))
 			g.Add(0)
+			e.clause += 1
 		}
 	}
 
@@ -49,6 +57,7 @@ func (e *OrderEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
 				g.Add(lit(y, y2).Not())
 			}
 			g.Add(0)
+			e.clause += 1
 		}
 
 	}
@@ -69,6 +78,7 @@ func (e *OrderEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
 		}
 	}
 
+	e.solveTime = time.Since(start)
 	return schedule, nil
 }
 
@@ -164,4 +174,13 @@ func (e *OrderEncoding) infer(g *gini.Gini) models.Schedule {
 	}
 
 	return schedule
+}
+
+func (e *OrderEncoding) Stats() *Statistics {
+
+	return &Statistics{
+		MaxVar:    e.maxVar,
+		Clause:    e.clause,
+		SolveTime: e.solveTime,
+	}
 }

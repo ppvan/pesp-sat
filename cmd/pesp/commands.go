@@ -60,5 +60,7 @@ func solve(ctx *cli.Context) error {
 		fmt.Printf("%d;%d\n", index, value)
 	}
 
+	fmt.Println(encode.Stats())
+
 	return nil
 }

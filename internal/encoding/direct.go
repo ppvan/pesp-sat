@@ -1,30 +1,40 @@
 package encoding
 
 import (
+	"time"
+
 	"github.com/go-air/gini"
 	"github.com/go-air/gini/z"
 	"github.com/ppvan/pesp-sat/internal/models"
 )
 
 type DirectEncoding struct {
-	Pen *models.PeriodicEventNetwork
+	Pen       *models.PeriodicEventNetwork
+	maxVar    uint64
+	clause    uint64
+	solveTime time.Duration
 }
 
 func (e *DirectEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
-
-	lit := MakeMapper(e.Pen.Period)
-
+	start := time.Now()
+	lit := func(index, value int) z.Lit {
+		return z.Var((index-1)*e.Pen.Period + value + 1).Pos()
+	}
+	e.maxVar = uint64(e.Pen.Events) * uint64(e.Pen.Period)
+	e.clause = 0
 	for event := 1; event <= e.Pen.Events; event++ {
 		for val := 0; val < e.Pen.Period; val++ {
 			g.Add(lit(event, val))
 		}
 		g.Add(0)
+		e.clause += 1
 
 		for val := 0; val < e.Pen.Period; val++ {
 			for otherVal := val + 1; otherVal < e.Pen.Period; otherVal++ {
 				g.Add(lit(event, val).Not())
 				g.Add(lit(event, otherVal).Not())
 				g.Add(0)
+				e.clause += 1
 			}
 		}
 
@@ -40,6 +50,7 @@ func (e *DirectEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
 				g.Add(lit(con.FirstEvent, val).Not())
 				g.Add(lit(con.SecondEvent, otherVal).Not())
 				g.Add(0)
+				e.clause += 1
 			}
 		}
 
@@ -49,17 +60,9 @@ func (e *DirectEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
 		return nil, ErrUnSatifiable
 	}
 
-	schedule := make(models.Schedule, e.Pen.Events+1)
+	schedule := e.infer(g)
 
-	for event := 1; event <= e.Pen.Events; event++ {
-		for value := 0; value < e.Pen.Period; value++ {
-			if g.Value(lit(event, value)) {
-				schedule[event] = value
-				break
-			}
-		}
-	}
-
+	e.solveTime = time.Since(start)
 	return schedule, nil
 }
 
@@ -98,10 +101,19 @@ func (e *DirectEncoding) SolveAll() <-chan models.Schedule {
 	return schedules
 }
 
+func (e *DirectEncoding) Stats() *Statistics {
+
+	return &Statistics{
+		MaxVar:    e.maxVar,
+		Clause:    e.clause,
+		SolveTime: e.solveTime,
+	}
+}
+
 func (e *DirectEncoding) infer(g *gini.Gini) models.Schedule {
 	schedule := make(models.Schedule, e.Pen.Events+1)
 	lit := func(index, value int) z.Lit {
-		return z.Var((index-1)*(e.Pen.Period-1) + value + 1).Pos()
+		return z.Var((index-1)*e.Pen.Period + value + 1).Pos()
 	}
 	for event := 1; event <= e.Pen.Events; event++ {
 		for value := 0; value < e.Pen.Period; value++ {
