@@ -1,4 +1,16 @@
 #set page(paper: "a4", margin: (top: 2.5cm, bottom: 3cm, left: 2.5cm, right: 2cm), numbering: "1")
+
+#set page(
+    footer: locate(
+      loc => {
+        let page-number = counter(page).at(loc).first()
+        let match-list = query(selector(<start>).before(loc), loc)
+        if match-list == () { return none }
+        align(center, str(page-number))
+      },
+    ),
+  )
+
 #set text(lang: "vi", font: "Latin Modern Roman 12", size: 13pt)
 
 // #set text(lang: "vi", font: "Times New Roman", size: 13pt)
@@ -19,7 +31,90 @@
   #pad(block(text(it.body, size: 23pt)), y: 32pt, bottom: 36pt)
 ]
 
-= Introduction
+
+// Title page
+#{
+
+show: block.with(stroke: 3pt, width: 100%, height: 100%, inset: 20pt)
+place(top+left, rect(width: 100%, height: 100%,outset:20pt - 0.15cm, stroke: 1pt))
+
+
+let author = "Phạm Văn Phúc"
+let title = "Nghiên cứu bài toán PESP áp dụng để lập lịch giờ tàu điện chạy"
+
+let advisor = "Tô Văn Khánh"
+
+// rect(width: 100%, height: 100%, "Hello")
+
+
+stack(dir: ttb, spacing: 6pt, align(upper(text("Đại học quốc gia Hà Nội", size: 12pt, weight: "bold")), center), align(upper(text("Trường đại học công nghệ", size: 12pt, weight: "bold")), center))
+
+
+pad(align(image("image/Logo_HUET.svg", fit: "contain", width: 24%), center), y: 2.2em)
+
+align((text(author, size: 14pt, weight: "bold")), center)
+
+v(10%)
+
+align(upper(text(title, size: 18pt, weight: "bold")), center)
+
+v(20%)
+pad(align(center+top)[#text("KHÓA LUẬN TỐT NGHIỆP ĐẠI HỌC HỆ CHÍNH QUY", weight: "bold", size: 14pt)])
+
+pad(align(center+top)[#text("Ngành: Công nghệ thông tin", weight: "bold", size: 14pt)])
+
+
+align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
+
+
+}
+#pagebreak(weak: true)
+
+
+// Title page
+#{
+
+show: block.with(stroke: 3pt, width: 100%, height: 100%, inset: 20pt)
+place(top+left, rect(width: 100%, height: 100%,outset:20pt - 0.15cm, stroke: 1pt))
+
+
+let author = "Phạm Văn Phúc"
+let title = "Nghiên cứu bài toán PESP áp dụng để lập lịch giờ tàu điện chạy"
+
+let advisor = "TS. Tô Văn Khánh"
+
+// rect(width: 100%, height: 100%, "Hello")
+
+stack(dir: ttb, spacing: 6pt, align(upper(text("Đại học quốc gia Hà Nội", size: 12pt, weight: "bold")), center), align(upper(text("Trường đại học công nghệ", size: 12pt, weight: "bold")), center))
+
+v(5%)
+
+align((text(author, size: 14pt, weight: "bold")), center)
+
+v(5%)
+
+align(upper(text(title, size: 18pt, weight: "bold")), center)
+
+v(15%)
+
+pad(align(center+top)[#text("KHÓA LUẬN TỐT NGHIỆP ĐẠI HỌC HỆ CHÍNH QUY", weight: "bold", size: 14pt)])
+
+pad(align(center+top)[#text("Ngành: Công nghệ thông tin", weight: "bold", size: 14pt)])
+
+v(15%)
+
+text("Cán bộ hướng dẫn: " + advisor, weight: "bold")
+
+
+align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
+}
+#pagebreak(weak: true)
+
+
+// Start numbering at this section
+#counter(page).update(1)
+
+= Introduction <start>
 
 This chapter will focuses on introducing the itemset mining tasks in data min-
 ing, the concepts, applications, and challenges of frequent itemset mining. Further-
