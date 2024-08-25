@@ -49,3 +49,13 @@ Note: Thời gian thuyết trình? Q&A ?
 + Encoding các kiểu
 + Kết quả và so sánh SAT approach với Y
 + Kết luận
+
+
+Pham Van Phucs
+
+Link dataset: https://timpasslib.aalto.fi/pesplib.html
+
+Link CSP: https://github.com/gnboorse/centipede
+
+
+arc consistency
