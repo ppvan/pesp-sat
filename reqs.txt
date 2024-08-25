@@ -1,0 +1,13 @@
+- Khả năng tham chiếu [x]
+- Layout A4 x
+- Từ khóa
+- Trang bìa x
+- Trang tóm tắt, lời cảm ơn...
+- Trang mục lục, danh sách hình vẽ, bảng biểu
+- Tiêu đề các chương và mục x
+
+- Layout đầy đủ các yêu cầu về font chữ, khoảng cách x
+- Mục lục
+- Danh sách bảng biểu 
+- Test tham chiếu, danh sách tham chiếu
+- viết thử 1 chương (nội dung là lorem) để test format

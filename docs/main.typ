@@ -17,9 +17,19 @@
 #set block(spacing: 1.56em)
 #set par(first-line-indent: 1cm, justify: true, leading: 0.845em)
 
+#show outline.entry.where(
+  level: 1
+): it => {
+  v(12pt, weak: true)
+  strong(it)
+}
+
+#outline(indent: auto)
+
+
 #set heading(numbering: "1.1.1")
 
-#show heading: it => pad({
+#show heading.where(depth: 1): it => pad({
   box(width: 35pt, counter(heading).display())
   it.body
 }, y: 16pt)
@@ -27,10 +37,8 @@
 #show heading.where(
   depth: 1
 ): it => block(width: 100%)[
-  #block(upper(text(weight: "light", size: 11.5pt,"Chương " + counter(heading).display())))
   #pad(block(text(it.body, size: 23pt)), y: 32pt, bottom: 36pt)
 ]
-
 
 // Title page
 #{
@@ -112,11 +120,74 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 // Start numbering at this section
 #counter(page).update(1)
 
-= Introduction <start>
+= Tóm tắt
+
+#lorem(160)
+
+*Từ khóa: * SAT, MaxSAT, lập lịch, lập lịch thời khóa biểu cho đại học
+
+#pagebreak()
+
+
+= Lời cảm ơn
+
+#lorem(160)
+
+#pagebreak()
+
+= Lời cam đoan
+
+#lorem(160)
+
+#pagebreak()
+
+= Danh mục viết tắt
+
+#lorem(160)
+
+#pagebreak()
+
+#{
+  show heading: set heading(outlined: true)
+  outline(
+  title: [Danh mục hình ảnh],
+  target: figure.where(kind: image),
+)
+}
+
+
+#pagebreak()
+
+
+#{
+  show heading: set heading(outlined: true)
+  outline(
+  title: [Danh mục bảng biểu],
+  target: figure.where(kind: table),
+)
+}
+
+
+#pagebreak()
+
+#outline()
+
+#pagebreak()
+
+
+#show heading.where(
+  depth: 1
+): it => block(width: 100%)[
+  #block(upper(text(weight: "light", size: 11.5pt,"Chương " + counter(heading).display())))
+  #pad(block(text(it.body, size: 23pt)), y: 32pt, bottom: 36pt)
+]
+
+= Giới thiệu <start>
+
 
 This chapter will focuses on introducing the itemset mining tasks in data min-
 ing, the concepts, applications, and challenges of frequent itemset mining. Further-
-more, the chapter also provides a survey of frequent itemset mining algorithms.
+more, the chapter also provides a survey of frequent itemset mining algorithms @hoare1962quicksort.
 
 == Frequent Itemset Mining
 
@@ -172,10 +243,47 @@ areas of data mining.
 === Concepts
 Frequent item sets ar
 
+#figure(
+  image("image/myownspell.jpg"),
+  caption: [A nice figure!],
+)
+
+#figure(
+  table(
+  columns: (1fr, 1fr),
+  inset: 10pt,
+  align: horizon + center,
+  table.header(
+    [*Math*], [*SAT (direct)*],
+  ),
+  $ pi = i, i in [0, T - 1], 
+   pi in ZZ, i in ZZ $,
+  $ p_(i) = #true, p_(j) = #false forall j != i, 0 <= j < T $,
+  $ pi = i, i in [0, T - 1], 
+   pi in ZZ, i in ZZ $,
+  $ (or.big_(i = 0)^(i < T) p_i ) and (and.big_(i=0)^(i < T) and.big_(j = 0, j != i)^(j < T) p_i => not p_j) $,
+  $ pi = i, i in [0, T - 1], 
+   pi in ZZ, i in ZZ $,
+  $ (or.big_(i = 0)^(i < T) p_i ) and (and.big_(i=0)^(i < T) and.big_(j = 0, j != i)^(j < T) not p_i or not p_j) $,
+), caption: "Table test"
+)
 
 #pagebreak()
+
+= Logic mệnh đề
+
+= Bài toán lập lịch sự kiện có chu kỳ
+
 = SAT
 
 == Some thing
 
 #lorem(60)
+
+#pagebreak()
+
+#show heading.where(
+  depth: 1
+): it => pad(text(it.body, size: 24pt), x: 0pt, y: 40pt)
+
+#bibliography("citation.bib")
