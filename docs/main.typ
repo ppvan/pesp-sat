@@ -37,6 +37,7 @@
 
 show: block.with(stroke: 3pt, width: 100%, height: 100%, inset: 20pt)
 place(top+left, rect(width: 100%, height: 100%,outset:20pt - 0.15cm, stroke: 1pt))
+set align(center)
 
 
 let author = "Phạm Văn Phúc"
@@ -46,65 +47,62 @@ let advisor = "Tô Văn Khánh"
 
 // rect(width: 100%, height: 100%, "Hello")
 
+stack(dir: ttb,
 
-stack(dir: ttb, spacing: 6pt, align(upper(text("Đại học quốc gia Hà Nội", size: 12pt, weight: "bold")), center), align(upper(text("Trường đại học công nghệ", size: 12pt, weight: "bold")), center))
+spacing: 2em,
 
+stack(dir: ttb, spacing: 6pt, align(upper(text("Đại học quốc gia Hà Nội", size: 12pt, weight: "bold")), center), align(upper(text("Trường đại học công nghệ", size: 12pt, weight: "bold")), center)),
+pad(align(image("image/Logo_HUET.svg", fit: "contain", width: 24%), center)),
 
-pad(align(image("image/Logo_HUET.svg", fit: "contain", width: 24%), center), y: 2.2em)
+pad((text(author, size: 14pt, weight: "bold")), y: 2em),
 
-align((text(author, size: 14pt, weight: "bold")), center)
+pad(upper(text(title, size: 18pt, weight: "bold")), y: 4em),
 
-v(10%)
+stack(
+  dir: ttb,
+  spacing: 10pt,
+  pad(align(center+top)[#text("Ngành: Công nghệ thông tin", weight: "bold", size: 14pt)]),
+)
 
-align(upper(text(title, size: 18pt, weight: "bold")), center)
-
-v(20%)
-pad(align(center+top)[#text("KHÓA LUẬN TỐT NGHIỆP ĐẠI HỌC HỆ CHÍNH QUY", weight: "bold", size: 14pt)])
-
-pad(align(center+top)[#text("Ngành: Công nghệ thông tin", weight: "bold", size: 14pt)])
-
+)
 
 align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
-
-
 }
 #pagebreak(weak: true)
 
-
-// Title page
 #{
 
 show: block.with(stroke: 3pt, width: 100%, height: 100%, inset: 20pt)
 place(top+left, rect(width: 100%, height: 100%,outset:20pt - 0.15cm, stroke: 1pt))
+set align(center)
 
 
 let author = "Phạm Văn Phúc"
 let title = "Nghiên cứu bài toán PESP áp dụng để lập lịch giờ tàu điện chạy"
 
-let advisor = "TS. Tô Văn Khánh"
+let advisor = "Tô Văn Khánh"
 
 // rect(width: 100%, height: 100%, "Hello")
 
-stack(dir: ttb, spacing: 6pt, align(upper(text("Đại học quốc gia Hà Nội", size: 12pt, weight: "bold")), center), align(upper(text("Trường đại học công nghệ", size: 12pt, weight: "bold")), center))
+stack(dir: ttb,
 
-v(5%)
+spacing: 2em,
 
-align((text(author, size: 14pt, weight: "bold")), center)
+stack(dir: ttb, spacing: 6pt, align(upper(text("Đại học quốc gia Hà Nội", size: 12pt, weight: "bold")), center), align(upper(text("Trường đại học công nghệ", size: 12pt, weight: "bold")), center)),
 
-v(5%)
+pad((text(author, size: 14pt, weight: "bold")), y: 2em),
 
-align(upper(text(title, size: 18pt, weight: "bold")), center)
+pad(upper(text(title, size: 18pt, weight: "bold")), y: 4em),
 
-v(15%)
+stack(
+  dir: ttb,
+  spacing: 10pt,
+  pad(align(center+top)[#text("Ngành: Công nghệ thông tin", weight: "bold", size: 14pt)]),
+),
 
-pad(align(center+top)[#text("KHÓA LUẬN TỐT NGHIỆP ĐẠI HỌC HỆ CHÍNH QUY", weight: "bold", size: 14pt)])
+pad(align(text("Cán bộ hướng dẫn: " + advisor, weight: "bold"), left), top: 6em)
 
-pad(align(center+top)[#text("Ngành: Công nghệ thông tin", weight: "bold", size: 14pt)])
-
-v(15%)
-
-text("Cán bộ hướng dẫn: " + advisor, weight: "bold")
-
+)
 
 align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 }
