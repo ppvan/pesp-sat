@@ -5,7 +5,7 @@
       loc => {
         let page-number = counter(page).at(loc).first()
         let match-list = query(selector(<start>).before(loc), loc)
-        if match-list == () { return none }
+        if match-list == () { return align(center, str(numbering("i", page-number))) }
         align(center, str(page-number))
       },
     ),
@@ -17,17 +17,8 @@
 #set block(spacing: 1.56em)
 #set par(first-line-indent: 1cm, justify: true, leading: 0.845em)
 
-#show outline.entry.where(
-  level: 1
-): it => {
-  v(12pt, weak: true)
-  strong(it)
-}
-
-#outline(indent: auto)
 
 
-#set heading(numbering: "1.1.1")
 
 #show heading.where(depth: 1): it => pad({
   box(width: 35pt, counter(heading).display())
@@ -119,8 +110,9 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 
 // Start numbering at this section
 #counter(page).update(1)
+#set heading(numbering: none)
+= Tóm tắt 
 
-= Tóm tắt
 
 #lorem(160)
 
@@ -141,14 +133,51 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 
 #pagebreak()
 
-= Danh mục viết tắt
+#show outline.entry.where(
+  level: 1
+): it => {
+
+  if (type(it.element) == figure) {
+    it
+  }
+
+
+  // set text(size: 14pt)
+  let supplement = ""
+  let ch = it.element
+  // we need the chapter number, i.e. the heading counter at the location the original heading appeared
+  let num = counter(heading).at(ch.location())
+
+  let match-list = query(
+    selector(heading).before(<start>), it.location(),
+  )
+
+  v(16pt, weak: true)
+
+  if 0 in num {
+    strong(it.element.body + h(0.2em) + box(width: 1fr) + h(0.2em) + numbering("i", ch.location().page()))
+  } else if 100 in num {
+    strong(it.element.body + h(0.2em) + box(width: 1fr) + h(0.2em) + numbering("1", ch.location().page()))
+  } else {
+    strong(text(supplement) + numbering("1", ..num) + ". " + it.element.body + h(0.2em) + box(width: 1fr) + h(0.2em) + it.page)
+  }
+}
+
+#outline(indent: auto)
+
+#pagebreak()
+
+
+#{
+  show heading: set heading(outlined: true)
+  heading("Danh mục viết tắt")
+}
 
 #lorem(160)
 
 #pagebreak()
 
 #{
-  show heading: set heading(outlined: true)
   outline(
   title: [Danh mục hình ảnh],
   target: figure.where(kind: image),
@@ -160,17 +189,12 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 
 
 #{
-  show heading: set heading(outlined: true)
   outline(
   title: [Danh mục bảng biểu],
   target: figure.where(kind: table),
 )
 }
 
-
-#pagebreak()
-
-#outline()
 
 #pagebreak()
 
@@ -182,6 +206,9 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
   #pad(block(text(it.body, size: 23pt)), y: 32pt, bottom: 36pt)
 ]
 
+#counter(page).update(1)
+#counter(heading).update(0)
+#set heading(numbering: "1.1.1")
 = Giới thiệu <start>
 
 
@@ -285,5 +312,8 @@ Frequent item sets ar
 #show heading.where(
   depth: 1
 ): it => pad(text(it.body, size: 24pt), x: 0pt, y: 40pt)
+
+#set heading(numbering: none)
+#counter(heading).update(100)
 
 #bibliography("citation.bib")
