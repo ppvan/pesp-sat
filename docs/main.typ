@@ -1,15 +1,25 @@
 #set page(paper: "a4", margin: (top: 2.5cm, bottom: 3cm, left: 2.5cm, right: 2cm), numbering: "1")
 
+
+
+// Bỏ qua đánh số trang ở 2 trang bìa. Bắt đầu từ "Tóm tắt" bằng số la mã và đánh số còn lại bằng số latinh. 
+// Tại sao á? khóa luận khác nó như thế
 #set page(
-    footer: locate(
-      loc => {
-        let page-number = counter(page).at(loc).first()
-        let match-list = query(selector(<start>).before(loc), loc)
-        if match-list == () { return align(center, str(numbering("i", page-number))) }
-        align(center, str(page-number))
-      },
-    ),
-  )
+  footer: locate(loc => {
+    let page-number = counter(page).at(loc).first()
+    let before-start = query(selector(<start>).before(loc), loc)
+
+    let before-page-start = query(selector(<page-start>).before(loc), loc)
+
+    if before-page-start == () {
+      none
+    } else if before-start == () {
+      align(center, str(numbering("i", page-number)))
+    } else {
+      align(center, str(page-number))
+    }
+  }),
+)
 
 #set text(lang: "vi", font: "Latin Modern Roman 12", size: 13pt)
 
@@ -20,90 +30,101 @@
 
 
 
-#show heading.where(depth: 1): it => pad({
-  box(width: 35pt, counter(heading).display())
-  it.body
-}, y: 16pt)
+#show heading.where(depth: 1): it => pad(
+  {
+    box(width: 35pt, counter(heading).display())
+    it.body
+  },
+  y: 16pt,
+)
 
-#show heading.where(
-  depth: 1
-): it => block(width: 100%)[
+#show heading.where(depth: 1): it => block(width: 100%)[
   #pad(block(text(it.body, size: 23pt)), y: 32pt, bottom: 36pt)
 ]
 
 // Title page
 #{
 
-show: block.with(stroke: 3pt, width: 100%, height: 100%, inset: 20pt)
-place(top+left, rect(width: 100%, height: 100%,outset:20pt - 0.15cm, stroke: 1pt))
-set align(center)
+  show: block.with(stroke: 3pt, width: 100%, height: 100%, inset: 20pt)
+  place(top + left, rect(width: 100%, height: 100%, outset: 20pt - 0.15cm, stroke: 1pt))
+  set align(center)
 
 
-let author = "Phạm Văn Phúc"
-let title = "Nghiên cứu bài toán PESP áp dụng để lập lịch giờ tàu điện chạy"
+  let author = "Phạm Văn Phúc"
+  let title = "Nghiên cứu bài toán PESP áp dụng để lập lịch giờ tàu điện chạy"
 
-let advisor = "Tô Văn Khánh"
+  let advisor = "Tô Văn Khánh"
 
-// rect(width: 100%, height: 100%, "Hello")
+  // rect(width: 100%, height: 100%, "Hello")
 
-stack(dir: ttb,
+  stack(
+    dir: ttb,
 
-spacing: 2em,
+    spacing: 2em,
 
-stack(dir: ttb, spacing: 6pt, align(upper(text("Đại học quốc gia Hà Nội", size: 12pt, weight: "bold")), center), align(upper(text("Trường đại học công nghệ", size: 12pt, weight: "bold")), center)),
-pad(align(image("image/Logo_HUET.svg", fit: "contain", width: 24%), center)),
+    stack(
+      dir: ttb,
+      spacing: 6pt,
+      align(upper(text("Đại học quốc gia Hà Nội", size: 12pt, weight: "bold")), center),
+      align(upper(text("Trường đại học công nghệ", size: 12pt, weight: "bold")), center),
+    ),
+    pad(align(image("image/Logo_HUET.svg", fit: "contain", width: 24%), center)),
 
-pad((text(author, size: 14pt, weight: "bold")), y: 2em),
+    pad((text(author, size: 14pt, weight: "bold")), y: 2em),
 
-pad(upper(text(title, size: 18pt, weight: "bold")), y: 4em),
+    pad(upper(text(title, size: 18pt, weight: "bold")), y: 4em),
 
-stack(
-  dir: ttb,
-  spacing: 10pt,
-  pad(align(center+top)[#text("Ngành: Công nghệ thông tin", weight: "bold", size: 14pt)]),
-)
+    stack(
+      dir: ttb,
+      spacing: 10pt,
+      pad(align(center + top)[#text("Ngành: Công nghệ thông tin", weight: "bold", size: 14pt)]),
+    ),
+  )
 
-)
-
-align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
+  align(center + bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 }
 #pagebreak(weak: true)
 
 #{
 
-show: block.with(stroke: 3pt, width: 100%, height: 100%, inset: 20pt)
-place(top+left, rect(width: 100%, height: 100%,outset:20pt - 0.15cm, stroke: 1pt))
-set align(center)
+  show: block.with(stroke: 3pt, width: 100%, height: 100%, inset: 20pt)
+  place(top + left, rect(width: 100%, height: 100%, outset: 20pt - 0.15cm, stroke: 1pt))
+  set align(center)
 
 
-let author = "Phạm Văn Phúc"
-let title = "Nghiên cứu bài toán PESP áp dụng để lập lịch giờ tàu điện chạy"
+  let author = "Phạm Văn Phúc"
+  let title = "Nghiên cứu bài toán PESP áp dụng để lập lịch giờ tàu điện chạy"
 
-let advisor = "Tô Văn Khánh"
+  let advisor = "Tô Văn Khánh"
 
-// rect(width: 100%, height: 100%, "Hello")
+  // rect(width: 100%, height: 100%, "Hello")
 
-stack(dir: ttb,
+  stack(
+    dir: ttb,
 
-spacing: 2em,
+    spacing: 2em,
 
-stack(dir: ttb, spacing: 6pt, align(upper(text("Đại học quốc gia Hà Nội", size: 12pt, weight: "bold")), center), align(upper(text("Trường đại học công nghệ", size: 12pt, weight: "bold")), center)),
+    stack(
+      dir: ttb,
+      spacing: 6pt,
+      align(upper(text("Đại học quốc gia Hà Nội", size: 12pt, weight: "bold")), center),
+      align(upper(text("Trường đại học công nghệ", size: 12pt, weight: "bold")), center),
+    ),
 
-pad((text(author, size: 14pt, weight: "bold")), y: 2em),
+    pad((text(author, size: 14pt, weight: "bold")), y: 2em),
 
-pad(upper(text(title, size: 18pt, weight: "bold")), y: 4em),
+    pad(upper(text(title, size: 18pt, weight: "bold")), y: 4em),
 
-stack(
-  dir: ttb,
-  spacing: 10pt,
-  pad(align(center+top)[#text("Ngành: Công nghệ thông tin", weight: "bold", size: 14pt)]),
-),
+    stack(
+      dir: ttb,
+      spacing: 10pt,
+      pad(align(center + top)[#text("Ngành: Công nghệ thông tin", weight: "bold", size: 14pt)]),
+    ),
 
-pad(align(text("Cán bộ hướng dẫn: " + advisor, weight: "bold"), left), top: 6em)
+    pad(align(text("Cán bộ hướng dẫn: " + advisor, weight: "bold"), left), top: 6em),
+  )
 
-)
-
-align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
+  align(center + bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 }
 #pagebreak(weak: true)
 
@@ -111,31 +132,60 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 // Start numbering at this section
 #counter(page).update(1)
 #set heading(numbering: none)
-= Tóm tắt 
+= Tóm tắt <page-start>
 
 
-#lorem(160)
+Hiện nay, các bộ giải SAT đã cải thiện đáng kể và được áp dụng thành công nhằm giải quyết các vấn đề thực tế, không trực tiếp liên quan đến logic mệnh đề. Vấn đề lập lịch sự kiện định kỳ (PESP) từ lâu đã được chương minh là một vấn đề NP đầy đủ. Các phương pháp hiện tại như ràng lập trình ràng buộc (Constraint satisfaction problem) hay quy hoạch số nguyên (Integer Programing) chưa thực sự hiệu quả với các bộ dự liệu lớn.
+Tài liệu này sẽ trình bày thuật toán chuyển hóa vấn đề lập lịch định kỳ (PESP) về bài toán SAT, sau đó được xử lý bởi các bộ giải SAT nhằm đạt được hiệu suất cao hơn.
 
-*Từ khóa: * SAT, MaxSAT, lập lịch, lập lịch thời khóa biểu cho đại học
+
+*Từ khóa: * Periodic railway timetabling; Optimisation; Periodic Event Scheduling Problem; SAT
 
 #pagebreak()
 
 
 = Lời cảm ơn
 
-#lorem(160)
+Quá trình thực hiện đề tài khóa luận tốt nghiệp là một hành trình đầy ý nghĩa và thử thách. Em xin gửi lời cảm ơn chân thành nhất đến tất cả những người đã đồng hành cùng em trong suốt thời gian qua. Đặc biệt, em xin bày tỏ lòng biết ơn sâu sắc đến thầy Tô Văn Khánh. Chính sự tận tâm hướng dẫn, những góp ý quý báu và kinh nghiệm phong phú của thầy đã giúp em định hình rõ hơn vấn đề nghiên cứu và vượt qua nhiều khó khăn. Em luôn trân trọng những buổi trao đổi cùng thầy, khi thầy không chỉ truyền đạt kiến thức chuyên môn mà còn giúp em rèn luyện tư duy khoa học.
+
+Em cũng xin gửi lời cảm ơn đến toàn thể quý thầy cô, cán bộ giảng viên trường Đại học Công Nghệ. Nhờ sự tận tình giảng dạy của thầy cô, em đã có được hành trang kiến thức vững chắc để bước vào nghiên cứu. Môi trường học tập thân thiện và cơ sở vật chất hiện đại của nhà trường đã tạo điều kiện thuận lợi cho em hoàn thành tốt khóa luận.
+
+Cuối cùng, em xin kính chúc các thầy cô luôn mạnh khỏe, hạnh phúc và gặt hái nhiều thành công hơn nữa trong sự nghiệp trồng người cao quý.
+
+#v(1em)
+
+#grid(
+  columns: (2fr, 1fr),
+  align: center,
+  inset: 10pt,
+  gutter: 30pt,
+  "", "Sinh viên", "", "Phạm Văn Phúc"
+)
+
 
 #pagebreak()
 
 = Lời cam đoan
 
-#lorem(160)
+Em xin cam đoan khóa luận tốt nghiệp là của em, do em thực hiện dưới sự hướng
+dẫn của TS. Tô Văn Khánh. Tất cả tham khảo, nghiên cứu
+và tài liệu liên quan đều được nêu rõ ràng và chi tiết trong danh mục tài liệu tham khảo.
+Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực.
+
+#v(1em)
+
+#grid(
+  columns: (2fr, 1fr),
+  align: center,
+  inset: 10pt,
+  gutter: 30pt,
+  "", "Sinh viên", "", "Phạm Văn Phúc"
+)
+
 
 #pagebreak()
 
-#show outline.entry.where(
-  level: 1
-): it => {
+#show outline.entry.where(level: 1): it => {
   let supplement = ""
   let ch = it.element
   let num = counter(heading).at(ch.location())
@@ -147,7 +197,10 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
   } else if 100 in num {
     strong(it.element.body + h(0.2em) + box(width: 1fr) + h(0.2em) + numbering("1", ch.location().page()))
   } else if (it.element.body.has("text")) {
-    strong(text(supplement) + numbering("1", ..num) + ". " + it.element.body.text + h(0.2em) + box(width: 1fr) + h(0.2em) + it.page)
+    strong(text(supplement) + numbering("1", ..num) + ". " + it
+      .element
+      .body
+      .text + h(0.2em) + box(width: 1fr) + h(0.2em) + it.page)
   } else {
     it
   }
@@ -164,15 +217,16 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
   heading("Danh mục viết tắt")
 }
 
+// FIXME with this
+// https://typst.app/universe/package/acrotastic/
+
 #lorem(160)
 
 #pagebreak()
 
 #{
 
-  show outline.entry.where(
-    level: 1
-  ): it => {
+  show outline.entry.where(level: 1): it => {
     it
   }
 
@@ -197,10 +251,8 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 #pagebreak()
 
 
-#show heading.where(
-  depth: 1
-): it => block(width: 100%)[
-  #block(upper(text(weight: "light", size: 11.5pt,"Chương " + counter(heading).display())))
+#show heading.where(depth: 1): it => block(width: 100%)[
+  #block(upper(text(weight: "light", size: 11.5pt, "Chương " + counter(heading).display())))
   #pad(block(text(it.body, size: 23pt)), y: 32pt, bottom: 36pt)
 ]
 
@@ -211,30 +263,14 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 
 = Giới thiệu <start>
 
-== Bài toán lập lịch sự kiện có chu kỳ
+== Bài toán xây dựng lịch trình tàu
 
 
-= Background
+== Các tiêu chí và mục tiêu trong việc xây dựng lịch trình tàu
 
-== Logic mệnh đề
-=== Mệnh đề và đại số Bool
 
-#lorem(loremAvg)
+== Vấn đề lập lịch sự kiện định kỳ
 
-=== Chuẩn tắc hội
-
-#lorem(loremAvg)
-
-== SAT
-=== SAT Problem
-
-#lorem(loremAvg)
-
-=== SAT encodings và ứng dụng
-
-#lorem(loremAvg)
-
-== PESP
 === Interval
 
 #lorem(loremAvg)
@@ -247,61 +283,87 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 
 #lorem(loremAvg)
 
-=== Existing appoachs
+=== Các giải pháp hiện tại
 
 #lorem(loremAvg)
 
-= Model PESP as SAT
+= Kiến thức nền tảng
 
-== Direct encoding
-
-=== Encode finite variable in SAT domain
+== Logic mệnh đề
+=== Mệnh đề và đại số Bool
 
 #lorem(loremAvg)
 
-=== Encode constraint
+=== Chuẩn tắc hội
+
+#lorem(loremAvg)
+
+== SAT
+=== Vấn đề 3-SAT
+
+#lorem(loremAvg)
+
+=== SAT Solver
+
+#lorem(loremAvg)
+
+=== SAT encoding và ứng dụng
+
+= Mô hình bài toán PESP về bài toán SAT
+
+== Binominal encoding
+
+=== Mã hóa sự kiện
+
+#lorem(loremAvg)
+
+=== Mã hóa ràng buộc
 
 #lorem(loremAvg)
 
 == Order encoding
 
-=== Encode finite variable in order domain
+=== Mã hóa sự kiện
 
 #lorem(loremAvg)
 
-=== Encode constraint
+=== Mã hóa ràng buộc
 
 #lorem(loremAvg)
 
-== Optimizations
+=== Tối ưu thuật toán mã hóa ràng buộc
 
 #lorem(loremAvg)
 
-== Comparision
+== So sánh Binominal encoding và Order encoding
+
+=== Số biến
+
+=== Số mệnh đề
 
 #lorem(loremAvg)
 
-= Experiments and results
+= Thực nghiệm và kết quả
 
-== Model railway network as PESP
-
-#lorem(loremAvg)
-
-== Setup and Dataset
+== Mô hình bài toán PTSP về bài toán PESP
 
 #lorem(loremAvg)
 
-== Results and Analaysis
+== Thu thập dữ liệu
 
 #lorem(loremAvg)
 
-= Conclusions
-
-== Conclusions
+== Kết quả và đánh giá
 
 #lorem(loremAvg)
 
-== Future work
+= Tổng kết
+
+== Kết luận
+
+#lorem(loremAvg)
+
+== Kế hoạch và dự định
 
 #lorem(loremAvg)
 
@@ -313,22 +375,33 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 
 #figure(
   table(
-  columns: (1fr, 1fr),
-  inset: 10pt,
-  align: horizon + center,
-  table.header(
-    [*Math*], [*SAT (direct)*],
+    columns: (1fr, 1fr),
+    inset: 10pt,
+    align: horizon + center,
+    table.header(
+      [*Math*],
+      [*SAT (direct)*],
+    ),
+
+    $
+      pi = i, i in [0, T - 1],
+      pi in ZZ, i in ZZ
+    $,
+    $ p_(i) = #true, p_(j) = #false forall j != i, 0 <= j < T $,
+
+    $
+      pi = i, i in [0, T - 1],
+      pi in ZZ, i in ZZ
+    $,
+    $ (or.big_(i = 0)^(i < T) p_i) and (and.big_(i=0)^(i < T) and.big_(j = 0, j != i)^(j < T) p_i => not p_j) $,
+
+    $
+      pi = i, i in [0, T - 1],
+      pi in ZZ, i in ZZ
+    $,
+    $ (or.big_(i = 0)^(i < T) p_i) and (and.big_(i=0)^(i < T) and.big_(j = 0, j != i)^(j < T) not p_i or not p_j) $,
   ),
-  $ pi = i, i in [0, T - 1], 
-   pi in ZZ, i in ZZ $,
-  $ p_(i) = #true, p_(j) = #false forall j != i, 0 <= j < T $,
-  $ pi = i, i in [0, T - 1], 
-   pi in ZZ, i in ZZ $,
-  $ (or.big_(i = 0)^(i < T) p_i ) and (and.big_(i=0)^(i < T) and.big_(j = 0, j != i)^(j < T) p_i => not p_j) $,
-  $ pi = i, i in [0, T - 1], 
-   pi in ZZ, i in ZZ $,
-  $ (or.big_(i = 0)^(i < T) p_i ) and (and.big_(i=0)^(i < T) and.big_(j = 0, j != i)^(j < T) not p_i or not p_j) $,
-), caption: "Table test"
+  caption: "Table test",
 )
 
 #pagebreak()
@@ -337,9 +410,7 @@ align(center+bottom)[#text("HÀ NỘI - 2024", weight: "bold", size: 12pt)]
 
 #pagebreak()
 
-#show heading.where(
-  depth: 1
-): it => pad(text(it.body, size: 24pt), x: 0pt, y: 40pt)
+#show heading.where(depth: 1): it => pad(text(it.body, size: 24pt), x: 0pt, y: 40pt)
 
 #set heading(numbering: none)
 #counter(heading).update(100)
