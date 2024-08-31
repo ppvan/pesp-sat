@@ -170,16 +170,22 @@ Cuối cùng, em xin kính chúc các thầy cô luôn mạnh khỏe, hạnh ph�
 Em xin cam đoan khóa luận tốt nghiệp là của em, do em thực hiện dưới sự hướng
 dẫn của TS. Tô Văn Khánh. Tất cả tham khảo, nghiên cứu
 và tài liệu liên quan đều được nêu rõ ràng và chi tiết trong danh mục tài liệu tham khảo.
-Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực.
+Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực và không sao chép bất kỳ nguồn nào khác mà không trích dẫn.
 
 #v(1em)
 
+#let spaceTime = () => {
+
+  datetime.today().display("Hà Nội, ngày [day] tháng [month] năm [year]")
+}
+
 #grid(
-  columns: (2fr, 1fr),
+  columns: (1fr, auto),
   align: center,
   inset: 10pt,
-  gutter: 30pt,
-  "", "Sinh viên", "", "Phạm Văn Phúc"
+  // gutter: 30pt,
+  "", spaceTime(),
+  "", "Sinh viên", "", pad("Phạm Văn Phúc", top: 40pt)
 )
 
 
@@ -263,25 +269,15 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 
 = Giới thiệu <start>
 
-== Bài toán xây dựng lịch trình tàu
+== Bài toán xây dựng lịch trình tàu (PTSP)
 
 
 == Các tiêu chí và mục tiêu trong việc xây dựng lịch trình tàu
 
 
-== Vấn đề lập lịch sự kiện định kỳ
+== Vấn đề lập lịch sự kiện định kỳ (PESP)
 
-=== Interval
-
-#lorem(loremAvg)
-
-=== Constaints
-
-#lorem(loremAvg)
-
-=== Period Event Network
-
-#lorem(loremAvg)
+=== Định nghĩa bài toán
 
 === Các giải pháp hiện tại
 
@@ -290,11 +286,15 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 = Kiến thức nền tảng
 
 == Logic mệnh đề
-=== Mệnh đề và đại số Bool
+=== Mệnh đề
 
 #lorem(loremAvg)
 
-=== Chuẩn tắc hội
+=== Các phép toán logic
+
+#lorem(loremAvg)
+
+=== Chuẩn tắc tuyển và chuẩn tắc hội
 
 #lorem(loremAvg)
 
@@ -307,11 +307,11 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 
 #lorem(loremAvg)
 
-=== SAT encoding và ứng dụng
+=== SAT Encoding và ứng dụng
 
 = Mô hình bài toán PESP về bài toán SAT
 
-== Binominal encoding
+== Binominal Encoding
 
 === Mã hóa sự kiện
 
@@ -321,7 +321,7 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 
 #lorem(loremAvg)
 
-== Order encoding
+== Order Encoding
 
 === Mã hóa sự kiện
 
