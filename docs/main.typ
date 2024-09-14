@@ -3,7 +3,7 @@
 
 #set page(paper: "a4", margin: (top: 2.5cm, bottom: 3cm, left: 2.5cm, right: 2cm), numbering: "1")
 
-
+#set pagebreak(weak: true)
 
 // Bỏ qua đánh số trang ở 2 trang bìa. Bắt đầu từ "Tóm tắt" bằng số la mã và đánh số còn lại bằng số latinh.
 // Tại sao á? khóa luận khác nó như thế
@@ -230,6 +230,7 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
   "PTSP": "Periodic Train Timetable Scheduling Problem",
   "PESP": "Periodic Event Scheduling Problem",
   "CSP": "Contraint Satisfaction Problem",
+  "MIP": "Mixed Integer Programing",
 ))
 
 #{
@@ -266,6 +267,46 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 #pagebreak()
 
 
+= Mở đầu
+
+Lập kế hoạch cho hệ thống tàu điện ngầm là một công việc đầy khó khăn và thử thách, bao gồm nhiều giai đoạn khác nhau, như: nghiên cứu thị trường, thiết lập tuyến đường, thiết lập phương tiện, lập lịch tàu chạy và đào tạo nhân viên.
+
+
+#figure(
+  image("image/railway-steps.svg"),
+  caption: "Các giai đoạn lập kế hoạch xây dựng hệ thống tàu điện ngầm"
+)
+
+
++ *Nghiên cứu nhu cầu di chuyển*: Khảo sát thị trường và nhu cầu di chuyển của khách hàng nhằm thiết kế tuyến đường phù hợp
+
++ *Thiết lập tuyến đường*: Dựa trên nhu cầu di chuyển, ta thiết kế các tuyến đường nhằm đạt hiệu quả di chuyển cao nhất, quy trình này cần đảm bảo các chuyến tàu được kết nối với nhau và giảm thiểu số lần chuyển chuyến.
+
++ *Thiết lập phương tiện*: Dựa theo nhu cầu di chuyển và tuyến đường, ta cần lập danh sách các phương tiện (cần bao nhiêu phương tiện, sức chứa, tốc độ di chuyển...)
+
++ *Xây dựng lịch trình*: Khi biết rõ tuyến đường và công thông số phương tiện, ta có thể xây dựng lịch trình tàu chạy. Lịch trình cần đáp ứng các yêu chuẩn an toàn cũng như các yêu cầu về nghiệp vụ, và sẵn sàng cho các tình huống sự cố gián đoạn, hủy chuyến...
+
++ *Phân bổ nhân viên*: Tương tự, việc xây dựng lịch trình cho các nhân viên lái tàu, phục vụ, nhân viên sửa chữa, bảo hành cũng cần được quan tâm.
+
+Các giai đoạn lập kế hoạch này liên quan mật thiết đến nhau và thường được tiến hành đổ thác theo thử tự. Tuy nhiên, có thể quay lại bước trước đó để tối ưu khi các yêu cầu nghiêm vụ được làm rõ hơn. Trong đó, khâu xây dựng lịch trình tàu là một công việc phức tạp, phải đáp ứng nhiều tiêu chí như:
+
++ *Thời gian đệm (recovery times)*: Thời gian đệm bù vào những gián đoạn trong hệ thống (vận tốc tàu không như tính toán do thời tiết, thiên tai, tàu khởi hành muộn so với dự kiến...). Để đảm bảo sự sai lệch này không làm tê liệt toàn bộ hệ thống, một lịch trình cần tính đến khoảng thời gian này.
+
++ *Thời gian giãn cách tối thiểu(minimum headway time)*: Nếu hai tàu dùng chung một đường ray, chúng phải khởi hành cách nhau 1 khoảng thời gian tối thiểu, vì lí do an toàn.
+
++ *Tính kết nối (Connections between trains)*: Thời gian đến/khởi hành của các tàu chung một bến đỗ nên liền mạch với nhau nhằm phục vụ nhu cầu đi nối chuyến của khách hàng.
+
++ *Thời gian bảo trì (Turn around times at termination)*: Thời gian bảo trì động cơ, nhiên liệu, thay ca nhân viên ở ga tàu cuối trước khi quay ngược lại.
+
+
+
+Trước đây, xây dựng lịch trình tàu chạy chủ yếu được làm thủ công @cyc, tốn nhiều thời gian, công sức và tiền bạc. Vì vậy, trong thập kỷ trước, nhiều nghiên cứu nhằm hỗ trợ và tự động quá trình lập lịch đã được tiến hành @liebchen2007modeling @odijk1996constraint @yan2019multi. Hầu hết các nghiên cứu đều dựa trên mô hình _lập lịch sự kiện định kỳ_ (Periodic Event Schedule Problem - PESP), một mô hình nổi tiếng được giới thiệu bởi Serafini and Ukovich @pesp-intro.
+
+
+
+#pagebreak()
+
+
 #show heading.where(depth: 1): it => block(width: 100%)[
   #block(upper(text(weight: "light", size: 11.5pt, "Chương " + counter(heading).display())))
   #pad(block(text(it.body, size: 23pt)), y: 32pt, bottom: 36pt)
@@ -277,13 +318,6 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 #let loremAvg = 400
 
 = Giới thiệu <start>
-
-== Bài toán xây dựng lịch trình tàu (PTSP)
-
-
-
-== Các tiêu chí và mục tiêu trong việc xây dựng lịch trình tàu
-
 
 == Vấn đề lập lịch sự kiện định kỳ (PESP)
 
