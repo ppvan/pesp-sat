@@ -1,4 +1,25 @@
 #import "@preview/acrotastic:0.1.1": *
+#import "@preview/fletcher:0.5.1" as fletcher: diagram, node, edge
+#import "@preview/cetz:0.2.1"
+
+
+#import "@preview/ctheorems:1.1.2": *
+#show: thmrules.with(qed-symbol: $square$)
+
+#set page(width: 16cm, height: auto, margin: 1.5cm)
+#set heading(numbering: "1.1.")
+
+#let theorem = thmbox("theorem", "Theorem", fill: rgb("#eeffee"))
+#let corollary = thmplain(
+  "corollary",
+  "Corollary",
+  base: "theorem",
+  titlefmt: strong,
+)
+#let definition = thmbox("definition", "Định nghĩa", inset: (x: 1.2em, top: 1em))
+
+#let example = thmplain("example", "Ví dụ").with(numbering: "1.1")
+#let proof = thmproof("proof", "Proof")
 
 
 #set page(paper: "a4", margin: (top: 2.5cm, bottom: 3cm, left: 2.5cm, right: 2cm), numbering: "1")
@@ -138,7 +159,7 @@
 = Tóm tắt <page-start>
 
 
-Hiện nay, hiệu năng của các SAT Solver đã cải thiện đáng kể và có thể được ứng dụng trong việc giải các bài toán NP-complete như: _Traveling Salesman, 
+Hiện nay, hiệu năng của các SAT Solver đã cải thiện đáng kể và có thể được ứng dụng trong việc giải các bài toán NP-complete như: _Traveling Salesman,
 Hamiltonian path
 , graph k-coloring..._. Vấn đề lập lịch sự kiện định kỳ (Periodic Event Scheduling Problem) từ lâu đã được chương minh là một vấn đề NP-complete. Các phương pháp hiện tại như lập trình ràng buộc (Constraint satisfaction Programing) hay quy hoạch số nguyên (Integer Programing) chưa thực sự hiệu quả với các bộ dữ liệu lớn.
 Tài liệu này sẽ trình bày thuật toán chuyển hóa vấn đề lập lịch định kỳ (PESP) về bài toán SAT, sau đó giải bài toán sử dụng SAT Solver nhằm đạt được hiệu suất cao hơn.
@@ -269,12 +290,12 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 
 = Mở đầu
 
-Lập kế hoạch cho hệ thống tàu điện ngầm là một công việc đầy khó khăn và thử thách, bao gồm nhiều giai đoạn khác nhau, như: nghiên cứu thị trường, thiết lập tuyến đường, thiết lập phương tiện, lập lịch tàu chạy và đào tạo nhân viên.
+Lập kế hoạch cho hệ thống tàu điện ngầm là một công việc đầy khó khăn và thử thách, bao gồm nhiều giai đoạn khác nhau, như: nghiên cứu thị trường, thiết lập tuyến đường, thiết lập phương tiện, lập lịch tàu chạy và đào tạo nhân viên. Các giai đoạn lập kế hoạch này liên quan mật thiết đến nhau và thường được tiến hành đổ thác theo thứ tự. Tuy nhiên, có thể quay lại bước trước đó để tối ưu khi các yêu cầu nghiêm vụ được làm rõ hơn.
 
 
 #figure(
   image("image/railway-steps.svg"),
-  caption: "Các giai đoạn lập kế hoạch xây dựng hệ thống tàu điện ngầm"
+  caption: "Các giai đoạn lập kế hoạch xây dựng hệ thống tàu điện ngầm",
 )
 
 
@@ -288,42 +309,307 @@ Lập kế hoạch cho hệ thống tàu điện ngầm là một công việc �
 
 + *Phân bổ nhân viên*: Tương tự, việc xây dựng lịch trình cho các nhân viên lái tàu, phục vụ, nhân viên sửa chữa, bảo hành cũng cần được quan tâm.
 
-Các giai đoạn lập kế hoạch này liên quan mật thiết đến nhau và thường được tiến hành đổ thác theo thử tự. Tuy nhiên, có thể quay lại bước trước đó để tối ưu khi các yêu cầu nghiêm vụ được làm rõ hơn. Trong đó, khâu xây dựng lịch trình tàu là một công việc phức tạp, phải đáp ứng nhiều tiêu chí như:
+Trong đó, _xây dựng lịch trình_ là giai đoạn thiết yếu đối với hệ thống tàu điện ngầm. Việc cung cấp thời gian khởi hành và đến chính xác giúp lịch trình tàu hoạt động mượt mà và đáng tin cậy, đồng thời quản lý lưu lượng hành khách và ngăn ngừa tình trạng quá tải. Lịch trình hiệu quả cũng phối hợp các kết nối với các phương thức vận chuyển khác, cải thiện kế hoạch vận hành bằng cách lập kế hoạch bảo trì và phân bổ nhân sự, và tối ưu hóa việc sử dụng tài nguyên như tàu và đội ngũ. Tổng thể, lịch trình đáng tin cậy dẫn đến sự hài lòng cao hơn của khách hàng và một hệ thống giao thông công cộng trơn tru, hiệu quả hơn.
 
-+ *Thời gian đệm (recovery times)*: Thời gian đệm bù vào những gián đoạn trong hệ thống (vận tốc tàu không như tính toán do thời tiết, thiên tai, tàu khởi hành muộn so với dự kiến...). Để đảm bảo sự sai lệch này không làm tê liệt toàn bộ hệ thống, một lịch trình cần tính đến khoảng thời gian này.
+Tuy nhiên, lập lịch trình tàu hỏa là một nhiệm vụ vô cùng khó khăn và tốn kém, vì phải đáp ứng nhiều tiêu chí phức tạp. Trước hết, thời gian đệm (recovery times) cần được tính toán để bù đắp cho những gián đoạn trong hệ thống, như sự thay đổi tốc độ do thời tiết hoặc thiên tai, và tình trạng tàu khởi hành muộn so với dự kiến. Để tránh làm gián đoạn toàn bộ hệ thống, lịch trình phải bao gồm thời gian đệm phù hợp. Tiếp theo, thời gian giãn cách tối thiểu (minimum headway time) là cần thiết để đảm bảo an toàn khi hai tàu sử dụng chung một đường ray và phải khởi hành cách nhau một khoảng thời gian tối thiểu. Tính kết nối (connections between trains) cũng rất quan trọng, vì thời gian đến và khởi hành của các tàu tại cùng một bến đỗ cần phải liên tục để phục vụ nhu cầu nối chuyến của hành khách. Cuối cùng, thời gian bảo trì (turn around times at termination) phải được tính toán để bao gồm thời gian cần thiết cho việc bảo trì động cơ, tiếp nhiên liệu và thay ca nhân viên ở ga tàu cuối trước khi tàu quay trở lại.
 
-+ *Thời gian giãn cách tối thiểu(minimum headway time)*: Nếu hai tàu dùng chung một đường ray, chúng phải khởi hành cách nhau 1 khoảng thời gian tối thiểu, vì lí do an toàn.
+Trước đây, xây dựng lịch trình tàu chạy chủ yếu được làm thủ công @cyc, tốn nhiều chi phí cũng như dễ xảy ra sai sót. Vì vậy, trong thập kỷ trước, nhiều nghiên cứu nhằm hỗ trợ và tự động quá trình lập lịch đã được tiến hành @liebchen2007modeling @odijk1996constraint @yan2019multi. Hầu hết các nghiên cứu đều dựa trên mô hình _lập lịch sự kiện định kỳ_ (Periodic Event Schedule Problem - PESP), một mô hình nổi tiếng được giới thiệu bởi Serafini and Ukovich @pesp-intro. Tuy nhiên, các phương pháp hiện tại trong việc giải bài toán PESP như lập trình ràng buộc, quy hoạch số nguyên chưa hiệu quả với các bộ dữ liệu lớn. Trong khóa luận này, chúng tôi trình bày phương pháp giải bài toán PESP sử dụng SAT Solver và đề xuất một vài cải tiến về thuật toán mã hóa.
 
-+ *Tính kết nối (Connections between trains)*: Thời gian đến/khởi hành của các tàu chung một bến đỗ nên liền mạch với nhau nhằm phục vụ nhu cầu đi nối chuyến của khách hàng.
+Phần còn lại của khóa luận được tổ chức như sau:
 
-+ *Thời gian bảo trì (Turn around times at termination)*: Thời gian bảo trì động cơ, nhiên liệu, thay ca nhân viên ở ga tàu cuối trước khi quay ngược lại.
+- *Chương 1*: Định nghĩa chi tiết các khái niệm trong bài toán _lập lịch sự kiện định kỳ_, một số cách tiếp cận hiện tại
 
+- *Chương 2*: Trình bày kiến nền tảng về logic mệnh đề và các khái niệm liên quan đến bài toán SAT như NP-complete, Satisfiablility Problem, SAT Solver và quy trình giải bài toán thực tế sử dụng SAT solver.
 
+- *Chương 3*: Đề xuất thuật toán chuyển đổi bài toán PESP về bài toán SAT và cách giải cùng cải tiến thuật toán mã hóa.
 
-Trước đây, xây dựng lịch trình tàu chạy chủ yếu được làm thủ công @cyc, tốn nhiều thời gian, công sức và tiền bạc. Vì vậy, trong thập kỷ trước, nhiều nghiên cứu nhằm hỗ trợ và tự động quá trình lập lịch đã được tiến hành @liebchen2007modeling @odijk1996constraint @yan2019multi. Hầu hết các nghiên cứu đều dựa trên mô hình _lập lịch sự kiện định kỳ_ (Periodic Event Schedule Problem - PESP), một mô hình nổi tiếng được giới thiệu bởi Serafini and Ukovich @pesp-intro.
-
-
+- *Chương 4*: Thử nghiệm thực tế và kết luận
 
 #pagebreak()
 
+
+#set heading(numbering: "1.1.1")
+#let loremAvg = 400
+#counter(heading).update(0)
+#counter(page).update(1)
 
 #show heading.where(depth: 1): it => block(width: 100%)[
   #block(upper(text(weight: "light", size: 11.5pt, "Chương " + counter(heading).display())))
   #pad(block(text(it.body, size: 23pt)), y: 32pt, bottom: 36pt)
 ]
 
-#counter(page).update(1)
-#counter(heading).update(0)
-#set heading(numbering: "1.1.1")
-#let loremAvg = 400
+= Lập lịch sự kiện định kỳ <start>
 
-= Giới thiệu <start>
+== Định nghĩa bài toán
 
-== Vấn đề lập lịch sự kiện định kỳ (PESP)
+#definition[
+  (Đoạn). Cho $a, b in ZZ $ với $a <= b.$
 
-=== Định nghĩa bài toán
+  $ [a, b] := {a, a + 1, a + 2, ...,b - 1, b} $
 
-=== Các giải pháp hiện tại
+  được gọi là đoạn từ cận dưới $a$ đến cận trên $b$ hay đoạn từ $a$ đến $b$.
+]
+
+
+#definition[
+  (Đoạn mô-đun). Cho $a, b in ZZ "and" t in NN^*$. Với $a$ là cận dưới và $b$ là cận trên,
+
+  $ [a, b]_t := union.big_(z in ZZ) [a + z dot t, b + z dot t] $
+
+  được gọi là _đoạn mô-đun_ $t$.
+]
+
+#example[
+  Cho
+
+  $
+    I &= [3, 7]_8 \
+    &= ... union [-13, -9] union [-5, -1] union [3, 7] union [11, 15] union [19, 23] ...
+    subset Z \
+  $
+
+  là đoạn mô-đun 8. Khi đó
+
+  $
+    5 &in [3, 7] subset I \
+    -10 &in [-13, -9] subset I \
+    12 &in [11, 15] subset I
+  $
+
+  #figure(
+    cetz.canvas({
+      import cetz.draw: *
+
+      let min = -12
+      let max = 10
+      let (a, b) = ((0, 0), ((max - min) / 1.5, 0))
+
+      line(
+        (rel: (-1, 0), to: a),
+        (rel: (1, 0), to: b),
+        mark: (fill: black, end: "stealth"),
+        name: "line",
+      )
+
+      // Place labels
+
+      let labels = (
+        (-10, $-10$),
+        (5, $5$),
+      )
+
+
+      let len = cetz.vector.dist(a, b)
+
+      for (position, label) in labels {
+        let pos = cetz.vector.lerp(a, b, (position - min) / (max - min))
+        content(pos, label, anchor: "south", padding: (bottom: .50))
+        group({
+          set-origin(pos)
+          scale(.1)
+          line((0, 1), (0, 4), stroke: red, mark: (fill: red, start: ">"))
+        })
+      }
+
+      // Place ticks
+
+      let numbers = (3, 5, -10, 12, 7, -13, -9, 0, 11, 15)
+
+      for maj in range(min, max + 1) {
+        if maj in numbers {
+          move-to(cetz.vector.lerp(a, b, (maj - min) / (max - min)))
+          line((), (rel: (0, -.2)))
+          content((rel: (0, -.1)), $maj$, anchor: "north")
+        }
+      }
+    }),
+    caption: "Minh họa đoạn mô-đun. -10 và 5 thuộc I",
+  )
+]
+
+
+#definition[
+  (Mạng sự kiện định kỳ). Một mạng sự kiện định kỳ (Periodic event network) chu kỳ $t_T$ $Nu = (nu, A, t_T)$ bao gồm tập hợp $nu$ sự kiện (danh sách đỉnh) và tập các ràng buộc $A$ (danh sách cạnh). Mỗi ràng buộc $a in A$ kết nối hai sự kiện, được kí hiệu:
+
+  $
+    a = ((i, j), [l_a, u_a]_t_T) in (nu times nu) times 2^ZZ
+  $
+
+  trong đó $l_a, u_a in ZZ$ lần lượt là cận trên và cận dưới, $2^ZZ$ là tập hợp các tập con của $ZZ$.
+
+  Tập $A$ là hợp của hai tập hợp $S$ và $C$ lần lượt là tập ràng buộc đối xứng và ràng buộc thời gian.
+
+  $
+    S union C &= A \
+    S sect C &= emptyset
+  $
+]
+
+#example[
+  Cho $N = ({A, B, C}, Nu, 8)$ là một mạng sự kiện định kỳ. Trong đó:
+
+  $
+    A = C = {
+      &((A, B), [3, 7]_8),\
+      &((B, C), [2, 4]_8),\
+      &((A, C), [3, 5]_8)
+    }
+  $
+
+
+  #figure(
+    diagram(
+      spacing: 10em,
+      {
+        let (a, b, c) = ((-1 / calc.sqrt(3), 0), (0, -1), (1 / calc.sqrt(3), 0))
+        node(a, $A$, stroke: 1pt)
+        node(b, $B$, stroke: 1pt)
+        node(c, $C$, stroke: 1pt)
+        edge(a, b, "->", $[3, 7]_8$)
+        edge(b, c, "->", $[2, 4]_8$)
+        edge(a, c, "->", $[3, 5]_8$)
+      },
+    ),
+    caption: "Ví dụ minh họa mạng sự kiện định kỳ",
+  )
+
+] <example-1.1.2>
+
+#definition[
+  (Tiềm năng sự kiện). Cho $N = (nu, A, t_T)$ là một _mạng sự kiện định kỳ_. $pi_n in ZZ$ được gọi là tiềm năng xảy ra của sự kiện $n in nu$.
+
+  Từ đây đến hết tài liệu, khái niệm này được gọi tắt là _tiềm năng_
+]
+
+#definition[
+  (Lịch trình). Cho $N = (nu, A, t_T)$ là một _mạng sự kiện định kỳ_. Ánh xạ:
+
+  $
+    Pi_nu: &nu -> ZZ \
+    &n |-> pi_n
+  $
+  được gọi là một lịch trình của tập sự kiện $N$
+]
+
+
+#definition[
+  (Ràng buộc thời gian). Cho $N = (nu, A, t_T)$ là một _mạng sự kiện định kỳ_ với tập ràng buộc $A = S union C$ với ràng buộc $a = ((i, j), [l_a, u_a]_t_T) in C, i, j in nu$. Hai tiềm năng $pi_i$ và $pi_j$ thỏa mãn ràng buộc thời gian $a$ khi và chỉ khi:
+
+  $
+    pi_j - pi_i in [l_a, u_a]_t_T
+  $
+]
+
+
+#definition[
+  (Ràng buộc đối xứng). Cho $N = (nu, A, t_T)$ là một _mạng sự kiện định kỳ_ với tập ràng buộc $A = S union C$ với ràng buộc $a = ((i, j), [l_a, u_a]_t_T) in S, i, j in nu$. Hai tiềm năng $pi_i$ và $pi_j$ thỏa mãn ràng buộc đối xứng $a$ khi và chỉ khi:
+
+  $
+    pi_j + pi_i in [l_a, u_a]_t_T
+  $
+]
+
+#example[
+  Cho A, B là hai sự kiện và $a = ((A, B), \[3, 7\]_8)$ là _ràng buộc thời gian_.
+
+  Các tiềm năng $(pi_a, pi_b) = (1, 5), (3, 2)$ thỏa mãn ràng buộc thời gian a vì:
+
+  $
+    5 - 1 &= 4 in [3, 7]_8 \
+    2 - 3 &= -1 in [3, 7]_8
+  $
+
+  Ngược lại, tiềm năng $(pi_a, pi_b) = (3, 5), (7, 1)$ không thỏa mãn ràng buộc, vì:
+
+  $
+    5 - 3 &= 2 in.not [3, 7]_8 \
+    1 - 7 &= -6 in.not [3, 7]_8
+  $
+]
+
+
+#definition[
+  Cho $N = (nu, A, t_T)$ là một _mạng sự kiện định kỳ_ và $Pi_nu$ là một lịch trình của $N$. Lịch trình $Pi$ thỏa mãn một ràng buộc $a in A$ khi và chỉ khi $pi_i = Pi_nu(i), pi_j = Pi_nu(j)$ thỏa mãn $a = (i, j, I)$
+]
+
+#definition[
+  (Lịch trình hợp lệ) Cho $N = (nu, A, t_T)$ là một _mạng sự kiện định kỳ_ và $Pi_nu$ là một lịch trình của $N$. Lịch trình $Pi$ được xem là hợp lệ nếu thỏa mãn mọi ràng buộc $a in A$.
+]
+
+#example[
+  Cho $N = (nu, A, 8)$ là mạng sự kiện định kỳ ở @example-1.1.2 và $Pi_nu$ là một lịch trình hợp lệ của $N$ với $pi_a = 6, pi_b = 1, pi_c = 3$. $Pi_nu$ là hợp lệ bởi vì:
+
+  $
+    pi_b - pi_a &= 1 - 6 = -5 in [3, 7]_8 \
+    pi_c - pi_b &= 3 - 1 = 2 in [2, 4]_8 \
+    pi_c - pi_a &= 3 - 6 = -3 in [3, 5]_8 \
+  $
+
+  được minh họa trong hình dưới đây:
+  #figure(
+  diagram(
+    spacing: 10em,
+    {
+      let (a, b, c) = ((-1 / calc.sqrt(3), 0), (0, -1), (1 / calc.sqrt(3), 0))
+      node(a, $pi_a = 6$, stroke: 1pt, shape: circle)
+      node(b, $pi_b = 1$, stroke: 1pt, shape: circle)
+      node(c, $pi_c = 3$, stroke: 1pt, shape: circle)
+      edge(a, b, "->", $1 - 6 = -5 in [3, 7]_8 $)
+      edge(b, c, "->", $3 - 1 = 2 in [2, 4]_8 $)
+      edge(a, c, "->", $3 - 6 = -3 in [3, 5]_8$)
+    },
+  ),
+  caption: "Ví dụ minh họa mạng lịch trình hợp lệ",
+)
+]
+
+
+#definition[
+  (Lịch trình tương đương) Cho $N = (nu, A, t_T)$ là một _mạng sự kiện định kỳ_ và $Pi_nu$ là một lịch trình của $N$. Lịch trình $Pi_nu$ và $Phi_nu$ được xem là tương đương:
+
+  $
+    Pi_nu equiv Phi_nu
+  $
+
+  khi và chỉ khi
+
+  $
+    forall n in nu: Pi_nu(n) mod t_T = Phi_nu(n) mod t_T
+  $
+]
+
+
+#example[
+  Cho $N = (nu, A, 8)$ là mạng sự kiện định kỳ ở @example-1.1.2 và $Pi_nu$ là một lịch trình hợp lệ của $N$ với $pi_a = 6, pi_b = 1, pi_c = 3$. $Pi_nu$ là hợp lệ bởi vì:
+
+  $
+    pi_b - pi_a &= 1 - 6 = -5 in [3, 7]_8 \
+    pi_c - pi_b &= 3 - 1 = 2 in [2, 4]_8 \
+    pi_c - pi_a &= 3 - 6 = -3 in [3, 5]_8 \
+  $
+
+  được minh họa trong hình dưới đây:
+  #figure(
+  diagram(
+    spacing: 10em,
+    {
+      let (a, b, c) = ((-1 / calc.sqrt(3), 0), (0, -1), (1 / calc.sqrt(3), 0))
+      node(a, $pi_a = 6$, stroke: 1pt, shape: circle)
+      node(b, $pi_b = 1$, stroke: 1pt, shape: circle)
+      node(c, $pi_c = 3$, stroke: 1pt, shape: circle)
+      edge(a, b, "->", $1 - 6 = -5 in [3, 7]_8 $)
+      edge(b, c, "->", $3 - 1 = 2 in [2, 4]_8 $)
+      edge(a, c, "->", $3 - 6 = -3 in [3, 5]_8$)
+    },
+  ),
+  caption: "Ví dụ minh họa mạng lịch trình hợp lệ",
+)
+]
+
+
+
+
+== Phương pháp giải
 
 #lorem(loremAvg)
 
@@ -400,57 +686,6 @@ Trước đây, xây dựng lịch trình tàu chạy chủ yếu được làm 
 == Kết quả và đánh giá
 
 #lorem(loremAvg)
-
-= Tổng kết
-
-== Kết luận
-
-#lorem(loremAvg)
-
-== Kế hoạch và dự định
-
-#lorem(loremAvg)
-
-
-#figure(
-  image("image/myownspell.jpg"),
-  caption: [A nice figure!],
-)
-
-#figure(
-  table(
-    columns: (1fr, 1fr),
-    inset: 10pt,
-    align: horizon + center,
-    table.header(
-      [*Math*],
-      [*SAT (direct)*],
-    ),
-
-    $
-      pi = i, i in [0, T - 1],
-      pi in ZZ, i in ZZ
-    $,
-    $ p_(i) = #true, p_(j) = #false forall j != i, 0 <= j < T $,
-
-    $
-      pi = i, i in [0, T - 1],
-      pi in ZZ, i in ZZ
-    $,
-    $ (or.big_(i = 0)^(i < T) p_i) and (and.big_(i=0)^(i < T) and.big_(j = 0, j != i)^(j < T) p_i => not p_j) $,
-
-    $
-      pi = i, i in [0, T - 1],
-      pi in ZZ, i in ZZ
-    $,
-    $ (or.big_(i = 0)^(i < T) p_i) and (and.big_(i=0)^(i < T) and.big_(j = 0, j != i)^(j < T) not p_i or not p_j) $,
-  ),
-  caption: "Table test",
-)
-
-#pagebreak()
-
-#lorem(60)
 
 #pagebreak()
 
