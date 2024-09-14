@@ -1,8 +1,11 @@
+#import "@preview/acrotastic:0.1.1": *
+
+
 #set page(paper: "a4", margin: (top: 2.5cm, bottom: 3cm, left: 2.5cm, right: 2cm), numbering: "1")
 
 
 
-// Bỏ qua đánh số trang ở 2 trang bìa. Bắt đầu từ "Tóm tắt" bằng số la mã và đánh số còn lại bằng số latinh. 
+// Bỏ qua đánh số trang ở 2 trang bìa. Bắt đầu từ "Tóm tắt" bằng số la mã và đánh số còn lại bằng số latinh.
 // Tại sao á? khóa luận khác nó như thế
 #set page(
   footer: locate(loc => {
@@ -135,8 +138,10 @@
 = Tóm tắt <page-start>
 
 
-Hiện nay, các bộ giải SAT đã cải thiện đáng kể và được áp dụng thành công nhằm giải quyết các vấn đề thực tế, không trực tiếp liên quan đến logic mệnh đề. Vấn đề lập lịch sự kiện định kỳ (PESP) từ lâu đã được chương minh là một vấn đề NP đầy đủ. Các phương pháp hiện tại như ràng lập trình ràng buộc (Constraint satisfaction problem) hay quy hoạch số nguyên (Integer Programing) chưa thực sự hiệu quả với các bộ dự liệu lớn.
-Tài liệu này sẽ trình bày thuật toán chuyển hóa vấn đề lập lịch định kỳ (PESP) về bài toán SAT, sau đó được xử lý bởi các bộ giải SAT nhằm đạt được hiệu suất cao hơn.
+Hiện nay, hiệu năng của các SAT Solver đã cải thiện đáng kể và có thể được ứng dụng trong việc giải các bài toán NP-complete như: _Traveling Salesman, 
+Hamiltonian path
+, graph k-coloring..._. Vấn đề lập lịch sự kiện định kỳ (Periodic Event Scheduling Problem) từ lâu đã được chương minh là một vấn đề NP-complete. Các phương pháp hiện tại như lập trình ràng buộc (Constraint satisfaction Programing) hay quy hoạch số nguyên (Integer Programing) chưa thực sự hiệu quả với các bộ dữ liệu lớn.
+Tài liệu này sẽ trình bày thuật toán chuyển hóa vấn đề lập lịch định kỳ (PESP) về bài toán SAT, sau đó giải bài toán sử dụng SAT Solver nhằm đạt được hiệu suất cao hơn.
 
 
 *Từ khóa: * Periodic railway timetabling; Optimisation; Periodic Event Scheduling Problem; SAT
@@ -159,7 +164,8 @@ Cuối cùng, em xin kính chúc các thầy cô luôn mạnh khỏe, hạnh ph�
   align: center,
   inset: 10pt,
   gutter: 30pt,
-  "", "Sinh viên", "", "Phạm Văn Phúc"
+  "", "Sinh viên",
+  "", "Phạm Văn Phúc",
 )
 
 
@@ -217,16 +223,19 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 
 #pagebreak()
 
+#init-acronyms((
+  "SAT": ("Satisfiablility"),
+  "UNSAT": "Unsatisfiability",
+  "CNF": "Conjunctive Normal Form",
+  "PTSP": "Periodic Train Timetable Scheduling Problem",
+  "PESP": "Periodic Event Scheduling Problem",
+  "CSP": "Contraint Satisfaction Problem",
+))
 
 #{
-  show heading: set heading(outlined: true)
-  heading("Danh mục viết tắt")
+  print-index(title: "Danh mục viết tắt", outlined: false, sorted: "up")
 }
 
-// FIXME with this
-// https://typst.app/universe/package/acrotastic/
-
-#lorem(160)
 
 #pagebreak()
 
@@ -270,6 +279,7 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 = Giới thiệu <start>
 
 == Bài toán xây dựng lịch trình tàu (PTSP)
+
 
 
 == Các tiêu chí và mục tiêu trong việc xây dựng lịch trình tàu
