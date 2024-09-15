@@ -9,10 +9,10 @@
 #set page(width: 16cm, height: auto, margin: 1.5cm)
 #set heading(numbering: "1.1.")
 
-#let theorem = thmbox("theorem", "Theorem", fill: rgb("#eeffee"))
+#let theorem = thmbox("theorem", "Định lý", fill: rgb("#eeffee"))
 #let corollary = thmplain(
   "corollary",
-  "Corollary",
+  "Hệ quả",
   base: "theorem",
   titlefmt: strong,
 )
@@ -340,7 +340,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
 
 = Lập lịch sự kiện định kỳ <start>
 
-== Định nghĩa bài toán
+== Mạng sự kiện định kỳ
 
 #definition[
   (Đoạn). Cho $a, b in ZZ $ với $a <= b.$
@@ -606,7 +606,84 @@ Phần còn lại của khóa luận được tổ chức như sau:
 )
 ]
 
+#theorem[
+(Tính hợp lệ của lịch trình tương đương). Cho $N = (nu, A, t_T)$ là một mạng sự kiện định kỳ, $Pi_nu, Phi_nu$ là hai lịch trình tương đương. Khi đó, với tập ràng buộc $A$:
 
+$
+Pi_nu "hợp lệ" <=> Phi_nu "hợp lệ"
+$
+]
+
+#proof[
+  #set math.equation(numbering: "(1)")
+  Không mất tính tổng quát, chỉ cần chứng minh $Pi_nu "hợp lệ" => Phi_nu "hợp lệ"$.
+
+  Ta có: $Pi_nu$ hợp lệ với tập ràng buộc $A$ $=> forall a in A:$
+
+  $
+    Pi_nu "thỏa mãn" a
+  $ <st>
+
+  Thật vậy, với $A = C union S$, cần chứng minh:
+
+  $
+  forall a in C&: Phi_nu "thỏa mãn" a
+  $ <prof1>
+
+  $
+  forall a in S&: Phi_nu "thỏa mãn" a
+  $ <prof2>
+
+
+  Giả sử $a = ((i, j), [l_a, u_a]_t_T) in C$ là một ràng buộc thời gian bất kỳ.
+
+  với $i, j in nu, pi_i = Pi_(nu)(i), pi_j = Pi_(nu)(j), phi_i = Phi_(nu)(i), phi_j = Phi_(nu)(j)$
+
+  $
+  (1) &=> pi_j - pi_i in [l_a, u_a]_t_T\
+  &=> pi_j - pi_i in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
+  &=> forall w, v in ZZ: pi_j - pi_i + w dot t_T - v dot t_T in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
+  &=> forall w, v in ZZ: (pi_j + w dot t_T) - (pi_i + v dot t_T) in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
+
+  &=> (pi_j mod t_T) - (pi_i mod t_T) in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
+
+  &=> (pi_j mod t_T) - (pi_i mod t_T) in [l_a, u_a]_t_T\
+
+  &=> (phi_j mod t_T) - (phi_i mod t_T) in [l_a, u_a]_t_T\
+
+  &=> phi_j - phi_i  in [l_a, u_a]_t_T\
+
+  &=> Phi_nu "thỏa mãn" a
+  $
+
+Tương tự, ra chứng minh được @prof2
+]
+
+#corollary[
+  Cho $[Pi_nu]_equiv := {Phi_nu | Phi_nu equiv Pi_nu}$, $Pi_nu$ hợp lệ. Khi đó:
+  $
+    forall Phi_nu in [Pi_nu]_equiv => Phi_nu "hợp lệ"
+  $
+]
+
+
+#corollary[
+  Cho $[Pi_nu]_equiv := {Phi_nu | Phi_nu equiv Pi_nu}$, $Pi_nu$ hợp lệ. Khi đó tồn tại một lịch trình $Phi_nu in [Pi_nu]_equiv$ sao cho:
+  $
+    forall n in nu: Phi_(nu)(n) in [0, t_T - 1]
+  $
+] <cor1>
+
+@cor1 là hệ quả quan trọng, giới hạn miền nghiệm của lịch trình trở thành hữu hạn. Vì vậy, khi tìm kiếm lịch trình hợp lệ, ta chỉ cần tìm các tiềm năng trong đoạn $[0, t_T-1]$
+
+
+== Bài toán lập lịch sự kiện định kỳ
+
+#definition[
+(PESP). Cho $N = (nu, A, t_T)$ là một _mạng sự kiện định kỳ_, bài toán đặt ra câu hỏi: _Liệu có tồn tại một lịch trình hợp lệ thỏa mãn mạng trên?_
+]
+
+Dễ thấy, PESP là một vấn đề quyết định@kozen2012automata. Từ minh họa @example-1.1.2, dễ hình dung PESP có thể chuyển thành bài toán _Vertex Coloring_, vậy PESP là bài toán NP-complete, được chứng minh bằng cách chuyển về bài toán _Vertex Coloring_ @odijk1994construction.
 
 
 == Phương pháp giải
