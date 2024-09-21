@@ -547,20 +547,20 @@ Phần còn lại của khóa luận được tổ chức như sau:
 
   được minh họa trong hình dưới đây:
   #figure(
-  diagram(
-    spacing: 10em,
-    {
-      let (a, b, c) = ((-1 / calc.sqrt(3), 0), (0, -1), (1 / calc.sqrt(3), 0))
-      node(a, $pi_a = 6$, stroke: 1pt, shape: circle)
-      node(b, $pi_b = 1$, stroke: 1pt, shape: circle)
-      node(c, $pi_c = 3$, stroke: 1pt, shape: circle)
-      edge(a, b, "->", $1 - 6 = -5 in [3, 7]_8 $)
-      edge(b, c, "->", $3 - 1 = 2 in [2, 4]_8 $)
-      edge(a, c, "->", $3 - 6 = -3 in [3, 5]_8$)
-    },
-  ),
-  caption: "Ví dụ minh họa mạng lịch trình hợp lệ",
-)
+    diagram(
+      spacing: 10em,
+      {
+        let (a, b, c) = ((-1 / calc.sqrt(3), 0), (0, -1), (1 / calc.sqrt(3), 0))
+        node(a, $pi_a = 6$, stroke: 1pt, shape: circle)
+        node(b, $pi_b = 1$, stroke: 1pt, shape: circle)
+        node(c, $pi_c = 3$, stroke: 1pt, shape: circle)
+        edge(a, b, "->", $1 - 6 = -5 in [3, 7]_8$)
+        edge(b, c, "->", $3 - 1 = 2 in [2, 4]_8$)
+        edge(a, c, "->", $3 - 6 = -3 in [3, 5]_8$)
+      },
+    ),
+    caption: "Ví dụ minh họa mạng lịch trình hợp lệ",
+  )
 ]
 
 
@@ -590,28 +590,28 @@ Phần còn lại của khóa luận được tổ chức như sau:
 
   được minh họa trong hình dưới đây:
   #figure(
-  diagram(
-    spacing: 10em,
-    {
-      let (a, b, c) = ((-1 / calc.sqrt(3), 0), (0, -1), (1 / calc.sqrt(3), 0))
-      node(a, $pi_a = 6$, stroke: 1pt, shape: circle)
-      node(b, $pi_b = 1$, stroke: 1pt, shape: circle)
-      node(c, $pi_c = 3$, stroke: 1pt, shape: circle)
-      edge(a, b, "->", $1 - 6 = -5 in [3, 7]_8 $)
-      edge(b, c, "->", $3 - 1 = 2 in [2, 4]_8 $)
-      edge(a, c, "->", $3 - 6 = -3 in [3, 5]_8$)
-    },
-  ),
-  caption: "Ví dụ minh họa mạng lịch trình hợp lệ",
-)
+    diagram(
+      spacing: 10em,
+      {
+        let (a, b, c) = ((-1 / calc.sqrt(3), 0), (0, -1), (1 / calc.sqrt(3), 0))
+        node(a, $pi_a = 6$, stroke: 1pt, shape: circle)
+        node(b, $pi_b = 1$, stroke: 1pt, shape: circle)
+        node(c, $pi_c = 3$, stroke: 1pt, shape: circle)
+        edge(a, b, "->", $1 - 6 = -5 in [3, 7]_8$)
+        edge(b, c, "->", $3 - 1 = 2 in [2, 4]_8$)
+        edge(a, c, "->", $3 - 6 = -3 in [3, 5]_8$)
+      },
+    ),
+    caption: "Ví dụ minh họa mạng lịch trình hợp lệ",
+  )
 ]
 
 #theorem[
-(Tính hợp lệ của lịch trình tương đương). Cho $N = (nu, A, t_T)$ là một mạng sự kiện định kỳ, $Pi_nu, Phi_nu$ là hai lịch trình tương đương. Khi đó, với tập ràng buộc $A$:
+  (Tính hợp lệ của lịch trình tương đương). Cho $N = (nu, A, t_T)$ là một mạng sự kiện định kỳ, $Pi_nu, Phi_nu$ là hai lịch trình tương đương. Khi đó, với tập ràng buộc $A$:
 
-$
-Pi_nu "hợp lệ" <=> Phi_nu "hợp lệ"
-$
+  $
+    Pi_nu "hợp lệ" <=> Phi_nu "hợp lệ"
+  $
 ]
 
 #proof[
@@ -627,11 +627,11 @@ $
   Thật vậy, với $A = C union S$, cần chứng minh:
 
   $
-  forall a in C&: Phi_nu "thỏa mãn" a
+    forall a in C&: Phi_nu "thỏa mãn" a
   $ <prof1>
 
   $
-  forall a in S&: Phi_nu "thỏa mãn" a
+    forall a in S&: Phi_nu "thỏa mãn" a
   $ <prof2>
 
 
@@ -640,23 +640,18 @@ $
   với $i, j in nu, pi_i = Pi_(nu)(i), pi_j = Pi_(nu)(j), phi_i = Phi_(nu)(i), phi_j = Phi_(nu)(j)$
 
   $
-  (1) &=> pi_j - pi_i in [l_a, u_a]_t_T\
-  &=> pi_j - pi_i in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
-  &=> forall w, v in ZZ: pi_j - pi_i + w dot t_T - v dot t_T in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
-  &=> forall w, v in ZZ: (pi_j + w dot t_T) - (pi_i + v dot t_T) in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
-
-  &=> (pi_j mod t_T) - (pi_i mod t_T) in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
-
-  &=> (pi_j mod t_T) - (pi_i mod t_T) in [l_a, u_a]_t_T\
-
-  &=> (phi_j mod t_T) - (phi_i mod t_T) in [l_a, u_a]_t_T\
-
-  &=> phi_j - phi_i  in [l_a, u_a]_t_T\
-
-  &=> Phi_nu "thỏa mãn" a
+    (1) &=> pi_j - pi_i in [l_a, u_a]_t_T\
+    &=> pi_j - pi_i in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
+    &=> forall w, v in ZZ: pi_j - pi_i + w dot t_T - v dot t_T in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
+    &=> forall w, v in ZZ: (pi_j + w dot t_T) - (pi_i + v dot t_T) in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
+    &=> (pi_j mod t_T) - (pi_i mod t_T) in {[l_a + z dot t_T, u_a + z dot t_T] | z in ZZ}\
+    &=> (pi_j mod t_T) - (pi_i mod t_T) in [l_a, u_a]_t_T\
+    &=> (phi_j mod t_T) - (phi_i mod t_T) in [l_a, u_a]_t_T\
+    &=> phi_j - phi_i in [l_a, u_a]_t_T\
+    &=> Phi_nu "thỏa mãn" a
   $
 
-Tương tự, ra chứng minh được @prof2
+  Tương tự, ra chứng minh được @prof2
 ]
 
 #corollary[
@@ -680,30 +675,313 @@ Tương tự, ra chứng minh được @prof2
 == Bài toán lập lịch sự kiện định kỳ
 
 #definition[
-(PESP). Cho $N = (nu, A, t_T)$ là một _mạng sự kiện định kỳ_, bài toán đặt ra câu hỏi: _Liệu có tồn tại một lịch trình hợp lệ thỏa mãn mạng trên?_
+  (PESP). Cho $N = (nu, A, t_T)$ là một _mạng sự kiện định kỳ_, bài toán đặt ra câu hỏi: _Liệu có tồn tại một lịch trình hợp lệ thỏa mãn mạng trên?_
 ]
 
 Dễ thấy, PESP là một vấn đề quyết định@kozen2012automata. Từ minh họa @example-1.1.2, dễ hình dung PESP có thể chuyển thành bài toán _Vertex Coloring_, vậy PESP là bài toán NP-complete, được chứng minh bằng cách chuyển về bài toán _Vertex Coloring_ @odijk1994construction.
 
-
-== Phương pháp giải
-
-#lorem(loremAvg)
 
 = Kiến thức nền tảng
 
 == Logic mệnh đề
 === Mệnh đề
 
-#lorem(loremAvg)
+
+#definition[
+  (Mệnh đề): Mệnh đề là một nhận định đúng hoặc sai.
+  Kí hiệu: $x, y, z, A, B, C...$
+]
+
+
+
+#example[
+  Các nhận định sau là mệnh đề:
+  - A = "Hôm nay trời mưa"
+  - B = "2 là số nguyên tố"
+  - z = "10 lớn hơn 20"
+  trong khi các nhận định sau không phải mệnh đề do không có tính đúng sai rõ ràng:
+  - Lan bao nhiêu tuổi?
+  - Dọn nhà đi!
+] <logic_ex>
+
+#definition[
+  (Chân trị) Một mệnh đề có thể đúng hoặc sai. Tính đúng sai của mệnh đề được gọi là chân trị của mệnh đề. Mệnh đề đúng có chân trị là 1 (`true`), mệnh đề sai có chân trị 0 (`false`).
+]
+
+#example[
+
+  Theo @logic_ex, $A, B$ là mệnh đề đúng, $z$ là mệnh đề sai:
+]
 
 === Các phép toán logic
 
-#lorem(loremAvg)
+Tương tự với số học, ta cũng có phép toán giữa các mệnh đề. Sau đây giới thiệu một số phép toán cơ bản thường dùng.
+
+#definition[
+  (Phủ định): Mệnh đề phủ định của mệnh đề $a$ là mệnh đề có chân trị đối lập với $a$.\
+  _Kí hiệu_: $not a$.
+
+  #figure(
+    table(
+      align: center + horizon,
+      columns: (4em, 4em),
+      [*$a$*], [*$not a$*],
+      "0", "1",
+      "1", "0",
+    ),
+    caption: "Bảng chân trị của phép phủ định",
+  )  <logic_not>
+]
+
+#example[
+  $
+    A &= "\"Hôm nay trời mưa\""\
+    => not A &= "\"Hôm nay trời không mưa"\"
+  $
+]
+
+
+#definition[
+  (Phép hội): Mệnh đề hội của hai mệnh đề $a, b$ là mệnh đề chỉ đúng khi cả $a, b$ đều đúng. \
+  _Kí hiệu_: $a and b$
+
+  #figure(
+    table(
+      align: center + horizon,
+      columns: (4em, 4em, 4em),
+      [*$a$*], [*$b$*], [*$a and b$*],
+      "0", "0", "0",
+      "1", "0", "0",
+      "0", "1", "0",
+      "1", "1", "1"
+    ),
+    caption: "Bảng chân trị của phép hội",
+  ) <logic_and>
+]
+
+
+#definition[
+  (Phép tuyển): Mệnh đề tuyển của hai mệnh đề $a, b$ là mệnh đề chỉ sai khi cả $a, b$ đều sai. \
+  _Kí hiệu_: $a or b$
+
+  #figure(
+    table(
+      align: center + horizon,
+      columns: (4em, 4em, 4em),
+      [*$a$*], [*$b$*], [*$a or b$*],
+      "0", "0", "0",
+      "1", "0", "1",
+      "0", "1", "1",
+      "1", "1", "1"
+    ),
+    caption: "Bảng chân trị của phép tuyển",
+  )  <logic_or>
+]
+
+
+#definition[
+  (Phép kéo theo): Mệnh đề kéo của hai mệnh đề $a, b$ là mệnh đề chỉ sai khi cả $a$ đúng $b$ sai. \
+  _Kí hiệu_: $a => b$
+
+  #figure(
+    table(
+      align: center + horizon,
+      columns: (4em, 4em, 4em),
+      [*$a$*], [*$b$*], [*$a => b$*],
+      "0", "0", "1",
+      "1", "0", "0",
+      "0", "1", "1",
+      "1", "1", "1"
+    ),
+    caption: "Bảng chân trị của phép kéo theo",
+  )
+]
+
+
+
+
+#definition[
+  (Phép tương đương): Mệnh đề tương của hai mệnh đề $a, b$ là mệnh đề chỉ đúng khi cả $a$ và $b$ cùng đúng hoặc cùng sai. \
+  _Kí hiệu_: $a <=> b$
+
+  #figure(
+    table(
+      align: center + horizon,
+      columns: (4em, 4em, 4em),
+      [*$a$*], [*$b$*], [*$a <=> b$*],
+      "0", "0", "1",
+      "1", "0", "0",
+      "0", "1", "0",
+      "1", "1", "1"
+    ),
+    caption: "Bảng chân trị của phép tương đương",
+  )
+]
+
+=== Biểu thức logic
+
+
+
+#definition[
+  (Mệnh đề sơ cấp): Mệnh đề sơ cấp (literal) là chỉ bao gồm mệnh đề và phủ định của nó ($a "và" not a$). Mệnh đề sơ cấp không thể chia thành các mệnh đề nhỏ hơn.
+]
+
+
+#definition[
+  (Biểu thức logic): Biểu thức logic được định nghĩa đệ quy như sau:
+  1. Mỗi mệnh đề sơ cấp là một biểu thức ($A, not B, C, x, y, z...$)
+  2. Nếu $A, B$ là hai biểu thức thì $A and B, A or B, A => B, A <=> B$ cũng là các biểu thức.
+]
+
+
+#example[
+  Các biểu thức logic:
+  $
+    f(x, y, z) &= (x or y) and z \
+    g(a, b) &= a => not b
+  $
+]
+
+
+
+#definition[
+  (Bảng chân trị): Bảng chân trị là bảng tính toán chân trị của biểu thức logic theo từng giá trị của các biến tham gia trong biểu thức.
+
+  @logic_not, @logic_and, @logic_or là ví dụ các bảng chân trị.
+]
+
+
+
+#definition[
+  (Biểu thức tương đương): Nếu hai biểu thức $f, g$ có cùng bảng chân trị thì $f, g$ được gọi là biểu thức tương đương.
+  _Kí hiệu:_
+
+  $
+    f <=> g
+  $
+]
+
+#example[
+  Theo định nghĩa, ta có: $a => b <=> not a or b$
+  #figure(
+    table(
+      align: center + horizon,
+      columns: (4em, 4em, 4em, 4em),
+      [*$a$*], [*$b$*], [*$a => b$*], [$not a or b$],
+      "0", "0", "1", "1",
+      "1", "0", "0", "0",
+      "0", "1", "0", "0",
+      "1", "1", "1", "1"
+    ),
+    caption: "Bảng chân trị của hai biểu thức tương đương",
+  )
+]
+
+
 
 === Chuẩn tắc tuyển và chuẩn tắc hội
 
-#lorem(loremAvg)
+
+#definition[
+  (Tuyển sơ cấp): Tuyển của các mệnh đề sơ cấp được gọi là tuyển sơ cấp.
+]
+
+#definition[
+  (Hội sơ cấp): Hội của các mệnh đề sơ cấp được gọi là hội sơ cấp.
+]
+
+#example[
+  - Các tuyển sơ cấp: $a or not b or c or not d, x or y, y or not z$
+
+  - Các hội sơ cấp: $a and not b and c and not d, x and y, y and not z$
+]
+
+#definition[
+  (Chuẩn tắc tuyển): Tuyển của các hội sơ cấp được gọi là chuẩn tắc tuyển.
+
+]
+
+
+#example[
+  $
+    f = (x_1 and x_2 and not x_3) or (not x_1 and x_2 and not x_3)
+  $
+]
+
+#definition[
+  (Chuẩn tắc hội): Hội của các tuyển sơ cấp được gọi là chuẩn tắc hội (CNF).
+  
+]
+
+
+#example[
+  $
+    g = (x_1 or x_2 or not x_3) and (not x_1 or x_2 or not x_3)
+  $
+]
+
+#theorem[
+  Mọi biểu thức logic đều có dạng chuẩn tắc hội và chuẩn tắc tuyển tương ứng @cnfproof.
+]
+
+// FIXME: xem xét chứng minh lại luôn
+
+#example[
+Cho biểu thức logic:
+
+$
+ f &= ((p => q) and (r or not s)) => (t <=> (u or v))
+$
+
+Ta có thể chuyển nó về dạng CNF như sau:
+
+$f &= ((p => q) and (r or not s)) => (t <=> (u or v))\
+
+ &= ((not p or q) and (r or not s)) => (t and (u or v) or (not t and not(u or v))) \
+
+ &= not((not p or q) and (r or not s)) or (t and (u or v) or (not t and not(u or v))) \
+
+ &= (p and not q) or (not r and s) or (t and (u or v) or (not t and (not u and not v))) \
+
+ &= ((p and not q) or (not r and s) or t) and ((p and not q) or (not r and s) or u or v) \ &
+ and ((p and not q) or (not r and s) or not t) \ &
+ and ((p and not q) or (not r and s) or not t or not u) \ &
+ and ((p and not q) or (not r and s) or not t or not v) \
+
+ &= (p or not r or t or u or v) \ &
+ and (p or s or t or u or v) 
+ and (not q or not r or t or u or v) \ &
+ and (not q or s or t or u or v)
+ and (p or not r or u or v) \ &
+ and (p or s or u or v) 
+ and (not q or not r or u or v) \ &
+ and (not q or s or u or v) 
+ and (p or not r or not t) \ &
+ and (p or s or not t) 
+ and (not q or not r or not t)  \ &
+ and (not q or s or not t) 
+ and (p or not r or not t or not u)  \ &
+ and (p or s or not t or not u) 
+ and (not q or not r or not t or not u)  \ &
+ and (not q or s or not t or not u) 
+ and (p or not r or not t or not v)  \ &
+ and (p or s or not t or not v) 
+ and (not q or not r or not t or not v)  \ &
+ and (not q or s or not t or not v)
+$
+]
+
+Tương tự với dạng DNF, ta có biểu thức cuối cùng như sau:
+
+$
+
+f &= (not p and r and t and u) or (not p and r and t and v) \
+&or (not p and not s and t and u) or (not p and not s and t and v) \
+&or (q and r and t and u) or (q and r and t and v) \
+&or (q and not s and t and u) or (q and not s and t and v) \
+&or (p and not q and not r and not t) or (p and not q and s and not t) \
+&or (p and not q and not r and not u and not v) or (p and not q and s and not u and not v) 
+$
 
 == SAT
 === Vấn đề 3-SAT
