@@ -909,7 +909,11 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
 ]
 
 #definition[
-  (Chuẩn tắc hội): Hội của các tuyển sơ cấp được gọi là chuẩn tắc hội (CNF).
+  (Chuẩn tắc hội): Hội của các tuyển sơ cấp được gọi là chuẩn tắc hội (CNF). Chuẩn tắc hội có thường có dạng:
+  $
+    f = &(P_1 or P_2 or P_3 or ... or P_n)_1 and ... and (Q_1 or Q_2 or ... or Q_n)_p \
+    &n, m, p in NN^*
+  $
   
 ]
 
@@ -975,7 +979,7 @@ Tương tự với dạng DNF, ta có biểu thức cuối cùng như sau:
 
 $
 
-f &= (not p and r and t and u) or (not p and r and t and v) \
+f = &(not p and r and t and u) or (not p and r and t and v) \
 &or (not p and not s and t and u) or (not p and not s and t and v) \
 &or (q and r and t and u) or (q and r and t and v) \
 &or (q and not s and t and u) or (q and not s and t and v) \
@@ -984,7 +988,82 @@ f &= (not p and r and t and u) or (not p and r and t and v) \
 $
 
 == SAT
-=== Vấn đề 3-SAT
+=== Vấn đề SAT
+
+#definition[
+  (Suy diễn - Interpretation) Cho $f in Sigma_("SAT")$ là một biểu thức logic mệnh đề, khi đó ánh xạ:
+  $
+    I: Sigma_("SAT") &-> {"true", "false"} \
+    f^I &= w
+  $
+  được gọi là một suy diễn $I$ với giá trị $w$ của $f$
+]
+
+#example[
+  Cho $f(x, y, z) = x and (y or z)$. Với suy diễn $I = {x: "true", y: "true", z: "false"}$ ta có:
+
+  $
+    f("true", "true", "false") = "true" and ("true" or "false") = "true"
+  $
+  hay
+  $
+    f^I (x,y,z) = "true"
+  $
+]
+
+
+#definition[
+  Cho $f in Sigma_("SAT")$ là một biểu thức logic mệnh đề, khi đó ánh xạ:
+  $
+    I: Sigma_("SAT") &-> {"true", "false"} \
+    f^I &= w
+  $
+  được gọi là một suy diễn $I$ với giá trị $w$ của $f$
+]
+
+
+#definition[
+  (Satisfiability) Cho $f in Sigma_("SAT")$ là một biểu thức logic mệnh đề, khi đó $f$ được gọi là _satisfiable_ nếu tồn tại một suy diễn $I$:
+  $
+  f^I &= "true"
+  $
+  
+  và $f$ được gọi là _unsatisfiable_ nếu:
+  $
+  f^I &= "false" forall I
+  $
+]
+
+#example[
+  ...
+]
+
+
+#definition[
+  (SAT). Cho $f in Sigma_("SAT")$ là một biểu thức logic mệnh đề ở dạng chuẩn tắc hội. _Liệu có tồn tại một suy diễn $I$ sao cho:_
+
+  $
+    f^I &= "true"
+  $
+  
+  được gọi là bài toán Satisfiability hay bài toán SAT.
+]
+
+#example[
+  Cho $f = (x or y) and not z$. Ta thấy tồn tại một suy diễn $I = {x: "true", y: "false", z: "false"}$ mà $f^I = "true"$.
+
+  trong khi đó với $g = (x or y) and (not x or y) and (x or not y) and (not x or not y)$, không tồn tại suy diễn nào để $g^I = "true"$.
+]
+
+
+
+
+Bài toán SAT (satisfiability problem) là bài toán tìm lời giải nhận đầu vào là các
+công thức logic mệnh đề để kiểm tra xem có tồn tại ít nhất một bộ giá trị true/false của các
+biến logic mệnh thỏa mãn các công thức logic mệnh đề. Nếu tồn tại một bộ giá trị như vậy
+bài toán sẽ trả về SAT ngược lại nếu không có một bộ giá trị nào thỏa mãn thì bài toán trả
+về UNSAT. Ngày nay SAT Solver đã có khả năng giải quyết được các công thức logic
+mệnh đề lớn với hàng nghìn mệnh đề, hàng triệu biến.
 
 #lorem(loremAvg)
 
