@@ -676,7 +676,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
 
 #definition[
   (PESP). Cho $N = (nu, A, t_T)$ là một _mạng sự kiện định kỳ_, bài toán đặt ra câu hỏi: _Liệu có tồn tại một lịch trình hợp lệ thỏa mãn mạng trên?_
-]
+] <pesp_def>
 
 Dễ thấy, PESP là một vấn đề quyết định@kozen2012automata. Từ minh họa @example-1.1.2, dễ hình dung PESP có thể chuyển thành bài toán _Vertex Coloring_, vậy PESP là bài toán NP-complete, được chứng minh bằng cách chuyển về bài toán _Vertex Coloring_ @odijk1994construction.
 
@@ -730,7 +730,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
       "1", "0",
     ),
     caption: "Bảng chân trị của phép phủ định",
-  )  <logic_not>
+  ) <logic_not>
 ]
 
 #example[
@@ -753,7 +753,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
       "0", "0", "0",
       "1", "0", "0",
       "0", "1", "0",
-      "1", "1", "1"
+      "1", "1", "1",
     ),
     caption: "Bảng chân trị của phép hội",
   ) <logic_and>
@@ -772,10 +772,10 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
       "0", "0", "0",
       "1", "0", "1",
       "0", "1", "1",
-      "1", "1", "1"
+      "1", "1", "1",
     ),
     caption: "Bảng chân trị của phép tuyển",
-  )  <logic_or>
+  ) <logic_or>
 ]
 
 
@@ -791,7 +791,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
       "0", "0", "1",
       "1", "0", "0",
       "0", "1", "1",
-      "1", "1", "1"
+      "1", "1", "1",
     ),
     caption: "Bảng chân trị của phép kéo theo",
   )
@@ -812,7 +812,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
       "0", "0", "1",
       "1", "0", "0",
       "0", "1", "0",
-      "1", "1", "1"
+      "1", "1", "1",
     ),
     caption: "Bảng chân trị của phép tương đương",
   )
@@ -871,7 +871,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
       "0", "0", "1", "1",
       "1", "0", "0", "0",
       "0", "1", "0", "0",
-      "1", "1", "1", "1"
+      "1", "1", "1", "1",
     ),
     caption: "Bảng chân trị của hai biểu thức tương đương",
   )
@@ -914,7 +914,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
     f = &(P_1 or P_2 or P_3 or ... or P_n)_1 and ... and (Q_1 or Q_2 or ... or Q_n)_p \
     &n, m, p in NN^*
   $
-  
+
 ]
 
 
@@ -931,60 +931,53 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
 // FIXME: xem xét chứng minh lại luôn
 
 #example[
-Cho biểu thức logic:
+  Cho biểu thức logic:
 
-$
- f &= ((p => q) and (r or not s)) => (t <=> (u or v))
-$
+  $
+    f &= ((p => q) and (r or not s)) => (t <=> (u or v))
+  $
 
-Ta có thể chuyển nó về dạng CNF như sau:
+  Ta có thể chuyển nó về dạng CNF như sau:
 
-$f &= ((p => q) and (r or not s)) => (t <=> (u or v))\
-
- &= ((not p or q) and (r or not s)) => (t and (u or v) or (not t and not(u or v))) \
-
- &= not((not p or q) and (r or not s)) or (t and (u or v) or (not t and not(u or v))) \
-
- &= (p and not q) or (not r and s) or (t and (u or v) or (not t and (not u and not v))) \
-
- &= ((p and not q) or (not r and s) or t) and ((p and not q) or (not r and s) or u or v) \ &
- and ((p and not q) or (not r and s) or not t) \ &
- and ((p and not q) or (not r and s) or not t or not u) \ &
- and ((p and not q) or (not r and s) or not t or not v) \
-
- &= (p or not r or t or u or v) \ &
- and (p or s or t or u or v) 
- and (not q or not r or t or u or v) \ &
- and (not q or s or t or u or v)
- and (p or not r or u or v) \ &
- and (p or s or u or v) 
- and (not q or not r or u or v) \ &
- and (not q or s or u or v) 
- and (p or not r or not t) \ &
- and (p or s or not t) 
- and (not q or not r or not t)  \ &
- and (not q or s or not t) 
- and (p or not r or not t or not u)  \ &
- and (p or s or not t or not u) 
- and (not q or not r or not t or not u)  \ &
- and (not q or s or not t or not u) 
- and (p or not r or not t or not v)  \ &
- and (p or s or not t or not v) 
- and (not q or not r or not t or not v)  \ &
- and (not q or s or not t or not v)
-$
+  $f &= ((p => q) and (r or not s)) => (t <=> (u or v))\
+    &= ((not p or q) and (r or not s)) => (t and (u or v) or (not t and not(u or v))) \
+    &= not((not p or q) and (r or not s)) or (t and (u or v) or (not t and not(u or v))) \
+    &= (p and not q) or (not r and s) or (t and (u or v) or (not t and (not u and not v))) \
+    &= ((p and not q) or (not r and s) or t) and ((p and not q) or (not r and s) or u or v) \ &
+    and ((p and not q) or (not r and s) or not t) \ &
+    and ((p and not q) or (not r and s) or not t or not u) \ &
+    and ((p and not q) or (not r and s) or not t or not v) \
+    &= (p or not r or t or u or v) \ &
+    and (p or s or t or u or v)
+    and (not q or not r or t or u or v) \ &
+    and (not q or s or t or u or v)
+    and (p or not r or u or v) \ &
+    and (p or s or u or v)
+    and (not q or not r or u or v) \ &
+    and (not q or s or u or v)
+    and (p or not r or not t) \ &
+    and (p or s or not t)
+    and (not q or not r or not t) \ &
+    and (not q or s or not t)
+    and (p or not r or not t or not u) \ &
+    and (p or s or not t or not u)
+    and (not q or not r or not t or not u) \ &
+    and (not q or s or not t or not u)
+    and (p or not r or not t or not v) \ &
+    and (p or s or not t or not v)
+    and (not q or not r or not t or not v) \ &
+    and (not q or s or not t or not v)$
 ]
 
 Tương tự với dạng DNF, ta có biểu thức cuối cùng như sau:
 
 $
-
-f = &(not p and r and t and u) or (not p and r and t and v) \
-&or (not p and not s and t and u) or (not p and not s and t and v) \
-&or (q and r and t and u) or (q and r and t and v) \
-&or (q and not s and t and u) or (q and not s and t and v) \
-&or (p and not q and not r and not t) or (p and not q and s and not t) \
-&or (p and not q and not r and not u and not v) or (p and not q and s and not u and not v) 
+  f = &(not p and r and t and u) or (not p and r and t and v) \
+  &or (not p and not s and t and u) or (not p and not s and t and v) \
+  &or (q and r and t and u) or (q and r and t and v) \
+  &or (q and not s and t and u) or (q and not s and t and v) \
+  &or (p and not q and not r and not t) or (p and not q and s and not t) \
+  &or (p and not q and not r and not u and not v) or (p and not q and s and not u and not v)
 $
 
 == SAT
@@ -1025,12 +1018,12 @@ $
 #definition[
   (Satisfiability) Cho $f in Sigma_("SAT")$ là một biểu thức logic mệnh đề, khi đó $f$ được gọi là _satisfiable_ nếu tồn tại một suy diễn $I$:
   $
-  f^I &= "true"
+    f^I &= "true"
   $
-  
+
   và $f$ được gọi là _unsatisfiable_ nếu:
   $
-  f^I &= "false" forall I
+    f^I &= "false" forall I
   $
 ]
 
@@ -1045,7 +1038,7 @@ $
   $
     f^I &= "true"
   $
-  
+
   được gọi là bài toán Satisfiability hay bài toán SAT.
 ]
 
@@ -1062,24 +1055,25 @@ $
 Bài toán SAT là bài toán NP xuất hiện sớm nhất, đồng thời là bài toán đầu tiên được chứng minh là NP-complete @sat_np. Vì vậy, không tồn tại giải thuật tối ưu giải bài toán SAT có độ phức tạp đa thức. Tuy nhiên, nhiều nghiên cứu đã được tiến hành nhằm xây dựng chương trình giải bài toán SAT, thường gọi là các SAT Solver.
 
 #figure(
-    diagram(
-      spacing: 5em,
-      {
-        let (input, solver, sat, unsat) = ((-1, 0), (0, 0), (1, 1), (1, -1))
+  diagram(
+    spacing: 5em,
+    node-corner-radius: 4pt,
+    {
+      let (input, solver, sat, unsat) = ((-1, 0), (0, 0), (1, 1), (1, -1))
 
-        node(input, [CNF formula \ $(x_1 or x_2 ...) and ... and (z_1 or z_2 ...)$ ], stroke: 1pt)
-        node(solver, "SAT Solver", stroke: 1pt, inset: 1em)
-        node(sat, "SAT",  stroke: 1pt)
-        node(unsat, "UNSAT",  stroke: 1pt)
+      node(input, [CNF formula \ $(x_1 or x_2 ...) and ... and (z_1 or z_2 ...)$ ], stroke: 1pt)
+      node(solver, "SAT Solver", stroke: 1pt, inset: 1em)
+      node(sat, [SAT], stroke: 1pt)
+      node(unsat, "UNSAT", stroke: 1pt)
 
-        edge(input, solver, "->")
-        edge(solver, sat, "->")
-        edge(solver, unsat, "->")
+      edge(input, solver, "->")
+      edge(solver, sat, "->")
+      edge(solver, unsat, "->")
 
-      },
-    ),
-    caption: "Sơ đồ đầu vào/đầu ra của SAT Solver",
-  )
+    },
+  ),
+  caption: "Sơ đồ đầu vào/đầu ra của SAT Solver",
+)
 
 Nhiều kĩ thuật đã được nghiên cứu nhằm cải thiện độ hiệu quả các SAT Solver theo thời gian, tiêu biểu như:
 
@@ -1100,14 +1094,98 @@ Do vậy, các SAT Solver hiện nay đã có khả năng giải các bài toán
 
 - *Glucose*: SAT Solver được dựa trên MiniSAT, áp dụng thêm nhiều kỹ thuật mới như phương pháp học mệnh đề hiện đại và giải song song.
 
-- *Gini*: Một solver hiện đại được viết bằng Go, điểm đặc biệt của solver này là giao thức chia sẻ tính toán, cho phép giải song song sử dụng cá goroutine. Đây cũng là solver được chọn để giải bài toán PESP khi thực nghiệm.
+- *Gini*: Một solver hiện đại được viết bằng Go, điểm đặc biệt của solver này là giao thức chia sẻ tính toán, cho phép giải song song sử dụng các goroutine. Đây cũng là solver được chọn để giải bài toán PESP khi thực nghiệm.
+
+Để giải các bài toán thực tế sử dụng SAT Solver, ta cần định nghĩa hình thức các yêu cầu nghiệp vụ của bài toán thành các logic mệnh đề, giải bài toán SAT, sau đó suy luận kết quả từ đầu ra của SAT Solver. Sơ đồ có thể giải một bài toán sử dụng SAT Solver được minh họa trong @fig_1. Chương tiếp theo sẽ minh họa rõ hơn quá trình này.
+
+#figure(
+  diagram(
+    spacing: 2em,
+    node-stroke: 1pt,
+    node-inset: 8pt,
+    node-corner-radius: 4pt,
+    {
+      let (input, encoding, solver, desiion, decoding) = ((-1, 1), (0, 1), (0, 2), (1, 2), (2, 2))
+
+      let (unsat, sat) = ((0, 5), (0, 3))
+      let result = (3, 2)
+      // set node(stroke: 1pt)
+
+      node(input, "Input")
+      node(encoding, "Encoding Module")
+      node(solver, "SAT Solver", shape: fletcher.shapes.diamond, inset: 8pt)
+      node(decoding, "Decoding Module")
+      node(unsat, "No result")
+      node(result, "Output")
+
+      edge(input, encoding, "->")
+      edge(encoding, solver, "->")
+      edge(solver, decoding, "->", [SAT])
+      edge(input, encoding, "->")
+      edge(solver, unsat, "->", [UNSAT])
+      edge(decoding, result, "->")
+    },
+  ),
+  caption: "Sơ đồ giải bài toán thực tế sử dụng SAT Solver",
+) <fig_1>
 
 
-=== SAT Encoding và ứng dụng
+#pagebreak(weak: true)
+= Mô hình bài toán PESP về bài toán SAT <pesp_reduction>
 
-= Mô hình bài toán PESP về bài toán SAT
+== Sơ đồ tổng quan
+
+
+#figure(
+  diagram(
+    spacing: 2em,
+    node-stroke: 1pt,
+    node-inset: 8pt,
+    node-corner-radius: 4pt,
+    {
+      let (input, encoding, solver, desiion, decoding) = ((-1, 1), (0, 1), (0, 2), (1, 2), (2, 2))
+
+      let (unsat, sat) = ((0, 5), (0, 3))
+      let result = (3, 2)
+      let verification = (2, 3)
+      let encoding_cons = (2, 1)
+
+      let direct_encode
+      // set node(stroke: 1pt)
+
+      node(input, [$N = (nu, A, t_T)$])
+      node(encoding, "Encoding Potentials")
+      node(encoding_cons, "Exclude unfeasible pairs")
+      node(solver, "Gini SAT Solver", shape: fletcher.shapes.diamond, inset: 8pt)
+      node(decoding, "Decoding Module")
+      node(unsat, "No result")
+      node(result, "Output")
+      node(verification, "Verification")
+
+      edge(input, encoding, "->")
+      edge(encoding, encoding_cons, "->")
+      edge(encoding_cons, solver, "->")
+      edge(solver, decoding, "->", [SAT])
+      edge(input, encoding, "->")
+      edge(solver, unsat, "->", [UNSAT])
+      edge(decoding, result, "->")
+      edge(result, verification, "->")
+    },
+  ),
+  caption: "Sơ đồ tổng quan giải bài toán PESP sử dụng SAT Solver",
+)
+
+Nhiều nghiên cứu liên quan đề xuất hai phương pháp mã hóa bài toán lập lịch định kỳ (PESP) về bài toán SAT là Binominal Encoding và Order Encoding.
+
+Nhắc lại @pesp_def về PESP và @cor1 về không gian nghiệm, từ đây trở đi trong khóa luận này, ta định nghĩa lại bài toán PESP như sau:
+
+#definition[
+  Cho mạng định kỳ $N = (nu, A, t_T)$ gồm $n$ sự kiện, tập ràng buộc $A$ và chu kỳ T. Tìm n tiềm năng sự kiện $pi_1, pi_2, ..., pi_n$ trong đoạn $[0, t_T - 1]$ thỏa mãn tập ràng buộc $A$.
+]
 
 == Binominal Encoding
+
+
 
 === Mã hóa sự kiện
 
@@ -1143,15 +1221,93 @@ Do vậy, các SAT Solver hiện nay đã có khả năng giải các bài toán
 
 == Mô hình bài toán PTSP về bài toán PESP
 
-#lorem(loremAvg)
+Vấn đề lập lịch tàu chạy (PTSP) trong thực tế còn phức tạp và có nhiều yếu tố tác động. Tuy nhiên, với sai số cho phép, ta có thể chuyển hoá các yêu cầu nghiệp vụ về sự kiện và các ràng buộc trong bài toán PESP.
+
+Ứng với mỗi tàu L và ga $s$, tạo một sự kiện khởi hành và cập bến $L_(t, s) (t in {"dep", "arr"})$. Mỗi sự kiện khởi hành và cập bến phải tuân theo chu kì $t_T$. Giữa hai sự kiện này có một ràng buộc thời gian $(L_("arr", s), L_("dep", s), [l, u]_t_T)$, ràng buộc thời gian tối thiểu và tối đa tàu dừng tại ga $("arrival" -> "departure")$. Tương tự, ta ràng buộc thời gian đi từ gia $s_1 -> s_2$ bằng ràng buộc $(L_("dep", s_1), L_("arr", s_2), [l', u']_t_T)$. $l', u'$ có thể ước lượng từ khoảng cách hai ga và vận tốc của tàu.
+
+Để ngăn hai tàu sử dụng cùng một đường ray, ta giới hạn thời gian đến cùng 1 ga phải cách nhau một thời gian đệm tương đối: $(L_("arr", s), J_("arr", s), [l, u]_t_T)$. Tương tự với các yêu cầu ràng buộc khác.
+
+Ta thu được thời gian biểu chính xác khi giải được bài toán PESP tương ứng.
+
 
 == Thu thập dữ liệu
 
-#lorem(loremAvg)
+Dữ liệu thử nghiệm được thu thập từ @pesplib, một tập dữ liệu PESP đã được chuẩn hóa và xử lý nhằm đánh giá hiệu quả của các thuật toán giải PESP. PESPlib được cộng đồng đánh giá cao và được dùng làm tiêu chuẩn đánh giá trong nhiều nghiên cứu.@pesplib_ref_1 @pesplib_ref_2
+
+Thông tin các bộ dữ liệu đầu vào của PESPlib được trình bày trong bảng sau:
+
+#let results = csv("image/input_instances.csv")
+
+#figure(
+  table(
+    columns: (1fr, 1fr, 1fr, 1fr),
+    ..results.flatten(),
+  ),
+  caption: "Bảng mô tả độ phức tạp của dữ liệu PESP đầu vào",
+)
+
 
 == Kết quả và đánh giá
 
-#lorem(loremAvg)
+#show link: underline
+
+Chương trình thử nghiệm được cài đặt bằng Golang, mã nguồn lưu tại: #link("https://github.com/ppvan/pesp-sat", "ppvan/pesp-sat"). Toàn bộ tài liệu liên quan đến khóa luận đều được lưu tại repo, bao gồm khóa luận này, chương trình thử nghiệm, testcase...
+
+Để kiểm chứng chương trình thử nghiệm, chạy lại benmark, vui lòng làm theo hướng dẫn trong README.md. Thực nghiệm sau đây được tiến hành trên máy tính (laptop) sau:
+
+#figure(
+  table(
+    columns: (auto, 1fr),
+    [*Component*], [*Details*],
+    [CPU], [AMD Ryzen™ 7 7735H],
+    [RAM], [32GB DDR4],
+    [Disk], [512GB SSD NVme],
+    [OS], [Linux 6.6.51-1-lts],
+    [Gini], [v1.0.4 - Go 1.23],
+  ),
+  caption: "Cấu hình máy chạy thực nghiệm",
+)
+
+
+Khóa luận sẽ tiến hành đo thời gian chạy (ms), số mệnh đề, số biến của hai thuật toán mã hóa trình bày ở @pesp_reduction, chi tiết trong @benmark_1. Mỗi ví dụ đều được tính trung bình 10 lần chạy để giảm sai số.
+
+#let benmark = csv("image/benmark.csv")
+
+#figure(
+  table(
+    columns: 9,
+    table.header([], [], [], table.cell([*Binominal*], colspan: 3), table.cell([*Order*], colspan: 3)),
+    [Index], [Events], [Cons], [Vars], [Clauses], [Time], [Vars], [Clauses], [Time],
+    ..benmark.flatten(),
+  ),
+  caption: "Kết quả chạy thử nghiệm, thời gian tính bằng mili giây (ms)",
+) <benmark_1>
+
+#figure(image("image/chart-vars.svg"), caption:"Biểu đồ đường so sánh số biến của Binominal và Order Encoding")
+
+
+#figure(image("image/chart-clause.svg"), caption:"Biểu đồ đường so sánh số mệnh đề của Binominal và Order Encoding")
+
+
+#figure(image("image/chart-time.svg"), caption:"Biểu đồ đường so sánh thời gian thực thi của Binominal và Order Encoding")
+
+Quan sát bảng dữ liệu và các biểu đồ trên, ta thấy cả hai thuật toán đều tăng độ phức tạp nhất quán với độ phức tạp tăng dần của vấn đề PESP đầu vào. Khoảng cách giữa Binominal và Order Encoding là khá rõ rệt (khoảng 7x-50x về thời gian, 15x-20x về số mệnh đề). Tuy nhiên về số biến, hai phương pháp tương đối đồng đều.
+
+Với sức mạnh phần cứng hiện tại, cả hai phương pháp đều giải ra khá nhanh (từ 100ms đến 24s) dù số mệnh đề lên đến hàng chục triệu, do giới hạn của dữ liệu đầu vào, ta chưa thống kê được giới hạn của hai giải thuật. Đây là mục tiêu khóa luận chưa thể hoàn thành, cần cải thiện trong tương lai.
+
+// viết chi tiết thêm?
+
+
+#pagebreak()
+
+= Kết luận
+
+Khoá luận đã trình bày nghiên cứu mới nhất về bài toán lập lịch định kì(PESP) và phương hướng tiếp cận bài toán sử dụng định nghĩa hình thức và các SAT Solver. Hai giải thuật mã hóa đã được cài đặt và thực nghiệm nhằm giải các bài toán PESP. Kết quả thực nghiệm cho thấy phương pháp Order Encoding tỏ ra hiệu quả hơn nhiều so với phương pháp còn lại, thách thức nhiều giới hạn trong tương lai.
+
+
+Quá trình nghiên cứu và thực nghiệm khóa luận đã giúp tôi có điều kiện tìm tòi, suy luận về bài toán lập lịch định kỳ cũng như phương pháp giải nó sử dụng kĩ thuật định nghĩa hình thức và SAT Solver. Khóa luận đã cho tôi những tri thức, trải nghiệm tuyệt vời khi nghiên cứu khoa học. Bên cạnh đó, tôi đã tiếp thu được nhiều bài học và phong cách làm việc, nghiên cứu khoa học từ thầy hướng dẫn.
+
+Trên đây là toàn bộ nghiên cứu của tôi trong thời gian qua, tài liệu khó tránh khỏi sai sót, mong nhận được sự góp ý của các thầy cô và các bạn nghiên cứu về SAT, giúp tôi có thể hoàn thiện hơn nữa trong tương lai.
 
 #pagebreak()
 
