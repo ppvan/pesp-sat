@@ -1040,7 +1040,7 @@ $
 
 
 #definition[
-  (SAT). Cho $f in Sigma_("SAT")$ là một biểu thức logic mệnh đề ở dạng chuẩn tắc hội. _Liệu có tồn tại một suy diễn $I$ sao cho:_
+  (SAT). Cho $f in Sigma_("SAT")$ là một biểu thức logic mệnh đề ở dạng chuẩn tắc hội (CNF). _Liệu có tồn tại một suy diễn $I$ sao cho:_
 
   $
     f^I &= "true"
@@ -1049,27 +1049,59 @@ $
   được gọi là bài toán Satisfiability hay bài toán SAT.
 ]
 
+
 #example[
   Cho $f = (x or y) and not z$. Ta thấy tồn tại một suy diễn $I = {x: "true", y: "false", z: "false"}$ mà $f^I = "true"$.
 
-  trong khi đó với $g = (x or y) and (not x or y) and (x or not y) and (not x or not y)$, không tồn tại suy diễn nào để $g^I = "true"$.
+  Trong khi đó với $g = (x or y) and (not x or y) and (x or not y) and (not x or not y)$, không tồn tại suy diễn nào để $g^I = "true"$.
 ]
 
 
-
-
-Bài toán SAT (satisfiability problem) là bài toán tìm lời giải nhận đầu vào là các
-công thức logic mệnh đề để kiểm tra xem có tồn tại ít nhất một bộ giá trị true/false của các
-biến logic mệnh thỏa mãn các công thức logic mệnh đề. Nếu tồn tại một bộ giá trị như vậy
-bài toán sẽ trả về SAT ngược lại nếu không có một bộ giá trị nào thỏa mãn thì bài toán trả
-về UNSAT. Ngày nay SAT Solver đã có khả năng giải quyết được các công thức logic
-mệnh đề lớn với hàng nghìn mệnh đề, hàng triệu biến.
-
-#lorem(loremAvg)
-
 === SAT Solver
 
-#lorem(loremAvg)
+Bài toán SAT là bài toán NP xuất hiện sớm nhất, đồng thời là bài toán đầu tiên được chứng minh là NP-complete @sat_np. Vì vậy, không tồn tại giải thuật tối ưu giải bài toán SAT có độ phức tạp đa thức. Tuy nhiên, nhiều nghiên cứu đã được tiến hành nhằm xây dựng chương trình giải bài toán SAT, thường gọi là các SAT Solver.
+
+#figure(
+    diagram(
+      spacing: 5em,
+      {
+        let (input, solver, sat, unsat) = ((-1, 0), (0, 0), (1, 1), (1, -1))
+
+        node(input, [CNF formula \ $(x_1 or x_2 ...) and ... and (z_1 or z_2 ...)$ ], stroke: 1pt)
+        node(solver, "SAT Solver", stroke: 1pt, inset: 1em)
+        node(sat, "SAT",  stroke: 1pt)
+        node(unsat, "UNSAT",  stroke: 1pt)
+
+        edge(input, solver, "->")
+        edge(solver, sat, "->")
+        edge(solver, unsat, "->")
+
+      },
+    ),
+    caption: "Sơ đồ đầu vào/đầu ra của SAT Solver",
+  )
+
+Nhiều kĩ thuật đã được nghiên cứu nhằm cải thiện độ hiệu quả các SAT Solver theo thời gian, tiêu biểu như:
+
+1. Thuật toán David-Putnam(1960)@putnam: Giảm số biến bằng thuật toán luận giải (resolusion).
+
+2. Thuật toán Davis-Putnam-Logemann-Loveland (DPLL)@DPLL: Cải thiện thuật toán David-Putnam sử dụng kĩ thuật quay lui và nổi bọt đơn vị(unit propagation).
+
+3. Conflict-Driven Clause Learning@cdcl: Mở rộng thuật toán DPLL, tối ưu giải thuật quay lui. Khi gặp một cặp mệnh đề mâu thuẫn và cần quay lui, thuật toán sẽ phân tích sai lầm này để tránh lặp lại tương tự. Thêm vào đó, thuật toán có thể quay lại trực tiếp điểm gây mâu thuẫn, giảm phần lớn nhánh cần tìm kiếm.
+
+4. Những cải tiến khác về cơ sở dữ liệu, tiền xử lý, tận dụng khả năng xử lý song song @balyo2015hordesatmassivelyparallelportfolio@martins2012overview@hamadi2010manysat.
+
+Do vậy, các SAT Solver hiện nay đã có khả năng giải các bài toán cực kì phức tạp, với hàng triệu biến và mệnh đề. Cùng với đó là độ phức tạp ngày càng tăng. Chính vì vậy, hiện nay ta ít khi cài đặt thuật toán mà sử dụng các chương trình chuyên dụng, sau đây liệt kê một số SAT Solver phổ biến:
+
+- *CaDiCal*: CaDiCal là bộ giải SAT dựa trên thuật toán CDCL Mục tiêu chính của CaDiCal không phải hiệu năng, mà là một cơ sở thuật toán dễ hiểu và mở rộng. Vì vậy đặt nền móng cho nhiều SAT Solver khác sau này.
+
+- *Kissat*: Dựa trên CaDiCal, nhưng được viết lại bằng C, với nhiều cải tiến về cấu trúc dữ liệu, xếp lịch tiến trình xử lý, tối ưu hóa cài đặt thuật toán. Xếp hạng đầu trong hạng mục các công cụ giải SAT tuần tự trong cuộc thi giải SAT quốc tế năm 2022.
+- *MiniSAT*: Một SAT Solver hiện đại, trở thành tiêu chuẩn trong công nghiệp. Dựa trên thuật toán CDCL, và giành chiến thắng trong cuộc thi giải SAT quốc tế năm 2005. Đây vẫn là một trong những SAT Solver được sử dụng nhiều nhất do chất lượng mã nguồn cao, rõ ràng và dễ cải tiến.
+
+- *Glucose*: SAT Solver được dựa trên MiniSAT, áp dụng thêm nhiều kỹ thuật mới như phương pháp học mệnh đề hiện đại và giải song song.
+
+- *Gini*: Một solver hiện đại được viết bằng Go, điểm đặc biệt của solver này là giao thức chia sẻ tính toán, cho phép giải song song sử dụng cá goroutine. Đây cũng là solver được chọn để giải bài toán PESP khi thực nghiệm.
+
 
 === SAT Encoding và ứng dụng
 
