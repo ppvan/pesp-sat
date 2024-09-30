@@ -20,9 +20,9 @@ jobs:
 
       - name: Build for multiple platforms
         run: |
-          GOOS=linux GOARCH=amd64 go build -o pesp-sat-linux-amd64 main.go commands.go
-          GOOS=darwin GOARCH=amd64 go build -o pesp-sat-darwin-amd64 main.go commands.go
-          GOOS=windows GOARCH=amd64 go build -o pesp-sat-windows-amd64.exe main.go commands.go
+          GOOS=linux GOARCH=amd64 go build -o pesp-sat-linux-amd64 ./cmd/pesp/...
+          GOOS=darwin GOARCH=amd64 go build -o pesp-sat-darwin-amd64 ./cmd/pesp/...
+          GOOS=windows GOARCH=amd64 go build -o pesp-sat-windows-amd64.exe ./cmd/pesp/...
 
       - name: Release
         uses: softprops/action-gh-release@v2
