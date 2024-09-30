@@ -7,7 +7,9 @@
 #show: thmrules.with(qed-symbol: $square$)
 
 #set page(width: 16cm, height: auto, margin: 1.5cm)
-#set heading(numbering: "1.1.")
+#set heading(numbering: "1.1.", supplement: "Chương")
+
+#show link: underline
 
 #let theorem = thmbox("theorem", "Định lý", fill: rgb("#eeffee"))
 #let corollary = thmplain(
@@ -64,6 +66,14 @@
 
 #show heading.where(depth: 1): it => block(width: 100%)[
   #pad(block(text(it.body, size: 23pt)), y: 32pt, bottom: 36pt)
+]
+
+#show heading.where(depth: 2): it => block(width: 100%)[
+  #pad(block(text(it, size: 16pt)), y: 16pt)
+]
+
+#show heading.where(depth: 3): it => block(width: 100%)[
+  #pad(block(text(it, size: 14pt)), y: 4pt)
 ]
 
 // Title page
@@ -222,13 +232,18 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
   let supplement = ""
   let ch = it.element
   let num = counter(heading).at(ch.location())
+  let _page = counter(page).at(ch.location()).first()
+
+  if ch.has("label") and ch.label == <intro_fig> {
+    return it
+  }
 
   v(16pt, weak: true)
 
   if 0 in num {
-    strong(it.element.body + h(0.2em) + box(width: 1fr) + h(0.2em)) + numbering("i", ch.location().page())
+    strong(it.element.body + h(0.2em) + box(width: 1fr) + h(0.2em)) + numbering("i", _page)
   } else if 100 in num {
-    strong(it.element.body + h(0.2em) + box(width: 1fr) + h(0.2em) + numbering("1", ch.location().page()))
+    strong(it.element.body + h(0.2em) + box(width: 1fr) + h(0.2em) + numbering("1", _page))
   } else if (it.element.body.has("text")) {
     strong(text(supplement) + numbering("1", ..num) + ". " + it
       .element
@@ -263,10 +278,6 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 
 #{
 
-  show outline.entry.where(level: 1): it => {
-    it
-  }
-
   outline(
     title: [Danh mục hình ảnh],
     target: figure.where(kind: image),
@@ -287,16 +298,14 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 
 #pagebreak()
 
-
 = Mở đầu
 
 Lập kế hoạch cho hệ thống tàu điện ngầm là một công việc đầy khó khăn và thử thách, bao gồm nhiều giai đoạn khác nhau, như: nghiên cứu thị trường, thiết lập tuyến đường, thiết lập phương tiện, lập lịch tàu chạy và đào tạo nhân viên. Các giai đoạn lập kế hoạch này liên quan mật thiết đến nhau và thường được tiến hành đổ thác theo thứ tự. Tuy nhiên, có thể quay lại bước trước đó để tối ưu khi các yêu cầu nghiêm vụ được làm rõ hơn.
 
-
 #figure(
   image("image/railway-steps.svg"),
   caption: "Các giai đoạn lập kế hoạch xây dựng hệ thống tàu điện ngầm",
-)
+) <intro_fig>
 
 
 + *Nghiên cứu nhu cầu di chuyển*: Khảo sát thị trường và nhu cầu di chuyển của khách hàng nhằm thiết kế tuyến đường phù hợp
@@ -331,16 +340,19 @@ Phần còn lại của khóa luận được tổ chức như sau:
 #set heading(numbering: "1.1.1")
 #let loremAvg = 400
 #counter(heading).update(0)
-#counter(page).update(1)
 
 #show heading.where(depth: 1): it => block(width: 100%)[
   #block(upper(text(weight: "light", size: 11.5pt, "Chương " + counter(heading).display())))
   #pad(block(text(it.body, size: 23pt)), y: 32pt, bottom: 36pt)
 ]
+#counter(page).update(1)
 
 = Lập lịch sự kiện định kỳ <start>
 
 == Mạng sự kiện định kỳ
+
+Chương 
+
 
 #definition[
   (Đoạn). Cho $a, b in ZZ $ với $a <= b.$
@@ -669,7 +681,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
   $
 ] <cor1>
 
-@cor1 là hệ quả quan trọng, giới hạn miền nghiệm của lịch trình trở thành hữu hạn. Vì vậy, khi tìm kiếm lịch trình hợp lệ, ta chỉ cần tìm các tiềm năng trong đoạn $[0, t_T-1]$
+@cor1 là hệ quả quan trọng, giới hạn miền nghiệm của lịch trình trở thành hữu hạn. Vì vậy, khi tìm kiếm lịch trình hợp lệ, ta chỉ cần tìm các tiềm năng trong đoạn $[0, t_T-1]$. Nếu không tồn tại hệ quả này, ta không thể giải bài toán PESP với logic mệnh đề vì không gian tìm kiếm là vô hạn.
 
 
 == Bài toán lập lịch sự kiện định kỳ
@@ -680,6 +692,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
 
 Dễ thấy, PESP là một vấn đề quyết định@kozen2012automata. Từ minh họa @example-1.1.2, dễ hình dung PESP có thể chuyển thành bài toán _Vertex Coloring_, vậy PESP là bài toán NP-complete, được chứng minh bằng cách chuyển về bài toán _Vertex Coloring_ @odijk1994construction.
 
+#pagebreak()
 
 = Kiến thức nền tảng
 
@@ -981,6 +994,9 @@ $
 $
 
 == SAT
+
+Nhằm cung cấp nền tảng kiến thức, sau đây khóa luận sẽ trình bày chi tiết các khái niệm liên quan đến logic mệnh đề nói chung và bài toán SAT. Đây là cơ sở quan trọng cho  @pesp_reduction
+
 === Vấn đề SAT
 
 #definition[
@@ -1016,19 +1032,15 @@ $
 
 
 #definition[
-  (Satisfiability) Cho $f in Sigma_("SAT")$ là một biểu thức logic mệnh đề, khi đó $f$ được gọi là _satisfiable_ nếu tồn tại một suy diễn $I$:
+  (Khả thỏa - Satisfiability) Cho $f in Sigma_("SAT")$ là một biểu thức logic mệnh đề, khi đó $f$ được gọi là khả thỏa hay SAT nếu tồn tại một suy diễn $I$:
   $
     f^I &= "true"
   $
 
-  và $f$ được gọi là _unsatisfiable_ nếu:
+  và $f$ không thể thỏa mãn, còn gọi là UNSAT nếu:
   $
     f^I &= "false" forall I
   $
-]
-
-#example[
-  ...
 ]
 
 
@@ -1044,15 +1056,35 @@ $
 
 
 #example[
-  Cho $f = (x or y) and not z$. Ta thấy tồn tại một suy diễn $I = {x: "true", y: "false", z: "false"}$ mà $f^I = "true"$.
+  Ví dụ về biểu thức SAT
 
-  Trong khi đó với $g = (x or y) and (not x or y) and (x or not y) and (not x or not y)$, không tồn tại suy diễn nào để $g^I = "true"$.
+  Cho $f = (x or y) and not z$. Ta thấy tồn tại một suy diễn $I = {x: "true", y: "false", z: "false"}$ mà $f^I = "true"$.
+]
+
+#example[
+  Ví dụ về biểu thức UNSAT
+  
+  Cho $g = (x or y) and (not x or y) and (x or not y) and (not x or not y)$, không tồn tại suy diễn nào để $g^I = "true"$.
+
+   #figure(
+    table(
+      align: center + horizon,
+      columns: (4em, 4em, 4em),
+      [*$x$*], [*$y$*], [*$g$*],
+      "0", "0", "0",
+      "1", "0", "0",
+      "0", "1", "0",
+      "1", "1", "0",
+    ),
+    caption: "Bảng chân trị của biểu thức UNSAT",
+  )
+
 ]
 
 
 === SAT Solver
 
-Bài toán SAT là bài toán NP xuất hiện sớm nhất, đồng thời là bài toán đầu tiên được chứng minh là NP-complete @sat_np. Vì vậy, không tồn tại giải thuật tối ưu giải bài toán SAT có độ phức tạp đa thức. Tuy nhiên, nhiều nghiên cứu đã được tiến hành nhằm xây dựng chương trình giải bài toán SAT, thường gọi là các SAT Solver.
+Bài toán SAT là bài toán thuộc lớp NP xuất hiện sớm nhất, đồng thời là bài toán đầu tiên được chứng minh là NP-complete @sat_np. Vì vậy, không tồn tại giải thuật tối ưu giải bài toán SAT có độ phức tạp đa thức. Tuy nhiên, nhiều nghiên cứu đã được tiến hành nhằm xây dựng chương trình giải bài toán SAT, thường gọi là các SAT Solver. Đầu vào chương trình thường là biểu thức logic dạng chuẩn tắc hội (CNF). Nếu biểu thức thỏa mãn được, đưa ra kết luận SAT và một nghiệm bất kỳ kèm chứng minh. Nếu không tồn tại nghiệm thoả mãn, kết luận UNSAT.
 
 #figure(
   diagram(
@@ -1063,7 +1095,7 @@ Bài toán SAT là bài toán NP xuất hiện sớm nhất, đồng thời là 
 
       node(input, [CNF formula \ $(x_1 or x_2 ...) and ... and (z_1 or z_2 ...)$ ], stroke: 1pt)
       node(solver, "SAT Solver", stroke: 1pt, inset: 1em)
-      node(sat, [SAT], stroke: 1pt)
+      node(sat, [SAT+Solution+Proof], stroke: 1pt)
       node(unsat, "UNSAT", stroke: 1pt)
 
       edge(input, solver, "->")
@@ -1085,7 +1117,7 @@ Nhiều kĩ thuật đã được nghiên cứu nhằm cải thiện độ hiệ
 
 4. Những cải tiến khác về cơ sở dữ liệu, tiền xử lý, tận dụng khả năng xử lý song song @balyo2015hordesatmassivelyparallelportfolio@martins2012overview@hamadi2010manysat.
 
-Do vậy, các SAT Solver hiện nay đã có khả năng giải các bài toán cực kì phức tạp, với hàng triệu biến và mệnh đề. Cùng với đó là độ phức tạp ngày càng tăng. Chính vì vậy, hiện nay ta ít khi cài đặt thuật toán mà sử dụng các chương trình chuyên dụng, sau đây liệt kê một số SAT Solver phổ biến:
+Do vậy, các SAT Solver hiện nay đã có khả năng giải các bài toán cực kì phức tạp, với hàng triệu biến và mệnh đề. Hằng năm, các cuộc thi về SAT Solver được tổ chức nhằm cải thiện hiệu suất thuật toán, tiêu biểu như #link("https://satcompetition.github.io/2024/", "SAT competition"). Phần lớn những người tham gia công bố SAT Solver dưới dạng thử viện mã nguồn mở, có thể dễ dàng tích hợp và sử dung. Sau đây liệt kê một số Solver có ảnh hưởng quan trọng trong lịch sử phát triển của các SAT Solver:
 
 - *CaDiCal*: CaDiCal là bộ giải SAT dựa trên thuật toán CDCL Mục tiêu chính của CaDiCal không phải hiệu năng, mà là một cơ sở thuật toán dễ hiểu và mở rộng. Vì vậy đặt nền móng cho nhiều SAT Solver khác sau này.
 
@@ -1096,7 +1128,7 @@ Do vậy, các SAT Solver hiện nay đã có khả năng giải các bài toán
 
 - *Gini*: Một solver hiện đại được viết bằng Go, điểm đặc biệt của solver này là giao thức chia sẻ tính toán, cho phép giải song song sử dụng các goroutine. Đây cũng là solver được chọn để giải bài toán PESP khi thực nghiệm.
 
-Để giải các bài toán thực tế sử dụng SAT Solver, ta cần định nghĩa hình thức các yêu cầu nghiệp vụ của bài toán thành các logic mệnh đề, giải bài toán SAT, sau đó suy luận kết quả từ đầu ra của SAT Solver. Sơ đồ có thể giải một bài toán sử dụng SAT Solver được minh họa trong @fig_1. Chương tiếp theo sẽ minh họa rõ hơn quá trình này.
+Để giải các bài toán thực tế sử dụng SAT Solver, ta cần định nghĩa hình thức các yêu cầu nghiệp vụ của bài toán thành các logic mệnh đề, giải bài toán SAT, sau đó suy luận kết quả từ đầu ra của SAT Solver. Sơ đồ có thể giải một bài toán sử dụng SAT Solver được minh họa trong @fig_1. Thuật toán encoding và decoding là một quá trình phức tạp, chương tiếp theo sẽ minh họa rõ hơn quá trình này.
 
 #figure(
   diagram(
@@ -1129,6 +1161,8 @@ Do vậy, các SAT Solver hiện nay đã có khả năng giải các bài toán
   caption: "Sơ đồ giải bài toán thực tế sử dụng SAT Solver",
 ) <fig_1>
 
+
+FIXME: có thể ví dụ thêm về 1 giải 1 bài toán đơn giản giải bằng SAT hoặc move phần giới thiệu encoding lên trên này.
 
 #pagebreak(weak: true)
 = Mô hình bài toán PESP về bài toán SAT <pesp_reduction>
@@ -1217,6 +1251,9 @@ Nhắc lại @pesp_def về PESP và @cor1 về không gian nghiệm, từ đây
 
 #lorem(loremAvg)
 
+
+#pagebreak(weak: true)
+
 = Thực nghiệm và kết quả
 
 == Mô hình bài toán PTSP về bài toán PESP
@@ -1232,9 +1269,43 @@ Ta thu được thời gian biểu chính xác khi giải được bài toán PE
 
 == Thu thập dữ liệu
 
-Dữ liệu thử nghiệm được thu thập từ @pesplib, một tập dữ liệu PESP đã được chuẩn hóa và xử lý nhằm đánh giá hiệu quả của các thuật toán giải PESP. PESPlib được cộng đồng đánh giá cao và được dùng làm tiêu chuẩn đánh giá trong nhiều nghiên cứu.@pesplib_ref_1 @pesplib_ref_2
+Dữ liệu thử nghiệm được thu thập từ #link("https://timpasslib.aalto.fi/pesplib.html", "PESPlib") @pesplib, một tập dữ liệu PESP đã được chuẩn hóa và xử lý nhằm đánh giá hiệu quả của các thuật toán giải PESP. PESPlib được cộng đồng học thuật đánh giá cao và được dùng làm tiêu chuẩn đánh giá trong nhiều nghiên cứu.@pesplib_ref_1 @pesplib_ref_2. 
+Dữ liệu đầu vào gồm các file csv, có định dạng sau:
 
-Thông tin các bộ dữ liệu đầu vào của PESPlib được trình bày trong bảng sau:
+
+```csv
+N; O; T; L; U; W
+```
+- N số thứ tự ràng buộc
+- O sự kiện bắt đầu
+- T sự kiện kết thúc
+- L cận dưới của thời gian chuyển sự kiện
+- U cận trên của thời gian chuyển sự kiện
+- W là hệ số (độ quan trọng) của ràng buộc này
+
+Lời giải của bài toán nên có định dạng sau:
+
+```csv
+N; D
+```
+
+- N là số thứ tự của sự kiện
+- D là thời điểm sự kiện xảy ra
+
+#example[
+\
+Input:\
+1; 1; 2; 50; 55; 10\
+2; 2; 3; 40; 50; 20\
+3; 1; 3; 30; 40; 15\
+\
+Output:\
+1; 50\
+2; 40\
+3; 30\
+]
+
+Toàn bộ dữ liệu đầu vào gồm 18 file với độ khó tăng dần, định dạng như mô tả ở trên. Thông qua tiền sử lý sơ bộ, ta có thông tin cơ bản của dữ liệu đầu vào như sau:
 
 #let results = csv("image/input_instances.csv")
 
@@ -1249,21 +1320,22 @@ Thông tin các bộ dữ liệu đầu vào của PESPlib được trình bày 
 
 == Kết quả và đánh giá
 
-#show link: underline
 
-Chương trình thử nghiệm được cài đặt bằng Golang, mã nguồn lưu tại: #link("https://github.com/ppvan/pesp-sat", "ppvan/pesp-sat"). Toàn bộ tài liệu liên quan đến khóa luận đều được lưu tại repo, bao gồm khóa luận này, chương trình thử nghiệm, testcase...
+Để tiến hành thử nghiệm hai phương pháp đã nêu ở @pesp_reduction, khoá luận đã cài đặt một công cụ dòng lệnh giải bài toán PESP có tên là #link("https://github.com/ppvan/pesp-sat", "pesp-sat"). 
 
-Để kiểm chứng chương trình thử nghiệm, chạy lại benmark, vui lòng làm theo hướng dẫn trong README.md. Thực nghiệm sau đây được tiến hành trên máy tính (laptop) sau:
+Chương trình thử nghiệm được cài đặt bằng ngôn ngữ Go, sử dụng SAT Solver #link("https://github.com/go-air/gini", "Gini"). Công cụ hỗ trợ đa nền tảng, được kiểm thử kĩ lưỡng, độ bao phủ đạt 80%, mã nguồn lưu tại: #link("https://github.com/ppvan/pesp-sat", "ppvan/pesp-sat"). Tất cả tài liệu và dữ liệu liên quan, bao gồm mã nguồn công cụ thử nghiệm, tài liệu khóa luận và slide trình bày khóa luận được lưu trữ tại git repo này. 
+
+Để kiểm chứng chương trình thử nghiệm, vui lòng làm theo hướng dẫn trong README.md. Thực nghiệm sau đây được tiến hành trên máy tính (laptop) sau:
 
 #figure(
   table(
-    columns: (auto, 1fr),
+    columns: (auto, 12em),
     [*Component*], [*Details*],
     [CPU], [AMD Ryzen™ 7 7735H],
     [RAM], [32GB DDR4],
     [Disk], [512GB SSD NVme],
     [OS], [Linux 6.6.51-1-lts],
-    [Gini], [v1.0.4 - Go 1.23],
+    [Gini(SAT Solver)], [v1.0.4 - Go 1.23],
   ),
   caption: "Cấu hình máy chạy thực nghiệm",
 )
@@ -1281,6 +1353,7 @@ Khóa luận sẽ tiến hành đo thời gian chạy (ms), số mệnh đề, s
     ..benmark.flatten(),
   ),
   caption: "Kết quả chạy thử nghiệm, thời gian tính bằng mili giây (ms)",
+  placement: top
 ) <benmark_1>
 
 #figure(image("image/chart-vars.svg"), caption:"Biểu đồ đường so sánh số biến của Binominal và Order Encoding")
@@ -1291,16 +1364,10 @@ Khóa luận sẽ tiến hành đo thời gian chạy (ms), số mệnh đề, s
 
 #figure(image("image/chart-time.svg"), caption:"Biểu đồ đường so sánh thời gian thực thi của Binominal và Order Encoding")
 
-Quan sát bảng dữ liệu và các biểu đồ trên, ta thấy cả hai thuật toán đều tăng độ phức tạp nhất quán với độ phức tạp tăng dần của vấn đề PESP đầu vào. Khoảng cách giữa Binominal và Order Encoding là khá rõ rệt (khoảng 7x-50x về thời gian, 15x-20x về số mệnh đề). Tuy nhiên về số biến, hai phương pháp tương đối đồng đều.
+Quan sát bảng dữ liệu và các biểu đồ trên, ta thấy cả hai thuật toán đều tăng độ phức tạp nhất quán với độ phức tạp tăng dần của vấn đề PESP đầu vào. Khoảng cách giữa Binominal và Order Encoding là khá rõ rệt (khoảng 7x-50x về thời gian, 15x-20x về số mệnh đề). Tuy nhiên về số biến, hai phương pháp tương đối đồng đều. Như vậy, phương pháp mã hóa Order tỏ ra tương đối ưu việt so với Binominal, điều này có thể dễ dàng giải thích bởi Order encoding loại bỏ không gian tìm kiếm theo từng vùng thay vì từng điểm như Binominal, dẫn đến số mệnh đề ít hơn. Hơn nữa, theo mô tả ở @pesp_reduction, các mệnh đề Order encoding chồng chéo lên nhau kiến vùng mâu thuẫn được tìm ra nhanh chóng bởi SAT Solver.
 
-Với sức mạnh phần cứng hiện tại, cả hai phương pháp đều giải ra khá nhanh (từ 100ms đến 24s) dù số mệnh đề lên đến hàng chục triệu, do giới hạn của dữ liệu đầu vào, ta chưa thống kê được giới hạn của hai giải thuật. Đây là mục tiêu khóa luận chưa thể hoàn thành, cần cải thiện trong tương lai.
+Với sức mạnh phần cứng hiện tại, cả hai phương pháp đều giải ra khá nhanh (từ 100ms đến 24s) dù số mệnh đề lên đến hàng chục triệu, do giới hạn của dữ liệu đầu vào, ta chưa thống kê được giới hạn của hai giải thuật. Mặt khác, bài toán PESP sinh ra khá nhiều nghiệm thỏa mãn, dẫn đến nhu cầu tìm ra nghiệm tối ưu (bài toán lập lịch tàu chạy tối ưu). Tuy nhiên, việc tìm ra các nhân tố đánh giá lịch trình đang gặp nhiều khó khăn, cần nghiên cứu thêm yêu cầu thực tế và cải thiện mô hình toán học @new_pesp1 @YAN201952, không được trình bày đầy đủ trong khóa luận này. Đây là thiếu sót khóa luận chưa thể khắc phục, cần cải thiện trong tương lai.
 
-// viết chi tiết thêm?
-
-
-#pagebreak()
-
-= Kết luận
 
 Khoá luận đã trình bày nghiên cứu mới nhất về bài toán lập lịch định kì(PESP) và phương hướng tiếp cận bài toán sử dụng định nghĩa hình thức và các SAT Solver. Hai giải thuật mã hóa đã được cài đặt và thực nghiệm nhằm giải các bài toán PESP. Kết quả thực nghiệm cho thấy phương pháp Order Encoding tỏ ra hiệu quả hơn nhiều so với phương pháp còn lại, thách thức nhiều giới hạn trong tương lai.
 
@@ -1316,4 +1383,4 @@ Trên đây là toàn bộ nghiên cứu của tôi trong thời gian qua, tài 
 #set heading(numbering: none)
 #counter(heading).update(100)
 
-#bibliography("citation.bib")
+#bibliography("citation.bib") <citation>
