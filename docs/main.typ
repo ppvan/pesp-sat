@@ -1167,83 +1167,223 @@ FIXME: có thể ví dụ thêm về 1 giải 1 bài toán đơn giản giải b
 #pagebreak(weak: true)
 = Mô hình bài toán PESP về bài toán SAT <pesp_reduction>
 
-== Sơ đồ tổng quan
+Trong chương này, khóa luận sẽ trình bày thuật toán nhằm chuyển hóa một bài toán PESP thành bài toán SAT. 
+Điều này có nghĩa là, khi cho trước một mạng lưới sự kiện định kỳ N, ta cần tìm ra một lịch trình hợp lệ hoặc chứng minh rằng không tồn tại một giải pháp như vậy thỏa mãn. Các thuộc tính vào ràng buộc của bài toán phải được mã hóa thành bài toán SAT, tức là một công thức mệnh đề ở dạng chuẩn tắc hội (CNF), và sau đó được chứng minh bởi một bộ giải SAT.
+
+Nếu bộ giải SAT trả về UNSAT, chúng ta biết rằng không tồn tại một lịch trình hợp lệ cho  mạng lưới sự kiện định kỳ N đã mã hóa. Ngược lại, nếu nhận được một nghiệm cho công thức mệnh đề, điều đó đảm bảo rằng có tồn tại một lịch trình hợp lệ cho N. Tính chính xác của thuật toán mã hóa các ràng buộc của bài toán về dạng chuẩn tắc hội và cách truy xuất lịch trình hợp lệ từ nghiệm sẽ được chứng minh ở phần sau.
+
+Sẽ có hai cách mã hóa khác nhau được giới thiệu cho một bài toán PESP đã được giảm thành bài toán SAT. Đầu tiên, mã hóa trực tiếp cho các biến của các miền hữu hạn sẽ được trình bày ở Mục 3.2 và cách triển khai cụ thể cho PESP ở Mục 3.3. Thứ hai, mã hóa thứ tự cho các biến có miền hữu hạn có thứ tự sẽ được định nghĩa trong Mục 3.4 và cách nó được sử dụng để mã hóa PESP thành bài toán SAT ở Mục 3.5.
+
+Cuối chương này, hai phương pháp sẽ được so sánh để đưa ra đánh giá và nhận định về việc mã hóa thứ tự có thể giải quyết bài toán PESP nhanh hơn bao nhiêu so với mã hóa trực tiếp và kích thước của nó nhỏ hơn bao nhiêu.
+
+// == Sơ đồ tổng quan
 
 
-#figure(
-  diagram(
-    spacing: 2em,
-    node-stroke: 1pt,
-    node-inset: 8pt,
-    node-corner-radius: 4pt,
-    {
-      let (input, encoding, solver, desiion, decoding) = ((-1, 1), (0, 1), (0, 2), (1, 2), (2, 2))
+// #figure(
+//   diagram(
+//     spacing: 2em,
+//     node-stroke: 1pt,
+//     node-inset: 8pt,
+//     node-corner-radius: 4pt,
+//     {
+//       let (input, encoding, solver, desiion, decoding) = ((-1, 1), (0, 1), (0, 2), (1, 2), (2, 2))
 
-      let (unsat, sat) = ((0, 5), (0, 3))
-      let result = (3, 2)
-      let verification = (2, 3)
-      let encoding_cons = (2, 1)
+//       let (unsat, sat) = ((0, 5), (0, 3))
+//       let result = (3, 2)
+//       let verification = (2, 3)
+//       let encoding_cons = (2, 1)
 
-      let direct_encode
-      // set node(stroke: 1pt)
+//       let direct_encode
+//       // set node(stroke: 1pt)
 
-      node(input, [$N = (nu, A, t_T)$])
-      node(encoding, "Encoding Potentials")
-      node(encoding_cons, "Exclude unfeasible pairs")
-      node(solver, "Gini SAT Solver", shape: fletcher.shapes.diamond, inset: 8pt)
-      node(decoding, "Decoding Module")
-      node(unsat, "No result")
-      node(result, "Output")
-      node(verification, "Verification")
+//       node(input, [$N = (nu, A, t_T)$])
+//       node(encoding, "Encoding Potentials")
+//       node(encoding_cons, "Exclude unfeasible pairs")
+//       node(solver, "Gini SAT Solver", shape: fletcher.shapes.diamond, inset: 8pt)
+//       node(decoding, "Decoding Module")
+//       node(unsat, "No result")
+//       node(result, "Output")
+//       node(verification, "Verification")
 
-      edge(input, encoding, "->")
-      edge(encoding, encoding_cons, "->")
-      edge(encoding_cons, solver, "->")
-      edge(solver, decoding, "->", [SAT])
-      edge(input, encoding, "->")
-      edge(solver, unsat, "->", [UNSAT])
-      edge(decoding, result, "->")
-      edge(result, verification, "->")
-    },
-  ),
-  caption: "Sơ đồ tổng quan giải bài toán PESP sử dụng SAT Solver",
-)
+//       edge(input, encoding, "->")
+//       edge(encoding, encoding_cons, "->")
+//       edge(encoding_cons, solver, "->")
+//       edge(solver, decoding, "->", [SAT])
+//       edge(input, encoding, "->")
+//       edge(solver, unsat, "->", [UNSAT])
+//       edge(decoding, result, "->")
+//       edge(result, verification, "->")
+//     },
+//   ),
+//   caption: "Sơ đồ tổng quan giải bài toán PESP sử dụng SAT Solver",
+// )
 
-Nhiều nghiên cứu liên quan đề xuất hai phương pháp mã hóa bài toán lập lịch định kỳ (PESP) về bài toán SAT là Binominal Encoding và Order Encoding.
+Nhiều nghiên cứu liên quan đề xuất hai phương pháp mã hóa bài toán lập lịch định kỳ (PESP) về bài toán SAT là Direct Encoding và Order Encoding.
 
-Nhắc lại @pesp_def về PESP và @cor1 về không gian nghiệm, từ đây trở đi trong khóa luận này, ta định nghĩa lại bài toán PESP như sau:
+== Mã hóa đại lượng rời rạc
 
-#definition[
-  Cho mạng định kỳ $N = (nu, A, t_T)$ gồm $n$ sự kiện, tập ràng buộc $A$ và chu kỳ T. Tìm n tiềm năng sự kiện $pi_1, pi_2, ..., pi_n$ trong đoạn $[0, t_T - 1]$ thỏa mãn tập ràng buộc $A$.
+Các biến số trong bài toán PESP (các tiềm năng sự kiện) là các biến đại số rời rạc, tức là chúng có thể nhận các giá trị từ một tập hữu hạn, thay vì có thể nhận bất kỳ giá trị nào trong một khoảng liên tục. Ví dụ, một biến rời rạc có thể đại diện cho một khoảng thời gian nhất định giữa các sự kiện, và giá trị của nó có thể là các số nguyên từ 1 đến 10, biểu thị số phút. Tuy nhiên, logic mệnh đề và biểu thức chuẩn tắc hội chỉ có thể biểu diễn hai trạng thái logic là 0 và 1, tương ứng với giá trị "đúng" và "sai". Điều này tạo ra một vấn đề khi ta cần biểu diễn các giá trị rời rạc, vì không thể trực tiếp gán chúng vào các biến logic chỉ có hai trạng thái.
+
+Do đó, chúng ta cần tìm cách mã hóa các biến rời rạc này sang không gian logic, tức là chuyển đổi các biến có nhiều giá trị tiềm năng sang các tổ hợp biến logic có thể được biểu diễn trong biểu thức mệnh đề. Ví dụ, nếu một biến rời rạc có thể nhận ba giá trị là 1, 2 và 3, ta có thể mã hóa chúng bằng cách sử dụng hai biến logic $x_1$ và $x_2$, trong đó:
+
+- $x_1 = 0$ và $x_2 = 0$ có thể đại diện cho giá trị 1,
+- $x_1 = 0$ và $x_2 = 1$ có thể đại diện cho giá trị 2,
+- $x_1 = 1$ và $x_2 = 0$ có thể đại diện cho giá trị 3.
+
+Cách mã hóa này cho phép chúng ta sử dụng công cụ của logic mệnh đề để xử lý các biến rời rạc, biến chúng thành các biến logic có thể được giải bằng bộ giải SAT. Điều quan trọng là việc chuyển đổi này phải được thực hiện sao cho các ràng buộc của bài toán ban đầu vẫn được duy trì trong không gian logic, đảm bảo rằng các giá trị logic được chọn phải tương ứng với một nghiệm hợp lệ trong miền rời rạc. Các phương pháp mã hóa như vậy được đề xuất và cải tiến bởi nhiều nghiên cứu, tiêu biểu như Direct Encoding @direct_encode, Product Encoding @chen2010new, Support Encoding... Sau đây khóa luận giới thiệu về hai phương pháp ứng dụng trong giải bài toán PESP: Mã hóa trực tiếp (Direct Encoding) và mã hóa thứ tự (Order Encoding).
+
+=== Mã hóa trực tiếp (Direct Encoding) <direct>
+
+Mã hóa trực tiếp, hay còn gọi là mã hóa nhị thức, là phương pháp đơn giản nhất để mã hóa các biến rời rạc. Nguyên lý chính của phương pháp này là loại bỏ từng cặp giá trị không thể cùng thỏa mãn đồng thời, đảm bảo rằng chỉ một giá trị trong số các giá trị có thể được chọn. Để làm rõ hơn, ta xét ví dụ sau:
+
+#example[
+  Cho $x in {1, 2, 3}$. Hiển nhiên ta có những mệnh đề đúng sau:
+
+  $
+    x = 1 or x = 2 or x = 3 \
+    x = 1 => x != 2 and x != 3\
+    x = 2 => x != 1 and x != 3 \
+    x = 3 => x != 1 and x != 2 \
+  $
+  Sử dụng các biến logic: $x_1, x_2, x_3$ tương ứng với mệnh đề $x = 1, x = 2, x = 3$ ta có:
+
+  $
+    x_1 or x_2 or x_3\
+    x_1 => not x_2 and not x_3\
+    x_2 => not x_1 and not x_3\
+    x_3 => not x_1 and not x_2\
+  $
+  $<=>$
+  $
+    x_1 or x_2 or x_3\
+    (x_1 => not x_2) and (x_1 => not x_3)\
+    (x_2 => not x_1) and (x_2 => not x_3)\
+    (x_3 => not x_1) and (x_3 => not x_2)\
+  $
+  $<=>$
+  $
+    x_1 or x_2 or x_3\
+    (not x_1 or not x_2) and (not x_1 or not x_3)\
+    (not x_2 or not x_1) and (not x_2 or not x_3)\
+    (not x_3 or not x_1) and (not x_3 or not x_2)\
+  $
+  $<=>$
+  $
+    (x_1 or x_2 or x_3) and
+    (not x_1 or not x_2) and (not x_2 or not x_3) and (not x_1 or not x_3)
+  $
 ]
 
-== Binominal Encoding
+Tổng quát hóa ví dụ trên, ta có thể áp dụng phương pháp mã hóa trực tiếp cho bất kỳ tập giá trị hữu hạn nào $x in {1, 2, ..., n}$. Khi đó, mã hóa trực tiếp được định nghĩa như sau:
+
+#definition[
+  Cho $x in X| X = {1, 2, ..., n| n in NN}$ và các mệnh đề: $x_1, x_2, ..., x_n$ đúng khi và chỉ khi $x = n$. Ta định nghĩa ánh xạ: 
+  $
+    "encode_direct"(X) = or.big_(i=1)^n x_i and (and.big_(i=1)^n and.big_(j=i+1)^n (not x_i or not x_j))
+  $
+]
+
+Phương pháp mã hóa trực tiếp đảm bảo rằng chỉ một biến logic duy nhất có giá trị "đúng" (true) trong khi tất cả các biến còn lại phải có giá trị "sai" (false) trong mọi suy diễn hợp lệ $I$.
+
+=== Mã hóa thứ tự (Order Encoding)
+
+Trái ngược với @direct, phần này giả định rằng miền hữu hạn có thứ tự. Ví dụ tốt nhất cho điều này là một tập con thực sự của tập số tự nhiên $NN$. Các số này luôn có thứ tự theo quan hệ "<". Trong phần tiếp theo, ta sẽ thảo luận cách mã hóa hiệu quả thuộc tính này vào một công thức mệnh đề. Vì trong  khóa luận này, ta chỉ xét các biến có miền là một tập con,chính xác hơn là một khoảng, của các số tự nhiên $[a, b]$, nên ta biết cách áp dụng quan hệ thứ tự "<" của chúng. Nhìn chung, mọi tập hợp đều có thể xác định quan hệ thứ tự cụ thể. Tương tự, cùng tiếp cận phương pháp mã hóa này với một ví dụ.
+
+#example[
+  Cho $x in {1, 2, 3, 4, 5} = [1, 5] subset NN$. Ta có các mệnh đề đúng sau:
+  $
+    &x >= 1 => not(x <= 0)\
+    &x <= 5\
+    &forall i in {1, 2, 3, 4, 5}: (x <= i - 1) -> (x <= i)\
+  $
+  $<=>$
+  $
+    &x >= 1 => not(x <= 0)\
+    &x <= 5\
+    &forall i in {1, 2, 3, 4, 5}: not (x <= i - 1) or (x <= i)
+  $
+  $<=>$
+  $
+    (not x <= 0) and (not x <= 1 or x <= 2) and (not x <= 2 or x <= 3) and (not x <= 3 or x <= 4) and (x <= 5)
+  $
+  Thế các mệnh đề: $x_i <=> x <= i$ ta có:
+  $
+    (not x_0) and (not x_1 or x_2) and (not x_2 or x_3) and (not x_3 or x_4) and (x_5)
+  $
+] <order_exp>
+
+Tương tự, ta có thể áp dụng phương pháp mã hóa trực tiếp cho bất kỳ tập giá trị hữu hạn *có thứ tự* nào $x in {1, 2, ..., n}$. Khi đó, mã hóa thứ tự được định nghĩa như sau:
+
+#definition[
+  Cho $x in X| X = {1, 2, ..., n| n in NN}$ và các mệnh đề: $x_0, x_1, x_2, ..., x_n$ đúng khi và chỉ khi $x <= n$. Ta định nghĩa ánh xạ:
+  #set math.equation(numbering: "(1)")
+  $
+    "encode_order(X)" = (not x_0) and and.big_(i = 2)^(n - 1)(not x_(i - 1) or x_i) and (x_n)
+  $ <ahihi>
+]
+
+Khác với mã hóa trực tiếp, mệnh đề trong mã hóa thứ tự mang ý nghĩa rộng hơn:
+
+$
+  x_i <=> x <= i
+$
+
+Điều này có nghĩa, với mỗi suy diễn I, việc trích xuất thông tin từ mệnh đề không quá đơn giản:
+
+$
+x_i^I = "true" <=> x <= i \
+x_i^I = "false" <=> x lt.eq.not i \
+
+=> x = "?"
+$
+
+Vì vậy ta cần chứng minh luôn có thể suy diễn thông tin từ một suy diễn khi mã hóa thứ tự, được chứng minh trong định lý sau:
+
+#theorem[
+Cho $x in X| X = {1, 2, 3, ..., n} | n in NN$ với $I$ là một suy diễn thỏa mãn @ahihi:
+  $
+    I tack.r.double "encode_order"(X) <=> exists k in [1, n]: &forall i in [1, k - 1]: I tack.r.double.not x_i\
+    &forall j in [k, n]: I tack.r.double x_j  
+  $
+]
+
+Do đó, ta có cách trích xuất giá trị của x từ một suy diễn $I$ như sau:
+
+#definition[
+  Cho $x in X| X = {1, 2, 3, ..., n} | n in NN$ với $I tack.r.double "encode_order(X)"$. Khi đó tồn tại duy nhất một giá trị $k in X$ mà:
+  $
+    x = k in X <=> x_(k-1)^I = "false" and x_k^I = "true"
+  $
+] <extract>
+
+Để hiểu rõ hơn các truy xuất thông tin từ suy diễn, cùng xem lại @order_exp:
+
+#example[
+  Cho $x in X = {1, 2, 3, 4, 5}$
+  $
+    "encode_order(X)" = &(not x <= 0) and (not x <= 1 or x <= 2) and \ &(not x <= 2 or x <= 3) and (not x <= 3 or x <= 4) and (x <= 5)
+  $
+  Xét một suy diễn hợp lệ $I$:
+  $
+    x_0 = "false" \
+    x_1 = "false" \
+    x_2 = "false" \
+    x_3 = "true" \
+    x_4 = "true" \
+    x_5 = "true"
+  $
+  
+  Từ @extract, ta suy ra: x = 3
+]
+
+== PESP as Direct Encoding
 
 
 
-=== Mã hóa sự kiện
 
-#lorem(loremAvg)
+== PESP as Order Encoding
 
-=== Mã hóa ràng buộc
-
-#lorem(loremAvg)
-
-== Order Encoding
-
-=== Mã hóa sự kiện
-
-#lorem(loremAvg)
-
-=== Mã hóa ràng buộc
-
-#lorem(loremAvg)
-
-=== Tối ưu thuật toán mã hóa ràng buộc
-
-#lorem(loremAvg)
-
-== So sánh Binominal encoding và Order encoding
+== So sánh Direct encoding và Order encoding
 
 === Số biến
 
@@ -1348,7 +1488,7 @@ Khóa luận sẽ tiến hành đo thời gian chạy (ms), số mệnh đề, s
 #figure(
   table(
     columns: 9,
-    table.header([], [], [], table.cell([*Binominal*], colspan: 3), table.cell([*Order*], colspan: 3)),
+    table.header([], [], [], table.cell([*Direct*], colspan: 3), table.cell([*Order*], colspan: 3)),
     [Index], [Events], [Cons], [Vars], [Clauses], [Time], [Vars], [Clauses], [Time],
     ..benmark.flatten(),
   ),
@@ -1356,15 +1496,15 @@ Khóa luận sẽ tiến hành đo thời gian chạy (ms), số mệnh đề, s
   placement: top
 ) <benmark_1>
 
-#figure(image("image/chart-vars.svg"), caption:"Biểu đồ đường so sánh số biến của Binominal và Order Encoding")
+#figure(image("image/chart-vars.svg"), caption:"Biểu đồ đường so sánh số biến của Direct và Order Encoding")
 
 
-#figure(image("image/chart-clause.svg"), caption:"Biểu đồ đường so sánh số mệnh đề của Binominal và Order Encoding")
+#figure(image("image/chart-clause.svg"), caption:"Biểu đồ đường so sánh số mệnh đề của Direct và Order Encoding")
 
 
-#figure(image("image/chart-time.svg"), caption:"Biểu đồ đường so sánh thời gian thực thi của Binominal và Order Encoding")
+#figure(image("image/chart-time.svg"), caption:"Biểu đồ đường so sánh thời gian thực thi của Direct và Order Encoding")
 
-Quan sát bảng dữ liệu và các biểu đồ trên, ta thấy cả hai thuật toán đều tăng độ phức tạp nhất quán với độ phức tạp tăng dần của vấn đề PESP đầu vào. Khoảng cách giữa Binominal và Order Encoding là khá rõ rệt (khoảng 7x-50x về thời gian, 15x-20x về số mệnh đề). Tuy nhiên về số biến, hai phương pháp tương đối đồng đều. Như vậy, phương pháp mã hóa Order tỏ ra tương đối ưu việt so với Binominal, điều này có thể dễ dàng giải thích bởi Order encoding loại bỏ không gian tìm kiếm theo từng vùng thay vì từng điểm như Binominal, dẫn đến số mệnh đề ít hơn. Hơn nữa, theo mô tả ở @pesp_reduction, các mệnh đề Order encoding chồng chéo lên nhau kiến vùng mâu thuẫn được tìm ra nhanh chóng bởi SAT Solver.
+Quan sát bảng dữ liệu và các biểu đồ trên, ta thấy cả hai thuật toán đều tăng độ phức tạp nhất quán với độ phức tạp tăng dần của vấn đề PESP đầu vào. Khoảng cách giữa Direct và Order Encoding là khá rõ rệt (khoảng 7x-50x về thời gian, 15x-20x về số mệnh đề). Tuy nhiên về số biến, hai phương pháp tương đối đồng đều. Như vậy, phương pháp mã hóa Order tỏ ra tương đối ưu việt so với Direct, điều này có thể dễ dàng giải thích bởi Order encoding loại bỏ không gian tìm kiếm theo từng vùng thay vì từng điểm như Direct, dẫn đến số mệnh đề ít hơn. Hơn nữa, theo mô tả ở @pesp_reduction, các mệnh đề Order encoding chồng chéo lên nhau kiến vùng mâu thuẫn được tìm ra nhanh chóng bởi SAT Solver.
 
 Với sức mạnh phần cứng hiện tại, cả hai phương pháp đều giải ra khá nhanh (từ 100ms đến 24s) dù số mệnh đề lên đến hàng chục triệu, do giới hạn của dữ liệu đầu vào, ta chưa thống kê được giới hạn của hai giải thuật. Mặt khác, bài toán PESP sinh ra khá nhiều nghiệm thỏa mãn, dẫn đến nhu cầu tìm ra nghiệm tối ưu (bài toán lập lịch tàu chạy tối ưu). Tuy nhiên, việc tìm ra các nhân tố đánh giá lịch trình đang gặp nhiều khó khăn, cần nghiên cứu thêm yêu cầu thực tế và cải thiện mô hình toán học @new_pesp1 @YAN201952, không được trình bày đầy đủ trong khóa luận này. Đây là thiếu sót khóa luận chưa thể khắc phục, cần cải thiện trong tương lai.
 
