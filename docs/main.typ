@@ -510,7 +510,7 @@ Chương
   $
     pi_j - pi_i in [l_a, u_a]_t_T
   $
-]
+] <time_cons>
 
 
 #definition[
@@ -519,7 +519,7 @@ Chương
   $
     pi_j + pi_i in [l_a, u_a]_t_T
   $
-]
+] <syms_cons>
 
 #example[
   Cho A, B là hai sự kiện và $a = ((A, B), \[3, 7\]_8)$ là _ràng buộc thời gian_.
@@ -537,7 +537,7 @@ Chương
     5 - 3 &= 2 in.not [3, 7]_8 \
     1 - 7 &= -6 in.not [3, 7]_8
   $
-]
+] <time_cons_example>
 
 
 #definition[
@@ -1281,7 +1281,7 @@ Tổng quát hóa ví dụ trên, ta có thể áp dụng phương pháp mã hó
   $
     "encode_direct"(X) = or.big_(i=1)^n x_i and (and.big_(i=1)^n and.big_(j=i+1)^n (not x_i or not x_j))
   $
-]
+] <def_direct>
 
 Phương pháp mã hóa trực tiếp đảm bảo rằng chỉ một biến logic duy nhất có giá trị "đúng" (true) trong khi tất cả các biến còn lại phải có giá trị "sai" (false) trong mọi suy diễn hợp lệ $I$.
 
@@ -1378,8 +1378,113 @@ Do đó, ta có cách trích xuất giá trị của x từ một suy diễn $I$
 
 == PESP as Direct Encoding
 
+#figure(
+  diagram(
+    spacing: 2em,
+    node-stroke: 1pt,
+    node-inset: 8pt,
+    node-corner-radius: 4pt,
+    {
+      let nodes = ((0, 0), (1, 0), (2, 0))
+
+      node((0, 0), $N = (nu, A, t_T) $)
+      node((1, 1), $"encode"(nu)$)
+      node((1, -1), $"encode"(A)$)
+      node((2, 0), $"encode"(nu, A, t_T)$)
+      node((3, 0), $"SAT Solver"$)
+      node((3, -1), $"No schedule"$)
+      node((3, 1), $"Interpretation" I$)
+      node((3, 2), $"Schedule" Pi_v$)
 
 
+      edge((0, 0), (1, 1), "->")
+      edge((0, 0), (1, -1), "->")
+      edge((1, 1), (2, 0), "->")
+      edge((1, -1), (2, 0), "->")
+      edge((2, 0), (3, 0), "->")
+      edge((3, 0), (3, -1), "->", [UNSAT])
+      edge((3, 0), (3, 1), "->", [SAT])
+      edge((3, 1), (3, 2), "->", [Decode (I)])
+    },
+  ),
+  caption: "Sơ đồ tổng quan giải bài toán PESP với mã hóa trực tiếp",
+)
+
+
+Để mã hóa trực tiếp bài toán PESP thành biểu thức mệnh đề, trước tiên ta cần mã hóa các tiềm năng sử kiện $pi_i$. Nhắc lại @cor1, các tiềm năng sự kiện $pi_i$ đều thỏa mãn:
+
+#set math.equation(numbering: "(1)")
+
+$
+  forall pi_i in nu | pi_i in [0, t_T - 1] = {0, 1, 2, ..., t_T - 1}
+$
+
+Vì vậy, ta dễ dàng mã hóa toàn bộ tiềm năng sự kiện dựa theo @ahihi:
+
+$
+  Omega_("direct")^nu := and.big_(n in nu) "encode_direct"(pi_n) 
+$ <direct_vars>
+
+do $"encode_direct"(pi_n)$ là một biểu thức chuẩn tắc hội và $Omega_("direct")^n$ là hội những mệnh đề này, $Omega_("direct")^nu$ là một biểu thức dạng chuẩn tắc hội.
+
+
+Với mỗi suy diễn I thoả mãn @direct_vars, ta luôn suy ra được một lịch trình hợp lệ theo định lý sau:
+$
+forall n in nu: Pi_(nu)(n) = i <=> p_(pi_(n), i)^(I) = "true"
+$ <direct_extract> trong đó $p_(pi_(n), i)^(I)$ là mệnh đề tương ứng với $pi_n = i$ trong suy diễn I.
+
+Tiếp theo, ta cần mã hóa các ràng buộc thời gian và ràng buộc đối xứng như ở @time_cons và @syms_cons. Ý tưởng chính là loại các cặp tiềm năng sự kiện không thỏa mãn ràng buộc, chuyển hóa chúng thành các mệnh đề. Do tập giá trị của các tiềm năng là hữu hạn ($[0, t_T - 1]$), ta loại tất cả các khả năng không khỏa mãn bằng các mệnh đề đảo nghịch.
+
+Thật vậy, ta xét một ràng buộc bất kỳ $a = ((i, j), [l_a, u_a]_(t_T))in A$, ta định nghĩa:
+
+$
+  "encode_direct_cons"(a) = and.big_(m, n in P_a)(not p_(pi_i, m) or not p_(pi_j, n))
+$ <direct_cons> trong đó: 
+
+- $m, n in [0, t_T - 1]$
+- $p_(pi_i, m) , p_(pi_j, n)$ là các biến logic tương ứng với các tiềm năng: $pi_i = m, pi_j = n$ 
+- $P_a := {(m, n) | (m, n) "không thỏa mãn" a}$
+
+Nhằm hiểu rõ hơn @direct_cons, ta xét ví dụ cụ thể sau:
+
+#example[
+  Cho hai sự kiện A, B và ràng buộc thời gian $a = ((A, B), [3, 7]_(8))$ như ở @time_cons_example.
+ 
+  Dễ thấy: $(pi_A, pi_B) = (6, 7)$ không thỏa mãn $a$ ($7 - 6 = 1 in.not [3, 7]_8$). Vậy ta cần loại khả năng $pi_A = 6 "và" pi_B = 7$, tức là
+  $
+    &not (pi_A = 6 and pi_B = 7)\
+    <=>& not (p_(pi_A,6) and p_(pi_B, 7))\
+    <=>& not p_(pi_A,6) or not p_(pi_B,7)
+  $
+  
+  Tương tự ta có:
+  $
+    P_a = {&(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2),\ 
+    &(1, 3), (2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (3, 0),\ 
+    &(3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (4, 0), (4, 1),\ 
+    &(4, 2), (4, 3), (4, 4), (4, 5), (4, 6), (5, 0), (5, 1),\ 
+    &(5, 2), (5, 3), (5, 4), (5, 5), (5, 6), (5, 7), (6, 0),\ 
+    &(6, 1), (6, 2), (6, 3), (6, 4), (6, 5), (6, 6), (6, 7),\ 
+    &(7, 0), (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6),\ 
+    &(7, 7)}\
+
+    => "encode_direct_cons"&(a) = (not p_(pi_A,0) or not p_(pi_B,3)) and ... and (not p_(pi_A,7) or not p_(pi_B,7)) 
+  $
+]
+
+Áp dụng @direct_cons với tất cả ràng buộc $a in A$, ta có được biểu thức mã hóa trực tiếp các ràng buộc:
+
+$
+  Psi_"direct"^A := and.big_(a in A) "encode_direct_cons(a)"
+$
+
+Cuối cùng, sử dụng @direct_vars và @direct_cons, ta mã hóa trực tiếp toàn bộ mạng định kỳ như sau:
+
+$
+  "encode_direct_pesp"(nu, A, t_T) = Omega_"direct"^nu and Psi_"direct"^A
+$ với $Omega_"direct"^nu, Psi_"direct"^A$ là các biểu thức có dạng tương ứng như @direct_vars và @direct_cons. 
+
+Rõ ràng rằng $Omega_"direct"^nu$ thỏa mãn dạng chuẩn tắc hội. Tương tự, $Psi_"direct"^A$ là hội của các điều khoản chuẩn tắc hội, nên cũng là một biểu thức chuẩn tắc hội. Do đó, $"encode_direct_pesp"(nu, A, t_T)$ cũng có dạng chuẩn tắc hội. Như vậy, chúng ta đã thành công trong việc mã hóa bài toán PESP thành một biểu thức chuẩn tắc hội, mà các SAT Solver hiện đại có thể giải quyết một cách dễ dàng. Từ suy diễn $I$ thu được từ SAT Solver, chúng ta có thể dễ dàng truy xuất ra lịch trình hợp lệ bằng cách sử dụng hàm @direct_extract.
 
 == PESP as Order Encoding
 
