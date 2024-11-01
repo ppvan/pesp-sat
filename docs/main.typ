@@ -229,7 +229,7 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 #pagebreak()
 
 #show outline.entry.where(level: 1): it => {
-  let supplement = ""
+  let supplement = "Chương "
   let ch = it.element
   let num = counter(heading).at(ch.location())
   let _page = counter(page).at(ch.location()).first()
