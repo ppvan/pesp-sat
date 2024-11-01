@@ -3,7 +3,7 @@
 #import "@preview/cetz:0.2.1"
 
 
-#import "@preview/ctheorems:1.1.2": *
+#import "@preview/ctheorems:1.1.3": *
 #show: thmrules.with(qed-symbol: $square$)
 
 #set page(width: 16cm, height: auto, margin: 1.5cm)
@@ -351,7 +351,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
 
 == Mạng sự kiện định kỳ
 
-Chương 
+Chương
 
 
 #definition[
@@ -995,7 +995,7 @@ $
 
 == SAT
 
-Nhằm cung cấp nền tảng kiến thức, sau đây khóa luận sẽ trình bày chi tiết các khái niệm liên quan đến logic mệnh đề nói chung và bài toán SAT. Đây là cơ sở quan trọng cho  @pesp_reduction
+Nhằm cung cấp nền tảng kiến thức, sau đây khóa luận sẽ trình bày chi tiết các khái niệm liên quan đến logic mệnh đề nói chung và bài toán SAT. Đây là cơ sở quan trọng cho @pesp_reduction
 
 === Vấn đề SAT
 
@@ -1063,10 +1063,10 @@ Nhằm cung cấp nền tảng kiến thức, sau đây khóa luận sẽ trình
 
 #example[
   Ví dụ về biểu thức UNSAT
-  
+
   Cho $g = (x or y) and (not x or y) and (x or not y) and (not x or not y)$, không tồn tại suy diễn nào để $g^I = "true"$.
 
-   #figure(
+  #figure(
     table(
       align: center + horizon,
       columns: (4em, 4em, 4em),
@@ -1167,10 +1167,10 @@ FIXME: có thể ví dụ thêm về 1 giải 1 bài toán đơn giản giải b
 #pagebreak(weak: true)
 = Mô hình bài toán PESP về bài toán SAT <pesp_reduction>
 
-Trong chương này, khóa luận sẽ trình bày thuật toán nhằm chuyển hóa một bài toán PESP thành bài toán SAT. 
+Trong chương này, khóa luận sẽ trình bày thuật toán nhằm chuyển hóa một bài toán PESP thành bài toán SAT.
 Điều này có nghĩa là, khi cho trước một mạng lưới sự kiện định kỳ N, ta cần tìm ra một lịch trình hợp lệ hoặc chứng minh rằng không tồn tại một giải pháp như vậy thỏa mãn. Các thuộc tính vào ràng buộc của bài toán phải được mã hóa thành bài toán SAT, tức là một công thức mệnh đề ở dạng chuẩn tắc hội (CNF), và sau đó được chứng minh bởi một bộ giải SAT.
 
-Nếu bộ giải SAT trả về UNSAT, chúng ta biết rằng không tồn tại một lịch trình hợp lệ cho  mạng lưới sự kiện định kỳ N đã mã hóa. Ngược lại, nếu nhận được một nghiệm cho công thức mệnh đề, điều đó đảm bảo rằng có tồn tại một lịch trình hợp lệ cho N. Tính chính xác của thuật toán mã hóa các ràng buộc của bài toán về dạng chuẩn tắc hội và cách truy xuất lịch trình hợp lệ từ nghiệm sẽ được chứng minh ở phần sau.
+Nếu bộ giải SAT trả về UNSAT, chúng ta biết rằng không tồn tại một lịch trình hợp lệ cho mạng lưới sự kiện định kỳ N đã mã hóa. Ngược lại, nếu nhận được một nghiệm cho công thức mệnh đề, điều đó đảm bảo rằng có tồn tại một lịch trình hợp lệ cho N. Tính chính xác của thuật toán mã hóa các ràng buộc của bài toán về dạng chuẩn tắc hội và cách truy xuất lịch trình hợp lệ từ nghiệm sẽ được chứng minh ở phần sau.
 
 Sẽ có hai cách mã hóa khác nhau được giới thiệu cho một bài toán PESP đã được giảm thành bài toán SAT. Đầu tiên, mã hóa trực tiếp cho các biến của các miền hữu hạn sẽ được trình bày ở Mục 3.2 và cách triển khai cụ thể cho PESP ở Mục 3.3. Thứ hai, mã hóa thứ tự cho các biến có miền hữu hạn có thứ tự sẽ được định nghĩa trong Mục 3.4 và cách nó được sử dụng để mã hóa PESP thành bài toán SAT ở Mục 3.5.
 
@@ -1277,7 +1277,7 @@ Mã hóa trực tiếp, hay còn gọi là mã hóa nhị thức, là phương p
 Tổng quát hóa ví dụ trên, ta có thể áp dụng phương pháp mã hóa trực tiếp cho bất kỳ tập giá trị hữu hạn nào $x in {1, 2, ..., n}$. Khi đó, mã hóa trực tiếp được định nghĩa như sau:
 
 #definition[
-  Cho $x in X| X = {1, 2, ..., n| n in NN}$ và các mệnh đề: $x_1, x_2, ..., x_n$ đúng khi và chỉ khi $x = n$. Ta định nghĩa ánh xạ: 
+  Cho $x in X| X = {1, 2, ..., n| n in NN}$ và các mệnh đề: $x_1, x_2, ..., x_n$ đúng khi và chỉ khi $x = n$. Ta định nghĩa ánh xạ:
   $
     "encode_direct"(X) = or.big_(i=1)^n x_i and (and.big_(i=1)^n and.big_(j=i+1)^n (not x_i or not x_j))
   $
@@ -1285,9 +1285,9 @@ Tổng quát hóa ví dụ trên, ta có thể áp dụng phương pháp mã hó
 
 Phương pháp mã hóa trực tiếp đảm bảo rằng chỉ một biến logic duy nhất có giá trị "đúng" (true) trong khi tất cả các biến còn lại phải có giá trị "sai" (false) trong mọi suy diễn hợp lệ $I$.
 
-=== Mã hóa thứ tự (Order Encoding)
+=== Mã hóa thứ tự (Order Encoding) <order_encode>
 
-Trái ngược với @direct, phần này giả định rằng miền hữu hạn có thứ tự. Ví dụ tốt nhất cho điều này là một tập con thực sự của tập số tự nhiên $NN$. Các số này luôn có thứ tự theo quan hệ "<". Trong phần tiếp theo, ta sẽ thảo luận cách mã hóa hiệu quả thuộc tính này vào một công thức mệnh đề. Vì trong  khóa luận này, ta chỉ xét các biến có miền là một tập con,chính xác hơn là một khoảng, của các số tự nhiên $[a, b]$, nên ta biết cách áp dụng quan hệ thứ tự "<" của chúng. Nhìn chung, mọi tập hợp đều có thể xác định quan hệ thứ tự cụ thể. Tương tự, cùng tiếp cận phương pháp mã hóa này với một ví dụ.
+Trái ngược với @direct, phần này giả định rằng miền hữu hạn có thứ tự. Ví dụ tốt nhất cho điều này là một tập con thực sự của tập số tự nhiên $NN$. Các số này luôn có thứ tự theo quan hệ "<". Trong phần tiếp theo, ta sẽ thảo luận cách mã hóa hiệu quả thuộc tính này vào một công thức mệnh đề. Vì trong khóa luận này, ta chỉ xét các biến có miền là một tập con,chính xác hơn là một khoảng, của các số tự nhiên $[a, b]$, nên ta biết cách áp dụng quan hệ thứ tự "<" của chúng. Nhìn chung, mọi tập hợp đều có thể xác định quan hệ thứ tự cụ thể. Tương tự, cùng tiếp cận phương pháp mã hóa này với một ví dụ.
 
 #example[
   Cho $x in {1, 2, 3, 4, 5} = [1, 5] subset NN$. Ta có các mệnh đề đúng sau:
@@ -1319,8 +1319,8 @@ Tương tự, ta có thể áp dụng phương pháp mã hóa trực tiếp cho 
   #set math.equation(numbering: "(1)")
   $
     "encode_order(X)" = (not x_0) and and.big_(i = 2)^(n - 1)(not x_(i - 1) or x_i) and (x_n)
-  $ <ahihi>
-]
+  $
+] <ahihi>
 
 Khác với mã hóa trực tiếp, mệnh đề trong mã hóa thứ tự mang ý nghĩa rộng hơn:
 
@@ -1331,19 +1331,18 @@ $
 Điều này có nghĩa, với mỗi suy diễn I, việc trích xuất thông tin từ mệnh đề không quá đơn giản:
 
 $
-x_i^I = "true" <=> x <= i \
-x_i^I = "false" <=> x lt.eq.not i \
-
-=> x = "?"
+  x_i^I = "true" <=> x <= i \
+  x_i^I = "false" <=> x lt.eq.not i \
+  => x = "?"
 $
 
 Vì vậy ta cần chứng minh luôn có thể suy diễn thông tin từ một suy diễn khi mã hóa thứ tự, được chứng minh trong định lý sau:
 
 #theorem[
-Cho $x in X| X = {1, 2, 3, ..., n} | n in NN$ với $I$ là một suy diễn thỏa mãn @ahihi:
+  Cho $x in X| X = {1, 2, 3, ..., n} | n in NN$ với $I$ là một suy diễn thỏa mãn @ahihi:
   $
     I tack.r.double "encode_order"(X) <=> exists k in [1, n]: &forall i in [1, k - 1]: I tack.r.double.not x_i\
-    &forall j in [k, n]: I tack.r.double x_j  
+    &forall j in [k, n]: I tack.r.double x_j
   $
 ]
 
@@ -1361,7 +1360,9 @@ Do đó, ta có cách trích xuất giá trị của x từ một suy diễn $I$
 #example[
   Cho $x in X = {1, 2, 3, 4, 5}$
   $
-    "encode_order(X)" = &(not x <= 0) and (not x <= 1 or x <= 2) and \ &(not x <= 2 or x <= 3) and (not x <= 3 or x <= 4) and (x <= 5)
+    "encode_order(X)" = &(not x <= 0) and (not x <= 1 or x <= 2) and \ &(not x <= 2 or x <= 3) and (
+      not x <= 3 or x <= 4
+    ) and (x <= 5)
   $
   Xét một suy diễn hợp lệ $I$:
   $
@@ -1372,7 +1373,7 @@ Do đó, ta có cách trích xuất giá trị của x từ một suy diễn $I$
     x_4 = "true" \
     x_5 = "true"
   $
-  
+
   Từ @extract, ta suy ra: x = 3
 ]
 
@@ -1387,7 +1388,7 @@ Do đó, ta có cách trích xuất giá trị của x từ một suy diễn $I$
     {
       let nodes = ((0, 0), (1, 0), (2, 0))
 
-      node((0, 0), $N = (nu, A, t_T) $)
+      node((0, 0), $N = (nu, A, t_T)$)
       node((1, 1), $"encode"(nu)$)
       node((1, -1), $"encode"(A)$)
       node((2, 0), $"encode"(nu, A, t_T)$)
@@ -1419,10 +1420,10 @@ $
   forall pi_i in nu | pi_i in [0, t_T - 1] = {0, 1, 2, ..., t_T - 1}
 $
 
-Vì vậy, ta dễ dàng mã hóa toàn bộ tiềm năng sự kiện dựa theo @ahihi:
+Vì vậy, ta dễ dàng mã hóa toàn bộ tiềm năng sự kiện dựa theo @def_direct:
 
 $
-  Omega_("direct")^nu := and.big_(n in nu) "encode_direct"(pi_n) 
+  Omega_("direct")^nu := and.big_(n in nu) "encode_direct"(pi_n)
 $ <direct_vars>
 
 do $"encode_direct"(pi_n)$ là một biểu thức chuẩn tắc hội và $Omega_("direct")^n$ là hội những mệnh đề này, $Omega_("direct")^nu$ là một biểu thức dạng chuẩn tắc hội.
@@ -1430,7 +1431,7 @@ do $"encode_direct"(pi_n)$ là một biểu thức chuẩn tắc hội và $Omeg
 
 Với mỗi suy diễn I thoả mãn @direct_vars, ta luôn suy ra được một lịch trình hợp lệ theo định lý sau:
 $
-forall n in nu: Pi_(nu)(n) = i <=> p_(pi_(n), i)^(I) = "true"
+  forall n in nu: Pi_(nu)(n) = i <=> p_(pi_(n), i)^(I) = "true"
 $ <direct_extract> trong đó $p_(pi_(n), i)^(I)$ là mệnh đề tương ứng với $pi_n = i$ trong suy diễn I.
 
 Tiếp theo, ta cần mã hóa các ràng buộc thời gian và ràng buộc đối xứng như ở @time_cons và @syms_cons. Ý tưởng chính là loại các cặp tiềm năng sự kiện không thỏa mãn ràng buộc, chuyển hóa chúng thành các mệnh đề. Do tập giá trị của các tiềm năng là hữu hạn ($[0, t_T - 1]$), ta loại tất cả các khả năng không khỏa mãn bằng các mệnh đề đảo nghịch.
@@ -1439,36 +1440,37 @@ Thật vậy, ta xét một ràng buộc bất kỳ $a = ((i, j), [l_a, u_a]_(t_
 
 $
   "encode_direct_cons"(a) = and.big_(m, n in P_a)(not p_(pi_i, m) or not p_(pi_j, n))
-$ <direct_cons> trong đó: 
+$ <direct_cons> trong đó:
 
 - $m, n in [0, t_T - 1]$
-- $p_(pi_i, m) , p_(pi_j, n)$ là các biến logic tương ứng với các tiềm năng: $pi_i = m, pi_j = n$ 
+- $p_(pi_i, m) , p_(pi_j, n)$ là các biến logic tương ứng với các tiềm năng: $pi_i = m, pi_j = n$
 - $P_a := {(m, n) | (m, n) "không thỏa mãn" a}$
 
 Nhằm hiểu rõ hơn @direct_cons, ta xét ví dụ cụ thể sau:
 
 #example[
   Cho hai sự kiện A, B và ràng buộc thời gian $a = ((A, B), [3, 7]_(8))$ như ở @time_cons_example.
- 
+
   Dễ thấy: $(pi_A, pi_B) = (6, 7)$ không thỏa mãn $a$ ($7 - 6 = 1 in.not [3, 7]_8$). Vậy ta cần loại khả năng $pi_A = 6 "và" pi_B = 7$, tức là
   $
     &not (pi_A = 6 and pi_B = 7)\
     <=>& not (p_(pi_A,6) and p_(pi_B, 7))\
     <=>& not p_(pi_A,6) or not p_(pi_B,7)
   $
-  
+
   Tương tự ta có:
   $
-    P_a = {&(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2),\ 
-    &(1, 3), (2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (3, 0),\ 
-    &(3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (4, 0), (4, 1),\ 
-    &(4, 2), (4, 3), (4, 4), (4, 5), (4, 6), (5, 0), (5, 1),\ 
-    &(5, 2), (5, 3), (5, 4), (5, 5), (5, 6), (5, 7), (6, 0),\ 
-    &(6, 1), (6, 2), (6, 3), (6, 4), (6, 5), (6, 6), (6, 7),\ 
-    &(7, 0), (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6),\ 
-    &(7, 7)}\
-
-    => "encode_direct_cons"&(a) = (not p_(pi_A,0) or not p_(pi_B,3)) and ... and (not p_(pi_A,7) or not p_(pi_B,7)) 
+    P_a = {
+      &(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2),\
+      &(1, 3), (2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (3, 0),\
+      &(3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (4, 0), (4, 1),\
+      &(4, 2), (4, 3), (4, 4), (4, 5), (4, 6), (5, 0), (5, 1),\
+      &(5, 2), (5, 3), (5, 4), (5, 5), (5, 6), (5, 7), (6, 0),\
+      &(6, 1), (6, 2), (6, 3), (6, 4), (6, 5), (6, 6), (6, 7),\
+      &(7, 0), (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6),\
+      &(7, 7)
+    }\
+    => "encode_direct_cons"&(a) = (not p_(pi_A,0) or not p_(pi_B,3)) and ... and (not p_(pi_A,7) or not p_(pi_B,7))
   $
 ]
 
@@ -1482,11 +1484,690 @@ Cuối cùng, sử dụng @direct_vars và @direct_cons, ta mã hóa trực ti�
 
 $
   "encode_direct_pesp"(nu, A, t_T) = Omega_"direct"^nu and Psi_"direct"^A
-$ với $Omega_"direct"^nu, Psi_"direct"^A$ là các biểu thức có dạng tương ứng như @direct_vars và @direct_cons. 
+$ với $Omega_"direct"^nu, Psi_"direct"^A$ là các biểu thức có dạng tương ứng như @direct_vars và @direct_cons.
 
-Rõ ràng rằng $Omega_"direct"^nu$ thỏa mãn dạng chuẩn tắc hội. Tương tự, $Psi_"direct"^A$ là hội của các điều khoản chuẩn tắc hội, nên cũng là một biểu thức chuẩn tắc hội. Do đó, $"encode_direct_pesp"(nu, A, t_T)$ cũng có dạng chuẩn tắc hội. Như vậy, chúng ta đã thành công trong việc mã hóa bài toán PESP thành một biểu thức chuẩn tắc hội, mà các SAT Solver hiện đại có thể giải quyết một cách dễ dàng. Từ suy diễn $I$ thu được từ SAT Solver, chúng ta có thể dễ dàng truy xuất ra lịch trình hợp lệ bằng cách sử dụng hàm @direct_extract.
+Dễ thấy $Omega_"direct"^nu$ thỏa mãn dạng chuẩn tắc hội. Tương tự, $Psi_"direct"^A$ là hội của các biểu thức chuẩn tắc hội, nên cũng là một biểu thức chuẩn tắc hội. Do đó, $"encode_direct_pesp"(nu, A, t_T)$ cũng có dạng chuẩn tắc hội. Như vậy, chúng ta đã thành công trong việc mã hóa bài toán PESP thành một biểu thức chuẩn tắc hội, mà các SAT Solver hiện đại có thể giải quyết một cách dễ dàng. Từ suy diễn $I$ thu được từ SAT Solver, chúng ta có thể dễ dàng truy xuất ra lịch trình hợp lệ bằng cách sử dụng hàm @direct_extract.
 
 == PESP as Order Encoding
+
+
+#figure(
+  diagram(
+    spacing: 2em,
+    node-stroke: 1pt,
+    node-inset: 8pt,
+    node-corner-radius: 4pt,
+    {
+      let nodes = ((0, 0), (1, 0), (2, 0))
+
+      node((0, 0), $N = (nu, A, t_T)$)
+      node((1, 1), $"encode"(A)$)
+      node((1, -1), $"encode"(nu)$)
+      node((2, 0), $"encode"(nu, A, t_T)$)
+      node((3, 0), $"SAT Solver"$)
+      node((3, -1), $"No schedule"$)
+      node((3, 1), $"Interpretation" I$)
+      node((3, 2), $"Schedule" Pi_v$)
+
+
+      edge((0, 0), (1, 1), "->")
+      edge((0, 0), (1, -1), "->")
+      edge((1, 1), (2, 0), "->")
+      edge((1, -1), (2, 0), "->")
+      edge((2, 0), (3, 0), "->")
+      edge((3, 0), (3, -1), "->", [UNSAT])
+      edge((3, 0), (3, 1), "->", [SAT])
+      edge((3, 1), (3, 2), "->", [Decode (I)])
+    },
+  ),
+  caption: "Sơ đồ tổng quan giải bài toán PESP với mã hóa thứ tự",
+)
+
+
+
+
+Tương tự mã hóa trực tiếp, khóa luận sẽ trình bày phương pháp mã hóa thứ tự gồm hai phần chính.
+Trước hết, ta mã hóa các tiềm năng sự kiện như đã trình bày ở @order_encode.
+Sau đó ta sẽ mã hóa các ràng buộc trong miền xác định thứ tự. Cuối cùng, ta tổng hợp các mệnh đề và giải bằng SAT Solver.
+
+Để mã hóa trực tiếp bài toán PESP thành biểu thức mệnh đề, trước tiên ta cần mã hóa các tiềm năng sử kiện $pi_i$. Nhắc lại @cor1, các tiềm năng sự kiện $pi_i$ đều thỏa mãn:
+
+
+$
+  forall pi_i in nu | pi_i in [0, t_T - 1] <=> 0 <= pi_i <= t_T - 1
+$
+
+Vì vậy, ta dễ dàng mã hóa toàn bộ tiềm năng sự kiện dựa theo @ahihi:
+
+$
+  Omega_("order")^nu := and.big_(n in nu) "encode_order"(pi_n)
+$
+
+do $"encode_order"(pi_n)$ là một biểu thức chuẩn tắc hội và $Omega_("order")^n$ là hội những mệnh đề này, $Omega_("order")^nu$ là một biểu thức dạng chuẩn tắc hội.
+
+Tiếp theo, khóa luận trình bày chi tiết cách mã hóa ràng buộc thời gian và ràng buộc đối xứng. Tư tưởng căn bản sẽ tương tự như mã hóa trực tiếp, loại bỏ các miền không khỏa mãn trong tập xác định. Tuy nhiên khi sử dụng mã hoá thứ tự, ta có thể loại bỏ từng vùng các hình chữ nhật song song với trục tọa độ do đó tối ưu hiệu quả mã hóa như @order_diagram
+
+=== Mã hóa thứ tự ràng buộc thời gian
+
+
+#figure(
+  cetz.canvas({
+    import cetz.draw: *
+    set-style(
+      stroke: 0.4pt,
+      mark: (
+        transform-shape: false,
+        fill: black,
+      ),
+    )
+    // vars
+    let T = 8
+    let width = 8
+    let height = 8
+    let a = 2
+    let b = 4
+    import cetz.draw: *
+    set-style(
+      stroke: 0.4pt,
+      mark: (
+        transform-shape: false,
+        fill: black,
+      ),
+    )
+
+
+    // Trục tọa độ
+    grid((0, 0), (width - 1, height - 1), step: 1, stroke: gray + 0.2pt)
+    line((0, 0), (width, 0), mark: (end: "stealth"))
+    line((0, 0), (0, height), mark: (end: "stealth"))
+
+    // tick
+    let x = 0
+    while x < width {
+      line((x, -1pt), (x, 1pt))
+      line((-1pt, x), (1pt, x))
+      x += 1
+    }
+
+    // text ab, 3, 5, 8
+    content((width, -0.5), $pi_A$)
+    content((-0.25, -0.25), $0$)
+    content((-0.5, height), $pi_B$)
+
+    let fill-color = color.mix((blue, 40%), white).opacify(-40%)
+    line(
+      (0, a),
+      (0, b),
+      (T - 1 - b, T - 1),
+      (T - 1 - a, T - 1),
+      (0, a),
+      fill: fill-color,
+      stroke: fill-color.darken(20%),
+    )
+    line(
+      (T - b, 0),
+      (T - a, 0),
+      (T - 1, a - 1),
+      (T - 1, b - 1),
+      (T - b, 0),
+      fill: fill-color,
+      stroke: fill-color.darken(20%),
+    )
+
+
+    let i = 0
+    let j = 0
+    while i < width {
+      j = 0
+      while j < height {
+        if (j - i >= a and j - i <= b) {
+          circle((i, j), radius: 1pt, fill: color.mix((blue, 100%)))
+
+
+        }
+
+        if (j - i >= a - T and j - i <= b - T) {
+          circle((i, j), radius: 1pt, fill: color.mix((blue, 100%)))
+        }
+
+
+        j += 1
+      }
+      i += 1
+    }
+
+    content((-0.5, a), $#a$)
+    content((-0.5, b), $#b$)
+    content((T - b, -0.5), $#(T - b)$)
+    content((T - a, -0.5), $#(T - a)$)
+    content((T - 1, -0.5), $#(T - 1)$)
+    content((-0.5, T - 1), $#(T - 1)$)
+
+
+    let error-color = color.mix((red, 70%), white).opacify(-40%)
+    rect((3, 2), (5, 4), fill: error-color, stroke: error-color.darken(40%))
+
+    line((3, 0), (3, 2), stroke: (dash: "dashed", paint: red))
+    line((5, 0), (5, 2), stroke: (dash: "dashed", paint: red))
+    line((0, 2), (3, 2), stroke: (dash: "dashed", paint: red))
+    line((0, 4), (3, 4), stroke: (dash: "dashed", paint: red))
+
+    for i in (3, 4, 5) {
+      for j in (2, 3, 4) {
+        circle((i, j), radius: 1pt, fill: color.mix((red, 100%)))
+      }
+    }
+
+
+  }),
+  caption: [Minh họa loại bỏ miền không thỏa mãn ràng buộc thời gian $((A, B), [2, 4]_8)$],
+) <order_diagram>
+
+
+#let pesp_diagram = (a, b, T) => {
+  cetz.canvas({
+    import cetz.draw: *
+    set-style(
+      stroke: 0.4pt,
+      mark: (
+        transform-shape: false,
+        fill: black,
+      ),
+    )
+    // vars
+    let width = T
+    let height = T
+
+
+    // Trục tọa độ
+    grid((0, 0), (width - 1, height - 1), step: 1, stroke: gray + 0.2pt)
+    line((0, 0), (width, 0), mark: (end: "stealth"))
+    line((0, 0), (0, height), mark: (end: "stealth"))
+
+    // tick
+    let x = 0
+    while x < width {
+      line((x, -1pt), (x, 1pt))
+      line((-1pt, x), (1pt, x))
+      x += 1
+    }
+
+    // text ab, 3, 5, 8
+    content((width, -0.5), $pi_A$)
+    content((-0.25, -0.25), $0$)
+    content((-0.5, height), $pi_B$)
+
+    let fill-color = color.mix((blue, 40%), white).opacify(-40%)
+    line(
+      (0, a),
+      (0, b),
+      (T - 1 - b, T - 1),
+      (T - 1 - a, T - 1),
+      (0, a),
+      fill: fill-color,
+      stroke: fill-color.darken(20%),
+    )
+    line(
+      (T - b, 0),
+      (T - a, 0),
+      (T - 1, a - 1),
+      (T - 1, b - 1),
+      (T - b, 0),
+      fill: fill-color,
+      stroke: fill-color.darken(20%),
+    )
+
+
+    let i = 0
+    let j = 0
+    while i < width {
+      j = 0
+      while j < height {
+        if (j - i >= a and j - i <= b) {
+          circle((i, j), radius: 1pt, fill: color.mix((blue, 100%)))
+
+
+        }
+
+        if (j - i >= a - T and j - i <= b - T) {
+          circle((i, j), radius: 1pt, fill: color.mix((blue, 100%)))
+        }
+
+
+        j += 1
+      }
+      i += 1
+    }
+
+    content((-0.5, a), $#a$)
+    content((-0.5, b), $#b$)
+    content((T - b, -0.5), $#(T - b)$)
+    content((T - a, -0.5), $#(T - a)$)
+    content((T - 1, -0.5), $#(T - 1)$)
+    content((-0.5, T - 1), $#(T - 1)$)
+
+  })
+}
+
+Để hiểu ý tưởng chính của thuật toán, ta xét ví dụ cụ thể sau:
+
+#example[
+  Cho ràng buộc thời gian $a = ((A, B), [2, 4]_8)$ với $pi_A, pi_B$ lần lượt là các tiềm năng tương ứng với A và B.
+  Đặt $p_(pi_A, i), p_(pi_B, j)$ lần lượt là các biến logic tương ứng với mệnh đề $pi_A <= i, pi_B <= j$
+] <cons_example>
+
+
+Dễ thấy một vùng không thỏa mãn ràng buộc như minh họa ở @order_diagram:
+$
+  r = ([2, 4] times [2, 4]) in P_a
+$
+
+$
+  &<=> exists.not (pi_A, pi_B): pi_A <= 4, pi_A >= 2, pi_B <= 4, pi_B >= 2\
+  &<=> not(pi_A <= 4 and pi_A >= 2 and pi_B <= 4 and pi_B >= 2)\
+  &<=> not(pi_A <= 4 and not pi_A <= 1 and pi_B <= 4 and not pi_B <= 1)\
+  &<=> not pi_A <= 4 or pi_A <= 1 or not pi_B <= 4 or pi_B <= 1\
+  &<=> not p_(pi_A, 4) or p_(pi_A, 1) or not p_(pi_B, 4) or p_(pi_B, 1) = F
+$
+
+Do $F$ là một mệnh đề chuẩn tắc hội, ta có được một mệnh đề ràng buộc tương ứng với phần bị loại bỏ trong @order_diagram.
+Như vậy ta đã biết cách loại bỏ một hình chữ nhật khỏi không gian tìm kiếm. Vấn đề còn lại là tìm tất cả các hình chữ nhật nhằm lấp đầy vùng không thỏa mãn.
+
+
+Cùng xem lại @order_diagram ở một góc nhìn khác. Ta thấy hai miền nghiệm tương ứng với $[2. 4], [-6, -4]$ và khoảng vô nghiệm giữa chúng $(-4, 2)$. Sau đây ta sẽ định nghĩa các hàm số nhằm phủ miền này bằng tập hợp các hình chữ nhật ở @order_diagram. Bằng cách tương tự, ta cũng có thể phủ hai vùng vô nghiệm còn lại($(4, 8), (-8, -6)$).
+
+
+#figure(
+  cetz.canvas({
+    import cetz.draw: *
+    set-style(
+      stroke: 0.4pt,
+      mark: (
+        transform-shape: false,
+        fill: black,
+      ),
+    )
+    // vars
+    let T = 8
+    let width = 8
+    let height = 8
+    let a = 2
+    let b = 4
+    import cetz.draw: *
+    set-style(
+      stroke: 0.4pt,
+      mark: (
+        transform-shape: false,
+        fill: black,
+      ),
+    )
+
+
+    // Trục tọa độ
+    grid((0, 0), (width - 1, height - 1), step: 1, stroke: gray + 0.2pt)
+    line((0, 0), (width, 0), mark: (end: "stealth"))
+    line((0, 0), (0, height), mark: (end: "stealth"))
+
+    // tick
+    let x = 0
+    while x < width {
+      line((x, -1pt), (x, 1pt))
+      line((-1pt, x), (1pt, x))
+      x += 1
+    }
+
+    // text ab, 3, 5, 8
+    content((width, -0.5), $pi_A$)
+    content((-0.25, -0.25), $0$)
+    content((-0.5, height), $pi_B$)
+
+    let fill-color = color.mix((blue, 40%), white).opacify(-40%)
+    line(
+      (0, a),
+      (0, b),
+      (T - 1 - b, T - 1),
+      (T - 1 - a, T - 1),
+      (0, a),
+      fill: fill-color,
+      stroke: fill-color.darken(20%),
+    )
+    line(
+      (T - b, 0),
+      (T - a, 0),
+      (T - 1, a - 1),
+      (T - 1, b - 1),
+      (T - b, 0),
+      fill: fill-color,
+      stroke: fill-color.darken(20%),
+    )
+
+
+    let i = 0
+    let j = 0
+    while i < width {
+      j = 0
+      while j < height {
+        if (j - i >= a and j - i <= b) {
+          circle((i, j), radius: 1pt, fill: color.mix((blue, 100%)))
+
+
+        }
+
+        if (j - i >= a - T and j - i <= b - T) {
+          circle((i, j), radius: 1pt, fill: color.mix((blue, 100%)))
+        }
+
+
+        j += 1
+      }
+      i += 1
+    }
+
+    content((-0.5, a), $#a$)
+    content((-0.5, b), $#b$)
+    content((T - b, -0.5), $#(T - b)$)
+    content((T - a, -0.5), $#(T - a)$)
+    content((T - 1, -0.5), $#(T - 1)$)
+    content((-0.5, T - 1), $#(T - 1)$)
+
+    line((-1, 1), (6, 8))
+    content((3, 4), $pi_B - pi_A < 2 $, angle: 45deg)
+    line((3, -1), (8, 4))
+    content((5, 2), $pi_B - pi_A > 4 - t_T = -4 $, angle: 45deg)
+
+  }),
+  caption: [Bản chất của miền vô nghiệm$((A, B), [2, 4]_8)$],
+) 
+
+
+#definition[
+  Cho $u, l in ZZ$ là hai số nguyên với u < l.
+  $
+    delta: ZZ times ZZ &-> ZZ\
+    (l, u) &|-> l - u - 1
+  $ được gọi là _khoảng cách trong_ giữa $u$ và $l$.
+]
+
+
+#definition[
+  Cho $u, l in ZZ$ là hai số nguyên với u < l.
+  $
+    delta y: ZZ times ZZ &-> ZZ\
+    (l, u) &|-> floor(frac(delta(l, u), 2))
+  $ được gọi là chiều rộng của hình chữ nhật giữa $u$ và $l$.
+]
+
+
+
+#definition[
+  Cho $u, l in ZZ$ là hai số nguyên với u < l.
+  $
+    delta x: ZZ times ZZ &-> ZZ\
+    (l, u) &|-> ceil(frac(delta(l, u), 2)) - 1
+  $ được gọi là chiều dài của hình chữ nhật giữa $u$ và $l$.
+]
+
+
+#let delta_y = (l: int, u: int) => {
+    return calc.floor((l - u - 1) / 2.0)
+}
+
+#let delta_x = (l: int, u: int) => {
+    return calc.ceil((l - u - 1) / 2.0) - 1
+}
+
+#example[
+    Xét hai sự kiện $A, B$ với $a = ((A, B), [2, 4]_8)$ như ở  @cons_example, với $pi_A, pi_B$ là hai tiềm năng sự kiện. Chọn $l = 2, u = -4$, ta có:
+    $
+      delta(2, -4) &= 2 - (-4) - 1 = 5\
+      delta y(2, 4) &= floor(frac(delta(2, -4), 2)) = 2\
+      delta x(2, 4) &= ceil(frac(delta(2, -4), 2)) - 1 = 2
+    $
+    được minh họa như @order_rect_szie.
+]
+
+#figure(
+  cetz.canvas({
+    import cetz.draw: *
+    set-style(
+      stroke: 0.4pt,
+      mark: (
+        transform-shape: false,
+        fill: black,
+      ),
+    )
+    // vars
+    let T = 8
+    let width = 8
+    let height = 8
+    let a = 2
+    let b = 4
+    import cetz.draw: *
+    set-style(
+      stroke: 0.4pt,
+      mark: (
+        transform-shape: false,
+        fill: black,
+      ),
+    )
+
+
+    // Trục tọa độ
+    grid((0, 0), (width - 1, height - 1), step: 1, stroke: gray + 0.2pt)
+    line((0, 0), (width, 0), mark: (end: "stealth"))
+    line((0, 0), (0, height), mark: (end: "stealth"))
+
+    // tick
+    let x = 0
+    while x < width {
+      line((x, -1pt), (x, 1pt))
+      line((-1pt, x), (1pt, x))
+      x += 1
+    }
+
+    // text ab, 3, 5, 8
+    content((width, -0.5), $pi_A$)
+    content((-0.25, -0.25), $0$)
+    content((-0.5, height), $pi_B$)
+
+    let fill-color = color.mix((blue, 40%), white).opacify(-40%)
+    line(
+      (0, a),
+      (0, b),
+      (T - 1 - b, T - 1),
+      (T - 1 - a, T - 1),
+      (0, a),
+      fill: fill-color,
+      stroke: fill-color.darken(20%),
+    )
+    line(
+      (T - b, 0),
+      (T - a, 0),
+      (T - 1, a - 1),
+      (T - 1, b - 1),
+      (T - b, 0),
+      fill: fill-color,
+      stroke: fill-color.darken(20%),
+    )
+
+
+    let i = 0
+    let j = 0
+    while i < width {
+      j = 0
+      while j < height {
+        if (j - i >= a and j - i <= b) {
+          circle((i, j), radius: 1pt, fill: color.mix((blue, 100%)))
+
+
+        }
+
+        if (j - i >= a - T and j - i <= b - T) {
+          circle((i, j), radius: 1pt, fill: color.mix((blue, 100%)))
+        }
+
+
+        j += 1
+      }
+      i += 1
+    }
+
+    content((-0.5, a), $#a$)
+    content((-0.5, b), $#b$)
+    content((T - b, -0.5), $#(T - b)$)
+    content((T - a, -0.5), $#(T - a)$)
+    content((T - 1, -0.5), $#(T - 1)$)
+    content((-0.5, T - 1), $#(T - 1)$)
+
+
+    let error-color = color.mix((red, 70%), white).opacify(-40%)
+    rect((3, 2), (5, 4), fill: error-color, stroke: error-color.darken(40%))
+
+    line((3, 0), (3, 2), stroke: (dash: "dashed", paint: red))
+    line((5, 0), (5, 2), stroke: (dash: "dashed", paint: red))
+    line((0, 2), (3, 2), stroke: (dash: "dashed", paint: red))
+    line((0, 4), (3, 4), stroke: (dash: "dashed", paint: red))
+
+    for i in (3, 4, 5) {
+      for j in (2, 3, 4) {
+        circle((i, j), radius: 1pt, fill: color.mix((red, 100%)))
+      }
+    }
+
+    line((5.25, 2), (5.25, 4), mark: (end: "stealth", start: "stealth"))
+    content((5.5, 3), $delta y$)
+
+    line((3, 4.25), (5, 4.25), mark: (end: "stealth", start: "stealth"))
+    content((4, 4.5), $delta x$)
+
+
+  }),
+  caption: [Minh họa vùng xác định kích thước vùng không thỏa mãn],
+) <order_rect_szie>
+
+
+#definition[
+    Cho $u, l in ZZ$ với $u < l$ và $t_T in NN$. Khi đó
+    $
+      phi_t_T: ZZ times ZZ &-> 2^(2^ZZ times 2^ZZ)\
+      (l, u) &|-> {([x, x + delta x (l, u)] times [y, y + delta y(l, u)])| \ 
+      &forall y in [-delta y(l, u), t_T - 1]:\
+      &x = y - u - 1 - delta x(l, u)}\
+    $ là ánh xạ tới tập hợp hình chữ nhật giữa $u $ và $l$.
+] <generator>
+
+Áp dụng @generator với hai sự kiện $A, B$, $a = ((A, B), [2, 4]_8)$ như ở  @cons_example, với $pi_A, pi_B$ là hai tiềm năng sự kiện. Chọn $l = 2, u = -4$, ta có 
+
+
+#figure(
+  cetz.canvas({
+    import cetz.draw: *
+    set-style(
+      stroke: 0.4pt,
+      mark: (
+        transform-shape: false,
+        fill: black,
+      ),
+    )
+    // vars
+    let T = 8
+    let width = 8
+    let height = 8
+    let a = 2
+    let b = 4
+    import cetz.draw: *
+    set-style(
+      stroke: 0.4pt,
+      mark: (
+        transform-shape: false,
+        fill: black,
+      ),
+    )
+
+
+    // Trục tọa độ
+    grid((0, 0), (width - 1, height - 1), step: 1, stroke: gray + 0.2pt)
+    line((0, 0), (width, 0), mark: (end: "stealth"))
+    line((0, 0), (0, height), mark: (end: "stealth"))
+
+    // tick
+    let x = 0
+    while x < width {
+      line((x, -1pt), (x, 1pt))
+      line((-1pt, x), (1pt, x))
+      x += 1
+    }
+
+    // text ab, 3, 5, 8
+    content((width, -0.5), $pi_A$)
+    content((-0.25, -0.25), $0$)
+    content((-0.5, height), $pi_B$)
+
+    let fill-color = color.mix((blue, 40%), white).opacify(-40%)
+    line(
+      (0, a),
+      (0, b),
+      (T - 1 - b, T - 1),
+      (T - 1 - a, T - 1),
+      (0, a),
+      fill: fill-color,
+      stroke: fill-color.darken(20%),
+    )
+    line(
+      (T - b, 0),
+      (T - a, 0),
+      (T - 1, a - 1),
+      (T - 1, b - 1),
+      (T - b, 0),
+      fill: fill-color,
+      stroke: fill-color.darken(20%),
+    )
+
+
+    let i = 0
+    let j = 0
+    while i < width {
+      j = 0
+      while j < height {
+        if (j - i >= a and j - i <= b) {
+          circle((i, j), radius: 1pt, fill: color.mix((blue, 100%)))
+
+
+        }
+
+        if (j - i >= a - T and j - i <= b - T) {
+          circle((i, j), radius: 1pt, fill: color.mix((blue, 100%)))
+        }
+
+
+        j += 1
+      }
+      i += 1
+    }
+
+    content((-0.5, a), $#a$)
+    content((-0.5, b), $#b$)
+    content((T - b, -0.5), $#(T - b)$)
+    content((T - a, -0.5), $#(T - a)$)
+    content((T - 1, -0.5), $#(T - 1)$)
+    content((-0.5, T - 1), $#(T - 1)$)
+
+    line((-1, 1), (6, 8))
+    // content((3, 4), $pi_B - pi_A < 2 $, angle: 45deg)
+    line((3, -1), (8, 4))
+    // content((5, 2), $pi_B - pi_A > 4 - t_T = -4 $, angle: 45deg)
+
+    // for y in range(-)
+
+
+  }),
+  caption: [Bản chất của miền vô nghiệm$((A, B), [2, 4]_8)$],
+) 
+
+
+#pesp_diagram(2, 4, 8)
+#pesp_diagram(2, 2, 10)
+
 
 == So sánh Direct encoding và Order encoding
 
@@ -1514,7 +2195,7 @@ Ta thu được thời gian biểu chính xác khi giải được bài toán PE
 
 == Thu thập dữ liệu
 
-Dữ liệu thử nghiệm được thu thập từ #link("https://timpasslib.aalto.fi/pesplib.html", "PESPlib") @pesplib, một tập dữ liệu PESP đã được chuẩn hóa và xử lý nhằm đánh giá hiệu quả của các thuật toán giải PESP. PESPlib được cộng đồng học thuật đánh giá cao và được dùng làm tiêu chuẩn đánh giá trong nhiều nghiên cứu.@pesplib_ref_1 @pesplib_ref_2. 
+Dữ liệu thử nghiệm được thu thập từ #link("https://timpasslib.aalto.fi/pesplib.html", "PESPlib") @pesplib, một tập dữ liệu PESP đã được chuẩn hóa và xử lý nhằm đánh giá hiệu quả của các thuật toán giải PESP. PESPlib được cộng đồng học thuật đánh giá cao và được dùng làm tiêu chuẩn đánh giá trong nhiều nghiên cứu.@pesplib_ref_1 @pesplib_ref_2.
 Dữ liệu đầu vào gồm các file csv, có định dạng sau:
 
 
@@ -1538,16 +2219,16 @@ N; D
 - D là thời điểm sự kiện xảy ra
 
 #example[
-\
-Input:\
-1; 1; 2; 50; 55; 10\
-2; 2; 3; 40; 50; 20\
-3; 1; 3; 30; 40; 15\
-\
-Output:\
-1; 50\
-2; 40\
-3; 30\
+  \
+  Input:\
+  1; 1; 2; 50; 55; 10\
+  2; 2; 3; 40; 50; 20\
+  3; 1; 3; 30; 40; 15\
+  \
+  Output:\
+  1; 50\
+  2; 40\
+  3; 30\
 ]
 
 Toàn bộ dữ liệu đầu vào gồm 18 file với độ khó tăng dần, định dạng như mô tả ở trên. Thông qua tiền sử lý sơ bộ, ta có thông tin cơ bản của dữ liệu đầu vào như sau:
@@ -1566,9 +2247,9 @@ Toàn bộ dữ liệu đầu vào gồm 18 file với độ khó tăng dần, �
 == Kết quả và đánh giá
 
 
-Để tiến hành thử nghiệm hai phương pháp đã nêu ở @pesp_reduction, khoá luận đã cài đặt một công cụ dòng lệnh giải bài toán PESP có tên là #link("https://github.com/ppvan/pesp-sat", "pesp-sat"). 
+Để tiến hành thử nghiệm hai phương pháp đã nêu ở @pesp_reduction, khoá luận đã cài đặt một công cụ dòng lệnh giải bài toán PESP có tên là #link("https://github.com/ppvan/pesp-sat", "pesp-sat").
 
-Chương trình thử nghiệm được cài đặt bằng ngôn ngữ Go, sử dụng SAT Solver #link("https://github.com/go-air/gini", "Gini"). Công cụ hỗ trợ đa nền tảng, được kiểm thử kĩ lưỡng, độ bao phủ đạt 80%, mã nguồn lưu tại: #link("https://github.com/ppvan/pesp-sat", "ppvan/pesp-sat"). Tất cả tài liệu và dữ liệu liên quan, bao gồm mã nguồn công cụ thử nghiệm, tài liệu khóa luận và slide trình bày khóa luận được lưu trữ tại git repo này. 
+Chương trình thử nghiệm được cài đặt bằng ngôn ngữ Go, sử dụng SAT Solver #link("https://github.com/go-air/gini", "Gini"). Công cụ hỗ trợ đa nền tảng, được kiểm thử kĩ lưỡng, độ bao phủ đạt 80%, mã nguồn lưu tại: #link("https://github.com/ppvan/pesp-sat", "ppvan/pesp-sat"). Tất cả tài liệu và dữ liệu liên quan, bao gồm mã nguồn công cụ thử nghiệm, tài liệu khóa luận và slide trình bày khóa luận được lưu trữ tại git repo này.
 
 Để kiểm chứng chương trình thử nghiệm, vui lòng làm theo hướng dẫn trong README.md. Thực nghiệm sau đây được tiến hành trên máy tính (laptop) sau:
 
@@ -1598,16 +2279,16 @@ Khóa luận sẽ tiến hành đo thời gian chạy (ms), số mệnh đề, s
     ..benmark.flatten(),
   ),
   caption: "Kết quả chạy thử nghiệm, thời gian tính bằng mili giây (ms)",
-  placement: top
+  placement: top,
 ) <benmark_1>
 
-#figure(image("image/chart-vars.svg"), caption:"Biểu đồ đường so sánh số biến của Direct và Order Encoding")
+#figure(image("image/chart-vars.svg"), caption: "Biểu đồ đường so sánh số biến của Direct và Order Encoding")
 
 
-#figure(image("image/chart-clause.svg"), caption:"Biểu đồ đường so sánh số mệnh đề của Direct và Order Encoding")
+#figure(image("image/chart-clause.svg"), caption: "Biểu đồ đường so sánh số mệnh đề của Direct và Order Encoding")
 
 
-#figure(image("image/chart-time.svg"), caption:"Biểu đồ đường so sánh thời gian thực thi của Direct và Order Encoding")
+#figure(image("image/chart-time.svg"), caption: "Biểu đồ đường so sánh thời gian thực thi của Direct và Order Encoding")
 
 Quan sát bảng dữ liệu và các biểu đồ trên, ta thấy cả hai thuật toán đều tăng độ phức tạp nhất quán với độ phức tạp tăng dần của vấn đề PESP đầu vào. Khoảng cách giữa Direct và Order Encoding là khá rõ rệt (khoảng 7x-50x về thời gian, 15x-20x về số mệnh đề). Tuy nhiên về số biến, hai phương pháp tương đối đồng đều. Như vậy, phương pháp mã hóa Order tỏ ra tương đối ưu việt so với Direct, điều này có thể dễ dàng giải thích bởi Order encoding loại bỏ không gian tìm kiếm theo từng vùng thay vì từng điểm như Direct, dẫn đến số mệnh đề ít hơn. Hơn nữa, theo mô tả ở @pesp_reduction, các mệnh đề Order encoding chồng chéo lên nhau kiến vùng mâu thuẫn được tìm ra nhanh chóng bởi SAT Solver.
 
