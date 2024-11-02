@@ -455,7 +455,7 @@ Chương
     S union C &= A \
     S sect C &= emptyset
   $
-]
+] <cons_def>
 
 #example[
   Cho $N = ({A, B, C}, Nu, 8)$ là một mạng sự kiện định kỳ. Trong đó:
@@ -1871,13 +1871,13 @@ Cùng xem lại @order_diagram ở một góc nhìn khác. Ta thấy hai miền 
     content((-0.5, T - 1), $#(T - 1)$)
 
     line((-1, 1), (6, 8))
-    content((3, 4), $pi_B - pi_A < 2 $, angle: 45deg)
+    content((3, 4), $pi_B - pi_A < 2$, angle: 45deg)
     line((3, -1), (8, 4))
-    content((5, 2), $pi_B - pi_A > 4 - t_T = -4 $, angle: 45deg)
+    content((5, 2), $pi_B - pi_A > 4 - t_T = -4$, angle: 45deg)
 
   }),
   caption: [Bản chất của miền vô nghiệm$((A, B), [2, 4]_8)$],
-) 
+)
 
 
 #definition[
@@ -1908,22 +1908,22 @@ Cùng xem lại @order_diagram ở một góc nhìn khác. Ta thấy hai miền 
 ]
 
 
-#let delta_y = (l: int, u: int) => {
-    return calc.floor((l - u - 1) / 2.0)
+#let delta_y = (l, u) => {
+  return calc.floor((l - u - 1) / 2.0)
 }
 
-#let delta_x = (l: int, u: int) => {
-    return calc.ceil((l - u - 1) / 2.0) - 1
+#let delta_x = (l, u) => {
+  return calc.ceil((l - u - 1) / 2.0) - 1
 }
 
 #example[
-    Xét hai sự kiện $A, B$ với $a = ((A, B), [2, 4]_8)$ như ở  @cons_example, với $pi_A, pi_B$ là hai tiềm năng sự kiện. Chọn $l = 2, u = -4$, ta có:
-    $
-      delta(2, -4) &= 2 - (-4) - 1 = 5\
-      delta y(2, 4) &= floor(frac(delta(2, -4), 2)) = 2\
-      delta x(2, 4) &= ceil(frac(delta(2, -4), 2)) - 1 = 2
-    $
-    được minh họa như @order_rect_szie.
+  Xét hai sự kiện $A, B$ với $a = ((A, B), [2, 4]_8)$ như ở @cons_example, với $pi_A, pi_B$ là hai tiềm năng sự kiện. Chọn $l = 2, u = -4$, ta có:
+  $
+    delta(2, -4) &= 2 - (-4) - 1 = 5\
+    delta y(2, 4) &= floor(frac(delta(2, -4), 2)) = 2\
+    delta x(2, 4) &= ceil(frac(delta(2, -4), 2)) - 1 = 2
+  $
+  được minh họa như @order_rect_szie.
 ]
 
 #figure(
@@ -2047,17 +2047,44 @@ Cùng xem lại @order_diagram ở một góc nhìn khác. Ta thấy hai miền 
 
 
 #definition[
-    Cho $u, l in ZZ$ với $u < l$ và $t_T in NN$. Khi đó
-    $
-      phi_t_T: ZZ times ZZ &-> 2^(2^ZZ times 2^ZZ)\
-      (l, u) &|-> {([x, x + delta x (l, u)] times [y, y + delta y(l, u)])| \ 
+  Cho $u, l in ZZ$ với $u < l$ và $t_T in NN$. Khi đó
+  $
+    phi_t_T: ZZ times ZZ &-> 2^(2^ZZ times 2^ZZ)\
+    (l, u) &|-> {
+      ([x, x + delta x (l, u)] times [y, y + delta y(l, u)])| \
       &forall y in [-delta y(l, u), t_T - 1]:\
-      &x = y - u - 1 - delta x(l, u)}\
-    $ là ánh xạ tới tập hợp hình chữ nhật giữa $u $ và $l$.
+      &x = y - u - 1 - delta x(l, u)
+    }\
+    &x + delta x(l, u) >= 0 and x <= t_T - 1
+  $ là ánh xạ tới tập hợp hình chữ nhật giữa $u $ và $l$.
 ] <generator>
 
-Áp dụng @generator với hai sự kiện $A, B$, $a = ((A, B), [2, 4]_8)$ như ở  @cons_example, với $pi_A, pi_B$ là hai tiềm năng sự kiện. Chọn $l = 2, u = -4$, ta có 
+Áp dụng @generator với hai sự kiện $A, B$, $a = ((A, B), [2, 4]_8)$ như ở @cons_example, với $pi_A, pi_B$ là hai tiềm năng sự kiện. Chọn $l = 2, u = -4$, ta thấy tập hợp các hình chữ nhật hoàn toàn phủ vùng vô nghiệm trong khoảng $(-4, 2)$, được minh họa ở @order_rect
 
+#let unfeasible = (l, u, T) => {
+  let d_y = delta_y(l, u)
+  let d_x = delta_x(l, u)
+
+  let result = ()
+  for y in range(-d_y, T - 1) {
+    let x = y - u - 1 - d_x
+    if x + d_x >= 0 and x <= T - 1 {
+      result.push((x, x + d_x, y, y + d_y))
+    }
+  }
+
+  result
+}
+
+#let render_rect = result => {
+  result.chunks(3).map(sub => $&#(sub.map(((x1, x2, y1, y2)) => $([#x1, #x2] times [#y1, #y2])$).join(","))$).join(
+    linebreak(),
+  )
+}
+
+$
+  phi_t_T (2, -4) = {#render_rect(unfeasible(2, -4, 8))}
+$
 
 #figure(
   cetz.canvas({
@@ -2152,6 +2179,18 @@ Cùng xem lại @order_diagram ở một góc nhìn khác. Ta thấy hai miền 
     content((T - 1, -0.5), $#(T - 1)$)
     content((-0.5, T - 1), $#(T - 1)$)
 
+    let rects = unfeasible(2, -4, T)
+    let error-color = color.mix((red, 70%), white).opacify(-40%)
+
+    for (x1, x2, y1, y2) in rects {
+      rect((x1, y1), (x2, y2), fill: error-color, stroke: error-color.darken(40%))
+      for i in range(x1, x2 + 1) {
+        for j in range(y1, y2 + 1) {
+          circle((i, j), radius: 1pt, fill: color.mix((red, 100%)))
+        }
+      }
+    }
+
     line((-1, 1), (6, 8))
     // content((3, 4), $pi_B - pi_A < 2 $, angle: 45deg)
     line((3, -1), (8, 4))
@@ -2161,13 +2200,93 @@ Cùng xem lại @order_diagram ở một góc nhìn khác. Ta thấy hai miền 
 
 
   }),
-  caption: [Bản chất của miền vô nghiệm$((A, B), [2, 4]_8)$],
-) 
+  caption: [Minh họa tập hợp hình chữ nhật phủ vùng vô nghiệm $((A, B), [2, 4]_8)$],
+) <order_rect>
+
+Tương tự, ta cần phủ hai vùng vô nghiệm còn lại ở góc trái trên và góc phải, tương ứng với các khoảng $(4, 8), (-8, -6)$. Từ đó
+ta có công thức tổng quát cho ràng buộc thời gian $((A, B), [l, u]_t_T)$
+
+#definition[
+  Cho ràng buộc thời gian $a = ((A, B), [l, u]_t_T)$. Với
+  $
+    k = -1 &"nếu" 0 in [l, u]_t_T\
+    k = 0 &"nếu" 0 in.not [l, u]_t_T
+  $
+
+  $
+    zeta_t_T: ZZ times ZZ &-> 2^((ZZ times ZZ) times (ZZ times ZZ))\
+    (l, u) &|-> union.big_(i in [k, 1]) phi_t_T (l + i dot t_T, u + (i - 1) dot t_T)
+  $ là hàm số sinh tất cả các hình chữ nhật phủ miền vô nghiệm của $a$
+]
 
 
-#pesp_diagram(2, 4, 8)
-#pesp_diagram(2, 2, 10)
+Tiếp theo, ta cần mã hóa các hình chữ nhật này thành các mệnh đề chuẩn tắc. Điều này có thể tổng quát trực tiếp từ @cons_example. Từ đó ta có ánh xạ tổng quát ràng buộc thời gian thành các mệnh đề chuẩn tắc.
 
+#definition[
+  Cho $A = ([x_1, x_2] times [y_1, y_2]) in 2^ZZ times 2^ZZ$ với $(x, y) in A$. Khi đó
+  $
+    "encode_order_rect": 2^ZZ times 2^ZZ &-> Sigma_("SAT")\
+    [x_1, x_2] times [y_1, y_2] &|-> (not p_(x, x_2) or p_(x, x_1 - 1) or not p_(y, y_2) or p (y, y_1 - 1))
+  $ là mã hóa thứ tự loại trừ miền phủ bởi $A$, trong đó $p_(l, k)$ là các biến logic tương ứng với mệnh đề $l <= k$ ở @ahihi
+]
+
+
+#definition[
+  Cho ràng buộc thời gian $a = ((A, B), [l, u]_t_T)$. Khi đó
+  $
+    "encode_order_time_con": C &-> L(Sigma_"SAT")\
+    ((A, B), [l, u]_t_T) &|-> and.big_(A in zeta_t_T (l, u)) "encode_order_rect"(A)
+  $ là hàm số mã hóa thứ tự ràng buộc thời gian
+]
+
+=== Mã hóa thứ tự ràng buộc đối xứng
+
+Mã hóa ràng buộc đối xứng hoàn toàn tương tự với ràng buộc thời gian. Ta dễ dàng có được các kết quả sau:
+
+#definition[
+  Cho $u, l in ZZ, u < l$ và $t_T in NN$. Khi đó
+
+  $
+    psi_t_T : ZZ times ZZ -> &2^(2^ZZ times 2^ZZ)\
+    (l, u) |-> &{
+      ([x, x + delta x(l, u)] times [y, y + delta y(l, u)]) \
+      &forall y in [-delta y, t_T - 1]:\
+      &x = -y + l - 1 - delta x(l, u)
+    }
+  $ là hàm số ánh xạ tất cả hình chữ nhật giữa $u$ và $l$
+]
+
+
+#definition[
+  Cho ràng buộc thời gian $a = ((A, B), [l, u]_t_T)$. Với
+  $
+    k = 1 &"nếu" 0 in [l, u]_t_T\
+    k = 2 &"nếu" 0 in.not [l, u]_t_T
+  $
+
+  $
+    Lambda_t_T: ZZ times ZZ &-> 2^((ZZ times ZZ) times (ZZ times ZZ))\
+    (l, u) &|-> union.big_(i in [0, k]) phi_t_T (l + i dot t_T, u + (i - 1) dot t_T)
+  $ là hàm số sinh tất cả các hình chữ nhật phủ miền vô nghiệm của $a$
+]
+
+
+#definition[
+  Cho ràng buộc đối xứng $a = ((A, B), [l, u]_t_T)$. Khi đó
+  $
+    "encode_order_sym_con": S &-> L(Sigma_"SAT")\
+    ((A, B), [l, u]_t_T) &|-> and.big_(A in Lambda_t_T (l, u)) "encode_order_rect"(A)
+  $ là hàm số mã hóa thứ tự ràng buộc đối xứng
+]
+
+Với toàn bộ thông tin từ các phần trước, ta có hàm số mã hóa thứ tự toàn bộ bài toán PESP như sau:
+
+#definition[
+    Cho $A = S union C$ là tập hợp các ràng buộc ở @cons_def, khi đó:
+    $
+      
+    $
+]
 
 == So sánh Direct encoding và Order encoding
 
