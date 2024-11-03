@@ -1220,7 +1220,7 @@ Cuối chương này, hai phương pháp sẽ được so sánh để đưa ra �
 
 Nhiều nghiên cứu liên quan đề xuất hai phương pháp mã hóa bài toán lập lịch định kỳ (PESP) về bài toán SAT là Direct Encoding và Order Encoding.
 
-== Mã hóa đại lượng rời rạc
+== Mã hóa đại lượng rời rạc <encoding>
 
 Các biến số trong bài toán PESP (các tiềm năng sự kiện) là các biến đại số rời rạc, tức là chúng có thể nhận các giá trị từ một tập hữu hạn, thay vì có thể nhận bất kỳ giá trị nào trong một khoảng liên tục. Ví dụ, một biến rời rạc có thể đại diện cho một khoảng thời gian nhất định giữa các sự kiện, và giá trị của nó có thể là các số nguyên từ 1 đến 10, biểu thị số phút. Tuy nhiên, logic mệnh đề và biểu thức chuẩn tắc hội chỉ có thể biểu diễn hai trạng thái logic là 0 và 1, tương ứng với giá trị "đúng" và "sai". Điều này tạo ra một vấn đề khi ta cần biểu diễn các giá trị rời rạc, vì không thể trực tiếp gán chúng vào các biến logic chỉ có hai trạng thái.
 
@@ -2284,22 +2284,135 @@ Với toàn bộ thông tin từ các phần trước, ta có hàm số mã hóa
 #definition[
     Cho $A = S union C$ là tập hợp các ràng buộc ở @cons_def, khi đó:
     $
-      
+      "encode_order_con": A &-> L(Sigma_"SAT") \
+      a &|->  cases("encode_order_time_con"(a) "nếu" a in C, "encode_order_sym_con"(a) "nếu" a in S)
     $
+]
+
+
+#definition[
+    Cho $A = S union C$ là tập hợp các ràng buộc ở @cons_def, khi đó:
+    $
+      Psi^A_"order" = and.big_(a in A) "encode_order_con"(a)
+    $
+]
+
+
+#definition[
+    Cho $N = (nu, A, t_T)$ là mạng sự kiện định kỳ như đã định nghĩa ở @cons_def, khi đó:
+    $
+      "encode_direct_pesp": 2^(nu^+) times 2^(A^+_t_T) times 2^NN &-> L(Sigma_"SAT")\
+
+      (nu, A, t_T) &|-> (Omega_"order"^nu and Psi^A_"order")
+    $ là hàm số mã hóa thứ tự của mạng định kỳ $N$.
 ]
 
 == So sánh Direct encoding và Order encoding
 
+Trong chương này khóa luận sẽ so sánh hai phương pháp mã hóa trực tiếp và thứ tự ở các thông số như số mệnh đề và số biến. Các thông số khác như thời gian giải thực tế sẽ được trình bày ở @exp. Để thuận tiện, ta định nghĩa thêm một số khái niệm sau.
+
+#definition[
+  Cho $F in L(Sigma_"SAT")$ là một biểu thức chuẩn tắc hội. Khi đó:
+  $
+    abs(F) in NN
+  $ là số mệnh đề (số tuyển sơ cấp) của F.
+]
+
+
+#definition[
+  Cho $F in L(Sigma_"SAT")$ là một biểu thức chuẩn tắc hội. Khi đó:
+  $
+    abs("vars"(F)) in NN
+  $ là số biến được sử dụng trong F.
+]
+
+
 === Số biến
+
+Với $F$ là biểu thức chuẩn tắc hội sinh ra từ mã hóa trực tiếp của mạng định kỳ $N = (nu, A, t_T)$. Từ @def_direct ta thấy với mỗi tiềm năng $pi_n (n in nu)$, ta cần $t_T$ biến vì $pi_n in [0, t_T - 1]$. Do đó
+
+$
+  |"vars"("encode_direct_pesp"(N))| = |"vars"(F)| = t_T dot |nu|
+$ tức là số biến bằng tích của chu kỳ và số sự kiện.
+
+Tương tự ta xem xét $G$ là biểu thức chuẩn tắc hội sinh từ mã hóa thứ tự của mạng định kỳ $N = (nu, A, t_T)$. Từ @ahihi
+
+
+$
+  |"vars"("encode_order_pesp"(N))| = |"vars"(G)| = (t_T - 1) dot |nu|
+$
+
+Trong thực tế, chu kì $t_T = 60$ hoặc $t_T = 120$. Vì vậy sự khác biệt về số biến là không lớn.
+
+$
+  |"vars"("encode_direct_pesp"(N))| approx |"vars"("encode_order_pesp"(N))|
+$
 
 === Số mệnh đề
 
-#lorem(loremAvg)
+Để ước tính số mệnh đề sử dụng, ta cần ước tính lần lượt số mệnh đề dùng cho mã hóa tiềm năng và số biến mã hóa ràng buộc, $Omega_t^nu$ và $Psi_t^A t in {"direct", "order"}$. Dễ thấy
 
+$
+  abs(Omega_t^nu and Psi_t^A) = abs(Omega_t^nu) + abs(Omega_t^nu) \ t in {"direct", "order"}
+$
+
+Đầu tiên, với mã hóa biến $Omega_t^nu$, do các biến có cùng tập xác định $[0, t_T - 1]$.
+
+$
+  abs(Omega_t^nu) = abs(nu) dot abs("encode_direct"(pi_n))\
+  abs(Omega_t^nu) = abs(nu) dot abs("encode_order"(pi_n))\
+  n in nu
+$ <thing_1>
+
+Từ các kết quả ở @encoding, ta có:
+
+$
+  abs("encode_direct"(pi_n)) &= frac(abs([0, t_T - 1]) dot (abs([0, t_T - 1]) - 1), 2)\
+  &= frac(t_T dot (t_T - 1), 2)\
+
+
+  abs("encode_order"(pi_n)) &= abs([0, t_T - 1]) - 2\
+  &= t_T - 2
+$ <thing_2>
+
+Từ @thing_1 và @thing_2 kết hợp với kí pháp $O(n)$, ta có:
+
+$
+  abs(Omega_"direct"^nu) &in O(t^2 abs(nu))\
+  abs(Omega_"order"^nu) &in O(t abs(nu))
+$ <vars_thing>
+
+Tiếp theo, ta cần xem xét mã hóa các ràng buộc $Psi_t^A t$. Do mã hóa trực tiếp loại trừ các căp không thỏa mãn $P_a$ nên ta có:
+
+$
+  abs(Psi^A_"direct") = sum_(a in A) abs(P_a)
+$
+
+Hiển nhiên $abs(P_a) in O(t^2_T)$ do $forall (i, j) in P_a => (i, j) in [0, t_T - 1] times [0, t_T - 1]$. Do đó
+
+$
+  abs(Psi^A_"direct") in O(t^2_T abs(A))
+$ <cons_thign1>
+
+Với mã hóa thứ tự, mỗi ràng buộc chỉ cần hợp của 2 hoặc 3 lần (tùy theo $[l, u]$) $phi_t_T$, mà $phi_t_T$ tỉ lệ với $[-delta y, t_T - 1]$ theo như @generator. Do vậy
+
+
+$
+  abs(Psi^A_"order") in O(t_T abs(A))
+$ <cons_thign2>
+
+Kết hợp @vars_thing, @cons_thign1 và @cons_thign2 ta có:
+
+$
+  |"vars"("encode_direct_pesp"(N))| in O(t^2(abs(nu) + abs(A)))\
+  |"vars"("encode_order_pesp"(N))| in O(t_T (abs(nu) + abs(A)))
+$
+
+Từ kết quả này ta thấy mã hóa thứ tự nhanh gấp $t_T$ lần so với mã hóa trực tiếp trên cùng một mạng định kỳ. Kết quả này sẽ được kiểm chứng ở @exp.
 
 #pagebreak(weak: true)
 
-= Thực nghiệm và kết quả
+= Thực nghiệm và kết quả <exp>
 
 == Mô hình bài toán PTSP về bài toán PESP
 

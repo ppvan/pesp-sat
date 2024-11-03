@@ -1,0 +1,1 @@
+1. Chỉ tồn tại tối đa 2 vùng nghiệm
