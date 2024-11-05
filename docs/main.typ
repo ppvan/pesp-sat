@@ -1102,12 +1102,13 @@ Nhằm cung cấp nền tảng kiến thức, sau đây khóa luận sẽ trình
 ]
 
 
-== Bộ giải SAT và ứng dụng
+=== Bộ giải SAT
 
 Bài toán SAT là bài toán thuộc lớp NP xuất hiện sớm nhất, đồng thời là bài toán đầu tiên được chứng minh là NP-complete @sat_np. Vì vậy, không tồn tại giải thuật tối ưu giải bài toán SAT có độ phức tạp đa thức. Tuy nhiên, nhiều nghiên cứu đã được tiến hành nhằm xây dựng chương trình giải bài toán SAT, thường gọi là các bộ giải SAT. Đầu vào chương trình thường là biểu thức logic dạng chuẩn tắc hội (CNF). Nếu biểu thức thỏa mãn được, đưa ra kết luận SAT và một nghiệm bất kỳ kèm chứng minh. Nếu không tồn tại nghiệm thoả mãn, kết luận UNSAT.
 
 #figure(
   diagram(
+    cell-size: 0pt,
     spacing: 5em,
     node-corner-radius: 4pt,
     {
