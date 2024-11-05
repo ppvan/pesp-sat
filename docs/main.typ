@@ -9,19 +9,41 @@
 #set page(width: 16cm, height: auto, margin: 1.5cm)
 #set heading(numbering: "1.1.", supplement: "Chương")
 
+#set math.equation(
+  numbering: "(1)",
+  supplement: none,
+)
+#show heading: it => {
+  counter(math.equation).update(0)
+  it
+}
+
 #show link: underline
 
-#let theorem = thmbox("theorem", "Định lý", fill: rgb("#eeffee"))
+#show ref: it => {
+    // show link: 
+  // provide custom reference for equations
+  if it.element != none and it.element.func() == math.equation {
+    // optional: wrap inside link, so whole label is linked
+    link(it.target)[(#it)]
+  } else {
+    it
+  }
+}
+
+
+#let theorem = thmbox("theorem", "Định lý", fill: rgb("#eeffee"), base_level: 1)
 #let corollary = thmplain(
   "corollary",
   "Hệ quả",
   base: "theorem",
   titlefmt: strong,
+  base_level: 1
 )
-#let definition = thmbox("definition", "Định nghĩa", inset: (x: 1.2em, top: 1em))
+#let definition = thmbox("definition", "Định nghĩa", inset: (x: 1.2em, top: 1em), base_level: 1)
 
-#let example = thmplain("example", "Ví dụ").with(numbering: "1.1")
-#let proof = thmproof("proof", "Proof")
+#let example = thmplain("example", "Ví dụ").with(numbering: "1.1", base_level: 1)
+#let proof = thmproof("proof", "Proof", base_level: 1)
 
 
 #set page(paper: "a4", margin: (top: 2.5cm, bottom: 3cm, left: 2.5cm, right: 2cm), numbering: "1")
@@ -47,7 +69,7 @@
   }),
 )
 
-#set text(lang: "vi", font: "Latin Modern Roman 12", size: 13pt)
+#set text(lang: "vi", font: "Latin Modern Roman", size: 13pt)
 
 // #set text(lang: "vi", font: "Times New Roman", size: 13pt)
 #set block(spacing: 1.56em)
@@ -169,10 +191,10 @@
 = Tóm tắt <page-start>
 
 
-Hiện nay, hiệu năng của các SAT Solver đã cải thiện đáng kể và có thể được ứng dụng trong việc giải các bài toán NP-complete như: _Traveling Salesman,
+Hiện nay, hiệu năng của các bộ giải SAT đã cải thiện đáng kể và có thể được ứng dụng trong việc giải các bài toán NP-complete như: _Traveling Salesman,
 Hamiltonian path
 , graph k-coloring..._. Vấn đề lập lịch sự kiện định kỳ (Periodic Event Scheduling Problem) từ lâu đã được chương minh là một vấn đề NP-complete. Các phương pháp hiện tại như lập trình ràng buộc (Constraint satisfaction Programing) hay quy hoạch số nguyên (Integer Programing) chưa thực sự hiệu quả với các bộ dữ liệu lớn.
-Tài liệu này sẽ trình bày thuật toán chuyển hóa vấn đề lập lịch định kỳ (PESP) về bài toán SAT, sau đó giải bài toán sử dụng SAT Solver nhằm đạt được hiệu suất cao hơn.
+Tài liệu này sẽ trình bày thuật toán chuyển hóa vấn đề lập lịch định kỳ (PESP) về bài toán SAT, sau đó giải bài toán sử dụng bộ giải SAT nhằm đạt được hiệu suất cao hơn.
 
 
 *Từ khóa: * Periodic railway timetabling; Optimisation; Periodic Event Scheduling Problem; SAT
@@ -322,13 +344,13 @@ Trong đó, _xây dựng lịch trình_ là giai đoạn thiết yếu đối v�
 
 Tuy nhiên, lập lịch trình tàu hỏa là một nhiệm vụ vô cùng khó khăn và tốn kém, vì phải đáp ứng nhiều tiêu chí phức tạp. Trước hết, thời gian đệm (recovery times) cần được tính toán để bù đắp cho những gián đoạn trong hệ thống, như sự thay đổi tốc độ do thời tiết hoặc thiên tai, và tình trạng tàu khởi hành muộn so với dự kiến. Để tránh làm gián đoạn toàn bộ hệ thống, lịch trình phải bao gồm thời gian đệm phù hợp. Tiếp theo, thời gian giãn cách tối thiểu (minimum headway time) là cần thiết để đảm bảo an toàn khi hai tàu sử dụng chung một đường ray và phải khởi hành cách nhau một khoảng thời gian tối thiểu. Tính kết nối (connections between trains) cũng rất quan trọng, vì thời gian đến và khởi hành của các tàu tại cùng một bến đỗ cần phải liên tục để phục vụ nhu cầu nối chuyến của hành khách. Cuối cùng, thời gian bảo trì (turn around times at termination) phải được tính toán để bao gồm thời gian cần thiết cho việc bảo trì động cơ, tiếp nhiên liệu và thay ca nhân viên ở ga tàu cuối trước khi tàu quay trở lại.
 
-Trước đây, xây dựng lịch trình tàu chạy chủ yếu được làm thủ công @cyc, tốn nhiều chi phí cũng như dễ xảy ra sai sót. Vì vậy, trong thập kỷ trước, nhiều nghiên cứu nhằm hỗ trợ và tự động quá trình lập lịch đã được tiến hành @liebchen2007modeling @odijk1996constraint @yan2019multi. Hầu hết các nghiên cứu đều dựa trên mô hình _lập lịch sự kiện định kỳ_ (Periodic Event Schedule Problem - PESP), một mô hình nổi tiếng được giới thiệu bởi Serafini and Ukovich @pesp-intro. Tuy nhiên, các phương pháp hiện tại trong việc giải bài toán PESP như lập trình ràng buộc, quy hoạch số nguyên chưa hiệu quả với các bộ dữ liệu lớn. Trong khóa luận này, chúng tôi trình bày phương pháp giải bài toán PESP sử dụng SAT Solver và đề xuất một vài cải tiến về thuật toán mã hóa.
+Trước đây, xây dựng lịch trình tàu chạy chủ yếu được làm thủ công @cyc, tốn nhiều chi phí cũng như dễ xảy ra sai sót. Vì vậy, trong thập kỷ trước, nhiều nghiên cứu nhằm hỗ trợ và tự động quá trình lập lịch đã được tiến hành @liebchen2007modeling @odijk1996constraint @yan2019multi. Hầu hết các nghiên cứu đều dựa trên mô hình _lập lịch sự kiện định kỳ_ (Periodic Event Schedule Problem - PESP), một mô hình nổi tiếng được giới thiệu bởi Serafini and Ukovich @pesp-intro. Tuy nhiên, các phương pháp hiện tại trong việc giải bài toán PESP như lập trình ràng buộc, quy hoạch số nguyên chưa hiệu quả với các bộ dữ liệu lớn. Trong khóa luận này, chúng tôi trình bày phương pháp giải bài toán PESP sử dụng bộ giải SAT và đề xuất một vài cải tiến về thuật toán mã hóa.
 
 Phần còn lại của khóa luận được tổ chức như sau:
 
 - *Chương 1*: Định nghĩa chi tiết các khái niệm trong bài toán _lập lịch sự kiện định kỳ_, một số cách tiếp cận hiện tại
 
-- *Chương 2*: Trình bày kiến nền tảng về logic mệnh đề và các khái niệm liên quan đến bài toán SAT như NP-complete, Satisfiablility Problem, SAT Solver và quy trình giải bài toán thực tế sử dụng SAT solver.
+- *Chương 2*: Trình bày kiến nền tảng về logic mệnh đề và các khái niệm liên quan đến bài toán SAT như NP-complete, Satisfiablility Problem, bộ giải SAT và quy trình giải bài toán thực tế sử dụng bộ giải SAT.
 
 - *Chương 3*: Đề xuất thuật toán chuyển đổi bài toán PESP về bài toán SAT và cách giải cùng cải tiến thuật toán mã hóa.
 
@@ -941,8 +963,6 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
   Mọi biểu thức logic đều có dạng chuẩn tắc hội và chuẩn tắc tuyển tương ứng @cnfproof.
 ]
 
-// FIXME: xem xét chứng minh lại luôn
-
 #example[
   Cho biểu thức logic:
 
@@ -1082,9 +1102,9 @@ Nhằm cung cấp nền tảng kiến thức, sau đây khóa luận sẽ trình
 ]
 
 
-=== SAT Solver
+== Bộ giải SAT và ứng dụng
 
-Bài toán SAT là bài toán thuộc lớp NP xuất hiện sớm nhất, đồng thời là bài toán đầu tiên được chứng minh là NP-complete @sat_np. Vì vậy, không tồn tại giải thuật tối ưu giải bài toán SAT có độ phức tạp đa thức. Tuy nhiên, nhiều nghiên cứu đã được tiến hành nhằm xây dựng chương trình giải bài toán SAT, thường gọi là các SAT Solver. Đầu vào chương trình thường là biểu thức logic dạng chuẩn tắc hội (CNF). Nếu biểu thức thỏa mãn được, đưa ra kết luận SAT và một nghiệm bất kỳ kèm chứng minh. Nếu không tồn tại nghiệm thoả mãn, kết luận UNSAT.
+Bài toán SAT là bài toán thuộc lớp NP xuất hiện sớm nhất, đồng thời là bài toán đầu tiên được chứng minh là NP-complete @sat_np. Vì vậy, không tồn tại giải thuật tối ưu giải bài toán SAT có độ phức tạp đa thức. Tuy nhiên, nhiều nghiên cứu đã được tiến hành nhằm xây dựng chương trình giải bài toán SAT, thường gọi là các bộ giải SAT. Đầu vào chương trình thường là biểu thức logic dạng chuẩn tắc hội (CNF). Nếu biểu thức thỏa mãn được, đưa ra kết luận SAT và một nghiệm bất kỳ kèm chứng minh. Nếu không tồn tại nghiệm thoả mãn, kết luận UNSAT.
 
 #figure(
   diagram(
@@ -1104,10 +1124,10 @@ Bài toán SAT là bài toán thuộc lớp NP xuất hiện sớm nhất, đồ
 
     },
   ),
-  caption: "Sơ đồ đầu vào/đầu ra của SAT Solver",
+  caption: "Sơ đồ đầu vào/đầu ra của bộ giải SAT",
 )
 
-Nhiều kĩ thuật đã được nghiên cứu nhằm cải thiện độ hiệu quả các SAT Solver theo thời gian, tiêu biểu như:
+Nhiều kĩ thuật đã được nghiên cứu nhằm cải thiện độ hiệu quả các bộ giải SAT theo thời gian, tiêu biểu như:
 
 1. Thuật toán David-Putnam(1960)@putnam: Giảm số biến bằng thuật toán luận giải (resolusion).
 
@@ -1117,18 +1137,18 @@ Nhiều kĩ thuật đã được nghiên cứu nhằm cải thiện độ hiệ
 
 4. Những cải tiến khác về cơ sở dữ liệu, tiền xử lý, tận dụng khả năng xử lý song song @balyo2015hordesatmassivelyparallelportfolio@martins2012overview@hamadi2010manysat.
 
-Do vậy, các SAT Solver hiện nay đã có khả năng giải các bài toán cực kì phức tạp, với hàng triệu biến và mệnh đề. Hằng năm, các cuộc thi về SAT Solver được tổ chức nhằm cải thiện hiệu suất thuật toán, tiêu biểu như #link("https://satcompetition.github.io/2024/", "SAT competition"). Phần lớn những người tham gia công bố SAT Solver dưới dạng thử viện mã nguồn mở, có thể dễ dàng tích hợp và sử dung. Sau đây liệt kê một số Solver có ảnh hưởng quan trọng trong lịch sử phát triển của các SAT Solver:
+Do vậy, các bộ giải SAT hiện nay đã có khả năng giải các bài toán cực kì phức tạp, với hàng triệu biến và mệnh đề. Hằng năm, các cuộc thi về bộ giải SAT được tổ chức nhằm cải thiện hiệu suất thuật toán, tiêu biểu như #link("https://satcompetition.github.io/2024/", "SAT competition"). Phần lớn những người tham gia công bố bộ giải SAT dưới dạng thử viện mã nguồn mở, có thể dễ dàng tích hợp và sử dung. Sau đây liệt kê một số Solver có ảnh hưởng quan trọng trong lịch sử phát triển của các bộ giải SAT:
 
-- *CaDiCal*: CaDiCal là bộ giải SAT dựa trên thuật toán CDCL Mục tiêu chính của CaDiCal không phải hiệu năng, mà là một cơ sở thuật toán dễ hiểu và mở rộng. Vì vậy đặt nền móng cho nhiều SAT Solver khác sau này.
+- *CaDiCal*: CaDiCal là bộ giải SAT dựa trên thuật toán CDCL Mục tiêu chính của CaDiCal không phải hiệu năng, mà là một cơ sở thuật toán dễ hiểu và mở rộng. Vì vậy đặt nền móng cho nhiều bộ giải SAT khác sau này.
 
 - *Kissat*: Dựa trên CaDiCal, nhưng được viết lại bằng C, với nhiều cải tiến về cấu trúc dữ liệu, xếp lịch tiến trình xử lý, tối ưu hóa cài đặt thuật toán. Xếp hạng đầu trong hạng mục các công cụ giải SAT tuần tự trong cuộc thi giải SAT quốc tế năm 2022.
-- *MiniSAT*: Một SAT Solver hiện đại, trở thành tiêu chuẩn trong công nghiệp. Dựa trên thuật toán CDCL, và giành chiến thắng trong cuộc thi giải SAT quốc tế năm 2005. Đây vẫn là một trong những SAT Solver được sử dụng nhiều nhất do chất lượng mã nguồn cao, rõ ràng và dễ cải tiến.
+- *MiniSAT*: Một bộ giải SAT hiện đại, trở thành tiêu chuẩn trong công nghiệp. Dựa trên thuật toán CDCL, và giành chiến thắng trong cuộc thi giải SAT quốc tế năm 2005. Đây vẫn là một trong những bộ giải SAT được sử dụng nhiều nhất do chất lượng mã nguồn cao, rõ ràng và dễ cải tiến.
 
-- *Glucose*: SAT Solver được dựa trên MiniSAT, áp dụng thêm nhiều kỹ thuật mới như phương pháp học mệnh đề hiện đại và giải song song.
+- *Glucose*: bộ giải SAT được dựa trên MiniSAT, áp dụng thêm nhiều kỹ thuật mới như phương pháp học mệnh đề hiện đại và giải song song.
 
 - *Gini*: Một solver hiện đại được viết bằng Go, điểm đặc biệt của solver này là giao thức chia sẻ tính toán, cho phép giải song song sử dụng các goroutine. Đây cũng là solver được chọn để giải bài toán PESP khi thực nghiệm.
 
-Để giải các bài toán thực tế sử dụng SAT Solver, ta cần định nghĩa hình thức các yêu cầu nghiệp vụ của bài toán thành các logic mệnh đề, giải bài toán SAT, sau đó suy luận kết quả từ đầu ra của SAT Solver. Sơ đồ có thể giải một bài toán sử dụng SAT Solver được minh họa trong @fig_1. Thuật toán encoding và decoding là một quá trình phức tạp, chương tiếp theo sẽ minh họa rõ hơn quá trình này.
+Để giải các bài toán thực tế sử dụng bộ giải SAT, ta cần định nghĩa hình thức các yêu cầu nghiệp vụ của bài toán thành các logic mệnh đề, giải bài toán SAT, sau đó suy luận kết quả từ đầu ra của bộ giải SAT. Sơ đồ có thể giải một bài toán sử dụng bộ giải SAT được minh họa trong @fig_1. Thuật toán encoding và decoding là một quá trình phức tạp, chương tiếp theo sẽ minh họa rõ hơn quá trình này.
 
 #figure(
   diagram(
@@ -1145,7 +1165,7 @@ Do vậy, các SAT Solver hiện nay đã có khả năng giải các bài toán
 
       node(input, "Input")
       node(encoding, "Encoding Module")
-      node(solver, "SAT Solver", shape: fletcher.shapes.diamond, inset: 8pt)
+      node(solver, "bộ giải SAT", shape: fletcher.shapes.diamond, inset: 8pt)
       node(decoding, "Decoding Module")
       node(unsat, "No result")
       node(result, "Output")
@@ -1158,17 +1178,14 @@ Do vậy, các SAT Solver hiện nay đã có khả năng giải các bài toán
       edge(decoding, result, "->")
     },
   ),
-  caption: "Sơ đồ giải bài toán thực tế sử dụng SAT Solver",
+  caption: "Sơ đồ giải bài toán thực tế sử dụng bộ giải SAT",
 ) <fig_1>
-
-
-FIXME: có thể ví dụ thêm về 1 giải 1 bài toán đơn giản giải bằng SAT hoặc move phần giới thiệu encoding lên trên này.
 
 #pagebreak(weak: true)
 = Mô hình bài toán PESP về bài toán SAT <pesp_reduction>
 
 Trong chương này, khóa luận sẽ trình bày thuật toán nhằm chuyển hóa một bài toán PESP thành bài toán SAT.
-Điều này có nghĩa là, khi cho trước một mạng lưới sự kiện định kỳ N, ta cần tìm ra một lịch trình hợp lệ hoặc chứng minh rằng không tồn tại một giải pháp như vậy thỏa mãn. Các thuộc tính vào ràng buộc của bài toán phải được mã hóa thành bài toán SAT, tức là một công thức mệnh đề ở dạng chuẩn tắc hội (CNF), và sau đó được chứng minh bởi một bộ giải SAT.
+Điều này có nghĩa là, khi cho trước một mạng lưới sự kiện định kỳ N, ta cần tìm ra một lịch trình hợp lệ hoặc chứng minh rằng không tồn tại một giải pháp như vậy thỏa mãn. Các thuộc tính vào ràng buộc của bài toán phải được mã hóa thành bài toán SAT, tức là một công thức mệnh đề ở dạng chuẩn tắc hội (CNF), và sau đó được xử lý bởi một bộ giải SAT.
 
 Nếu bộ giải SAT trả về UNSAT, chúng ta biết rằng không tồn tại một lịch trình hợp lệ cho mạng lưới sự kiện định kỳ N đã mã hóa. Ngược lại, nếu nhận được một nghiệm cho công thức mệnh đề, điều đó đảm bảo rằng có tồn tại một lịch trình hợp lệ cho N. Tính chính xác của thuật toán mã hóa các ràng buộc của bài toán về dạng chuẩn tắc hội và cách truy xuất lịch trình hợp lệ từ nghiệm sẽ được chứng minh ở phần sau.
 
@@ -1199,7 +1216,7 @@ Cuối chương này, hai phương pháp sẽ được so sánh để đưa ra �
 //       node(input, [$N = (nu, A, t_T)$])
 //       node(encoding, "Encoding Potentials")
 //       node(encoding_cons, "Exclude unfeasible pairs")
-//       node(solver, "Gini SAT Solver", shape: fletcher.shapes.diamond, inset: 8pt)
+//       node(solver, "Gini bộ giải SAT", shape: fletcher.shapes.diamond, inset: 8pt)
 //       node(decoding, "Decoding Module")
 //       node(unsat, "No result")
 //       node(result, "Output")
@@ -1215,7 +1232,7 @@ Cuối chương này, hai phương pháp sẽ được so sánh để đưa ra �
 //       edge(result, verification, "->")
 //     },
 //   ),
-//   caption: "Sơ đồ tổng quan giải bài toán PESP sử dụng SAT Solver",
+//   caption: "Sơ đồ tổng quan giải bài toán PESP sử dụng bộ giải SAT",
 // )
 
 Nhiều nghiên cứu liên quan đề xuất hai phương pháp mã hóa bài toán lập lịch định kỳ (PESP) về bài toán SAT là Direct Encoding và Order Encoding.
@@ -1226,13 +1243,13 @@ Các biến số trong bài toán PESP (các tiềm năng sự kiện) là các 
 
 Do đó, chúng ta cần tìm cách mã hóa các biến rời rạc này sang không gian logic, tức là chuyển đổi các biến có nhiều giá trị tiềm năng sang các tổ hợp biến logic có thể được biểu diễn trong biểu thức mệnh đề. Ví dụ, nếu một biến rời rạc có thể nhận ba giá trị là 1, 2 và 3, ta có thể mã hóa chúng bằng cách sử dụng hai biến logic $x_1$ và $x_2$, trong đó:
 
-- $x_1 = 0$ và $x_2 = 0$ có thể đại diện cho giá trị 1,
-- $x_1 = 0$ và $x_2 = 1$ có thể đại diện cho giá trị 2,
-- $x_1 = 1$ và $x_2 = 0$ có thể đại diện cho giá trị 3.
+- $x_1 = 0$ và $x_2 = 0$ đại diện cho giá trị 1,
+- $x_1 = 0$ và $x_2 = 1$ đại diện cho giá trị 2,
+- $x_1 = 1$ và $x_2 = 0$ đại diện cho giá trị 3.
 
 Cách mã hóa này cho phép chúng ta sử dụng công cụ của logic mệnh đề để xử lý các biến rời rạc, biến chúng thành các biến logic có thể được giải bằng bộ giải SAT. Điều quan trọng là việc chuyển đổi này phải được thực hiện sao cho các ràng buộc của bài toán ban đầu vẫn được duy trì trong không gian logic, đảm bảo rằng các giá trị logic được chọn phải tương ứng với một nghiệm hợp lệ trong miền rời rạc. Các phương pháp mã hóa như vậy được đề xuất và cải tiến bởi nhiều nghiên cứu, tiêu biểu như Direct Encoding @direct_encode, Product Encoding @chen2010new, Support Encoding... Sau đây khóa luận giới thiệu về hai phương pháp ứng dụng trong giải bài toán PESP: Mã hóa trực tiếp (Direct Encoding) và mã hóa thứ tự (Order Encoding).
 
-=== Mã hóa trực tiếp (Direct Encoding) <direct>
+=== Mã hóa trực tiếp <direct>
 
 Mã hóa trực tiếp, hay còn gọi là mã hóa nhị thức, là phương pháp đơn giản nhất để mã hóa các biến rời rạc. Nguyên lý chính của phương pháp này là loại bỏ từng cặp giá trị không thể cùng thỏa mãn đồng thời, đảm bảo rằng chỉ một giá trị trong số các giá trị có thể được chọn. Để làm rõ hơn, ta xét ví dụ sau:
 
@@ -1285,7 +1302,7 @@ Tổng quát hóa ví dụ trên, ta có thể áp dụng phương pháp mã hó
 
 Phương pháp mã hóa trực tiếp đảm bảo rằng chỉ một biến logic duy nhất có giá trị "đúng" (true) trong khi tất cả các biến còn lại phải có giá trị "sai" (false) trong mọi suy diễn hợp lệ $I$.
 
-=== Mã hóa thứ tự (Order Encoding) <order_encode>
+=== Mã hóa thứ tự <order_encode>
 
 Trái ngược với @direct, phần này giả định rằng miền hữu hạn có thứ tự. Ví dụ tốt nhất cho điều này là một tập con thực sự của tập số tự nhiên $NN$. Các số này luôn có thứ tự theo quan hệ "<". Trong phần tiếp theo, ta sẽ thảo luận cách mã hóa hiệu quả thuộc tính này vào một công thức mệnh đề. Vì trong khóa luận này, ta chỉ xét các biến có miền là một tập con,chính xác hơn là một khoảng, của các số tự nhiên $[a, b]$, nên ta biết cách áp dụng quan hệ thứ tự "<" của chúng. Nhìn chung, mọi tập hợp đều có thể xác định quan hệ thứ tự cụ thể. Tương tự, cùng tiếp cận phương pháp mã hóa này với một ví dụ.
 
@@ -1377,7 +1394,9 @@ Do đó, ta có cách trích xuất giá trị của x từ một suy diễn $I$
   Từ @extract, ta suy ra: x = 3
 ]
 
-== PESP as Direct Encoding
+== Mã hóa bài toán PESP
+
+=== Mã hóa trực tiếp PESP
 
 #figure(
   diagram(
@@ -1392,7 +1411,7 @@ Do đó, ta có cách trích xuất giá trị của x từ một suy diễn $I$
       node((1, 1), $"encode"(nu)$)
       node((1, -1), $"encode"(A)$)
       node((2, 0), $"encode"(nu, A, t_T)$)
-      node((3, 0), $"SAT Solver"$)
+      node((3, 0), $"bộ giải SAT"$)
       node((3, -1), $"No schedule"$)
       node((3, 1), $"Interpretation" I$)
       node((3, 2), $"Schedule" Pi_v$)
@@ -1486,10 +1505,9 @@ $
   "encode_direct_pesp"(nu, A, t_T) = Omega_"direct"^nu and Psi_"direct"^A
 $ với $Omega_"direct"^nu, Psi_"direct"^A$ là các biểu thức có dạng tương ứng như @direct_vars và @direct_cons.
 
-Dễ thấy $Omega_"direct"^nu$ thỏa mãn dạng chuẩn tắc hội. Tương tự, $Psi_"direct"^A$ là hội của các biểu thức chuẩn tắc hội, nên cũng là một biểu thức chuẩn tắc hội. Do đó, $"encode_direct_pesp"(nu, A, t_T)$ cũng có dạng chuẩn tắc hội. Như vậy, chúng ta đã thành công trong việc mã hóa bài toán PESP thành một biểu thức chuẩn tắc hội, mà các SAT Solver hiện đại có thể giải quyết một cách dễ dàng. Từ suy diễn $I$ thu được từ SAT Solver, chúng ta có thể dễ dàng truy xuất ra lịch trình hợp lệ bằng cách sử dụng hàm @direct_extract.
+Dễ thấy $Omega_"direct"^nu$ thỏa mãn dạng chuẩn tắc hội. Tương tự, $Psi_"direct"^A$ là hội của các biểu thức chuẩn tắc hội, nên cũng là một biểu thức chuẩn tắc hội. Do đó, $"encode_direct_pesp"(nu, A, t_T)$ cũng có dạng chuẩn tắc hội. Như vậy, chúng ta đã thành công trong việc mã hóa bài toán PESP thành một biểu thức chuẩn tắc hội, mà các bộ giải SAT hiện đại có thể giải quyết một cách dễ dàng. Từ suy diễn $I$ thu được từ bộ giải SAT, chúng ta có thể dễ dàng truy xuất ra lịch trình hợp lệ bằng cách sử dụng hàm @direct_extract.
 
-== PESP as Order Encoding
-
+=== Mã hóa thứ tự PESP
 
 #figure(
   diagram(
@@ -1504,7 +1522,7 @@ Dễ thấy $Omega_"direct"^nu$ thỏa mãn dạng chuẩn tắc hội. Tương 
       node((1, 1), $"encode"(A)$)
       node((1, -1), $"encode"(nu)$)
       node((2, 0), $"encode"(nu, A, t_T)$)
-      node((3, 0), $"SAT Solver"$)
+      node((3, 0), $"bộ giải SAT"$)
       node((3, -1), $"No schedule"$)
       node((3, 1), $"Interpretation" I$)
       node((3, 2), $"Schedule" Pi_v$)
@@ -1528,7 +1546,7 @@ Dễ thấy $Omega_"direct"^nu$ thỏa mãn dạng chuẩn tắc hội. Tương 
 
 Tương tự mã hóa trực tiếp, khóa luận sẽ trình bày phương pháp mã hóa thứ tự gồm hai phần chính.
 Trước hết, ta mã hóa các tiềm năng sự kiện như đã trình bày ở @order_encode.
-Sau đó ta sẽ mã hóa các ràng buộc trong miền xác định thứ tự. Cuối cùng, ta tổng hợp các mệnh đề và giải bằng SAT Solver.
+Sau đó ta sẽ mã hóa các ràng buộc trong miền xác định thứ tự. Cuối cùng, ta tổng hợp các mệnh đề và giải bằng bộ giải SAT.
 
 Để mã hóa trực tiếp bài toán PESP thành biểu thức mệnh đề, trước tiên ta cần mã hóa các tiềm năng sử kiện $pi_i$. Nhắc lại @cor1, các tiềm năng sự kiện $pi_i$ đều thỏa mãn:
 
@@ -1547,7 +1565,8 @@ do $"encode_order"(pi_n)$ là một biểu thức chuẩn tắc hội và $Omega
 
 Tiếp theo, khóa luận trình bày chi tiết cách mã hóa ràng buộc thời gian và ràng buộc đối xứng. Tư tưởng căn bản sẽ tương tự như mã hóa trực tiếp, loại bỏ các miền không khỏa mãn trong tập xác định. Tuy nhiên khi sử dụng mã hoá thứ tự, ta có thể loại bỏ từng vùng các hình chữ nhật song song với trục tọa độ do đó tối ưu hiệu quả mã hóa như @order_diagram
 
-=== Mã hóa thứ tự ràng buộc thời gian
+
+*Mã hóa thứ tự ràng buộc thời gian*
 
 
 #figure(
@@ -2239,7 +2258,7 @@ Tiếp theo, ta cần mã hóa các hình chữ nhật này thành các mệnh �
   $ là hàm số mã hóa thứ tự ràng buộc thời gian
 ]
 
-=== Mã hóa thứ tự ràng buộc đối xứng
+*Mã hóa thứ tự ràng buộc đối xứng*
 
 Mã hóa ràng buộc đối xứng hoàn toàn tương tự với ràng buộc thời gian. Ta dễ dàng có được các kết quả sau:
 
@@ -2307,7 +2326,7 @@ Với toàn bộ thông tin từ các phần trước, ta có hàm số mã hóa
     $ là hàm số mã hóa thứ tự của mạng định kỳ $N$.
 ]
 
-== So sánh Direct encoding và Order encoding
+== So sánh mã hóa trực tiếp và mã hóa thứ tự
 
 Trong chương này khóa luận sẽ so sánh hai phương pháp mã hóa trực tiếp và thứ tự ở các thông số như số mệnh đề và số biến. Các thông số khác như thời gian giải thực tế sẽ được trình bày ở @exp. Để thuận tiện, ta định nghĩa thêm một số khái niệm sau.
 
@@ -2481,7 +2500,7 @@ Toàn bộ dữ liệu đầu vào gồm 18 file với độ khó tăng dần, �
 
 Để tiến hành thử nghiệm hai phương pháp đã nêu ở @pesp_reduction, khoá luận đã cài đặt một công cụ dòng lệnh giải bài toán PESP có tên là #link("https://github.com/ppvan/pesp-sat", "pesp-sat").
 
-Chương trình thử nghiệm được cài đặt bằng ngôn ngữ Go, sử dụng SAT Solver #link("https://github.com/go-air/gini", "Gini"). Công cụ hỗ trợ đa nền tảng, được kiểm thử kĩ lưỡng, độ bao phủ đạt 80%, mã nguồn lưu tại: #link("https://github.com/ppvan/pesp-sat", "ppvan/pesp-sat"). Tất cả tài liệu và dữ liệu liên quan, bao gồm mã nguồn công cụ thử nghiệm, tài liệu khóa luận và slide trình bày khóa luận được lưu trữ tại git repo này.
+Chương trình thử nghiệm được cài đặt bằng ngôn ngữ Go, sử dụng bộ giải SAT #link("https://github.com/go-air/gini", "Gini"). Công cụ hỗ trợ đa nền tảng, được kiểm thử kĩ lưỡng, độ bao phủ đạt 80%, mã nguồn lưu tại: #link("https://github.com/ppvan/pesp-sat", "ppvan/pesp-sat"). Tất cả tài liệu và dữ liệu liên quan, bao gồm mã nguồn công cụ thử nghiệm, tài liệu khóa luận và slide trình bày khóa luận được lưu trữ tại git repo này.
 
 Để kiểm chứng chương trình thử nghiệm, vui lòng làm theo hướng dẫn trong README.md. Thực nghiệm sau đây được tiến hành trên máy tính (laptop) sau:
 
@@ -2493,7 +2512,7 @@ Chương trình thử nghiệm được cài đặt bằng ngôn ngữ Go, sử 
     [RAM], [32GB DDR4],
     [Disk], [512GB SSD NVme],
     [OS], [Linux 6.6.51-1-lts],
-    [Gini(SAT Solver)], [v1.0.4 - Go 1.23],
+    [Gini(bộ giải SAT)], [v1.0.4 - Go 1.23],
   ),
   caption: "Cấu hình máy chạy thực nghiệm",
 )
@@ -2522,15 +2541,15 @@ Khóa luận sẽ tiến hành đo thời gian chạy (ms), số mệnh đề, s
 
 #figure(image("image/chart-time.svg"), caption: "Biểu đồ đường so sánh thời gian thực thi của Direct và Order Encoding")
 
-Quan sát bảng dữ liệu và các biểu đồ trên, ta thấy cả hai thuật toán đều tăng độ phức tạp nhất quán với độ phức tạp tăng dần của vấn đề PESP đầu vào. Khoảng cách giữa Direct và Order Encoding là khá rõ rệt (khoảng 7x-50x về thời gian, 15x-20x về số mệnh đề). Tuy nhiên về số biến, hai phương pháp tương đối đồng đều. Như vậy, phương pháp mã hóa Order tỏ ra tương đối ưu việt so với Direct, điều này có thể dễ dàng giải thích bởi Order encoding loại bỏ không gian tìm kiếm theo từng vùng thay vì từng điểm như Direct, dẫn đến số mệnh đề ít hơn. Hơn nữa, theo mô tả ở @pesp_reduction, các mệnh đề Order encoding chồng chéo lên nhau kiến vùng mâu thuẫn được tìm ra nhanh chóng bởi SAT Solver.
+Quan sát bảng dữ liệu và các biểu đồ trên, ta thấy cả hai thuật toán đều tăng độ phức tạp nhất quán với độ phức tạp tăng dần của vấn đề PESP đầu vào. Khoảng cách giữa Direct và Order Encoding là khá rõ rệt (khoảng 7x-50x về thời gian, 15x-20x về số mệnh đề). Tuy nhiên về số biến, hai phương pháp tương đối đồng đều. Như vậy, phương pháp mã hóa Order tỏ ra tương đối ưu việt so với Direct, điều này có thể dễ dàng giải thích bởi Order encoding loại bỏ không gian tìm kiếm theo từng vùng thay vì từng điểm như Direct, dẫn đến số mệnh đề ít hơn. Hơn nữa, theo mô tả ở @pesp_reduction, các mệnh đề Order encoding chồng chéo lên nhau kiến vùng mâu thuẫn được tìm ra nhanh chóng bởi bộ giải SAT.
 
 Với sức mạnh phần cứng hiện tại, cả hai phương pháp đều giải ra khá nhanh (từ 100ms đến 24s) dù số mệnh đề lên đến hàng chục triệu, do giới hạn của dữ liệu đầu vào, ta chưa thống kê được giới hạn của hai giải thuật. Mặt khác, bài toán PESP sinh ra khá nhiều nghiệm thỏa mãn, dẫn đến nhu cầu tìm ra nghiệm tối ưu (bài toán lập lịch tàu chạy tối ưu). Tuy nhiên, việc tìm ra các nhân tố đánh giá lịch trình đang gặp nhiều khó khăn, cần nghiên cứu thêm yêu cầu thực tế và cải thiện mô hình toán học @new_pesp1 @YAN201952, không được trình bày đầy đủ trong khóa luận này. Đây là thiếu sót khóa luận chưa thể khắc phục, cần cải thiện trong tương lai.
 
 
-Khoá luận đã trình bày nghiên cứu mới nhất về bài toán lập lịch định kì(PESP) và phương hướng tiếp cận bài toán sử dụng định nghĩa hình thức và các SAT Solver. Hai giải thuật mã hóa đã được cài đặt và thực nghiệm nhằm giải các bài toán PESP. Kết quả thực nghiệm cho thấy phương pháp Order Encoding tỏ ra hiệu quả hơn nhiều so với phương pháp còn lại, thách thức nhiều giới hạn trong tương lai.
+Khoá luận đã trình bày nghiên cứu mới nhất về bài toán lập lịch định kì(PESP) và phương hướng tiếp cận bài toán sử dụng định nghĩa hình thức và các bộ giải SAT. Hai giải thuật mã hóa đã được cài đặt và thực nghiệm nhằm giải các bài toán PESP. Kết quả thực nghiệm cho thấy phương pháp Order Encoding tỏ ra hiệu quả hơn nhiều so với phương pháp còn lại, thách thức nhiều giới hạn trong tương lai.
 
 
-Quá trình nghiên cứu và thực nghiệm khóa luận đã giúp tôi có điều kiện tìm tòi, suy luận về bài toán lập lịch định kỳ cũng như phương pháp giải nó sử dụng kĩ thuật định nghĩa hình thức và SAT Solver. Khóa luận đã cho tôi những tri thức, trải nghiệm tuyệt vời khi nghiên cứu khoa học. Bên cạnh đó, tôi đã tiếp thu được nhiều bài học và phong cách làm việc, nghiên cứu khoa học từ thầy hướng dẫn.
+Quá trình nghiên cứu và thực nghiệm khóa luận đã giúp tôi có điều kiện tìm tòi, suy luận về bài toán lập lịch định kỳ cũng như phương pháp giải nó sử dụng kĩ thuật định nghĩa hình thức và bộ giải SAT. Khóa luận đã cho tôi những tri thức, trải nghiệm tuyệt vời khi nghiên cứu khoa học. Bên cạnh đó, tôi đã tiếp thu được nhiều bài học và phong cách làm việc, nghiên cứu khoa học từ thầy hướng dẫn.
 
 Trên đây là toàn bộ nghiên cứu của tôi trong thời gian qua, tài liệu khó tránh khỏi sai sót, mong nhận được sự góp ý của các thầy cô và các bạn nghiên cứu về SAT, giúp tôi có thể hoàn thiện hơn nữa trong tương lai.
 
