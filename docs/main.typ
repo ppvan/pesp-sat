@@ -44,7 +44,7 @@
 #let proof = thmproof("proof", "Proof", base_level: 1)
 
 
-#set page(paper: "a4", margin: (top: 2.5cm, bottom: 3cm, left: 2.5cm, right: 2cm), numbering: "1")
+#set page(paper: "a4", margin: (top: 2.5cm, bottom: 3cm, left: 3cm, right: 2cm), numbering: "1")
 
 #set pagebreak(weak: true)
 
@@ -97,6 +97,10 @@
 #show heading.where(depth: 3): it => block(width: 100%)[
   #pad(block(text(it, size: 14pt)), y: 4pt)
 ]
+
+#show figure.where(
+  kind: table
+): set figure.caption(position: top)
 
 // Title page
 #{
