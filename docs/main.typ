@@ -287,8 +287,6 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
   "CNF": "Conjunctive Normal Form",
   "PTSP": "Periodic Train Timetable Scheduling Problem",
   "PESP": "Periodic Event Scheduling Problem",
-  "CSP": "Contraint Satisfaction Problem",
-  "MIP": "Mixed Integer Programing",
 ))
 
 #{
