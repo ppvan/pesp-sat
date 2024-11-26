@@ -6,8 +6,6 @@
 #import "@preview/ctheorems:1.1.3": *
 #show: thmrules.with(qed-symbol: $square$)
 
-#set page(width: 16cm, height: auto, margin: 1.5cm)
-#set heading(numbering: "1.1.", supplement: "Chương")
 
 #set math.equation(
   numbering: "(1)",
@@ -71,7 +69,9 @@
 
 #set text(lang: "vi", font: "Latin Modern Roman", size: 13pt)
 
-// #set text(lang: "vi", font: "Times New Roman", size: 13pt)
+
+#set heading(numbering: "1.1.", supplement: "Chương")
+
 #set block(spacing: 1.56em)
 #set par(first-line-indent: 1cm, justify: true, leading: 0.845em)
 
@@ -193,7 +193,7 @@
 
 Hiện nay, hiệu năng của các bộ giải SAT đã cải thiện đáng kể và có thể được ứng dụng trong việc giải các bài toán NP-complete như: _Traveling Salesman,
 Hamiltonian path
-, graph k-coloring..._. Vấn đề lập lịch sự kiện định kỳ (Periodic Event Scheduling Problem) từ lâu đã được chương minh là một vấn đề NP-complete. Các phương pháp hiện tại như lập trình ràng buộc (Constraint satisfaction Programing) hay quy hoạch số nguyên (Integer Programing) chưa thực sự hiệu quả với các bộ dữ liệu lớn.
+, graph k-coloring..._. Vấn đề lập lịch sự kiện định kỳ (Periodic Event Scheduling Problem) từ lâu đã được chứng minh là một vấn đề NP-complete. Các phương pháp hiện tại như lập trình ràng buộc (Constraint satisfaction Programing) hay quy hoạch số nguyên (Integer Programing) chưa thực sự hiệu quả với các bộ dữ liệu lớn.
 Tài liệu này sẽ trình bày thuật toán chuyển hóa vấn đề lập lịch định kỳ (PESP) về bài toán SAT, sau đó giải bài toán sử dụng bộ giải SAT nhằm đạt được hiệu suất cao hơn.
 
 
@@ -322,7 +322,7 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 
 = Mở đầu
 
-Lập kế hoạch cho hệ thống tàu điện ngầm là một công việc đầy khó khăn và thử thách, bao gồm nhiều giai đoạn khác nhau, như: nghiên cứu thị trường, thiết lập tuyến đường, thiết lập phương tiện, lập lịch tàu chạy và đào tạo nhân viên. Các giai đoạn lập kế hoạch này liên quan mật thiết đến nhau và thường được tiến hành đổ thác theo thứ tự. Tuy nhiên, có thể quay lại bước trước đó để tối ưu khi các yêu cầu nghiêm vụ được làm rõ hơn.
+Lập kế hoạch cho hệ thống tàu điện ngầm là một công việc đầy khó khăn và thử thách, bao gồm nhiều giai đoạn khác nhau, như: nghiên cứu thị trường, thiết lập tuyến đường, thiết lập phương tiện, lập lịch tàu chạy và đào tạo nhân viên. Các giai đoạn lập kế hoạch này liên quan mật thiết đến nhau và thường được tiến hành đổ thác theo thứ tự. Tuy nhiên, có thể quay lại bước trước đó để tối ưu khi các yêu cầu nghiệp vụ được làm rõ hơn.
 
 #figure(
   image("image/railway-steps.svg"),
@@ -340,7 +340,7 @@ Lập kế hoạch cho hệ thống tàu điện ngầm là một công việc �
 
 + *Phân bổ nhân viên*: Tương tự, việc xây dựng lịch trình cho các nhân viên lái tàu, phục vụ, nhân viên sửa chữa, bảo hành cũng cần được quan tâm.
 
-Trong đó, _xây dựng lịch trình_ là giai đoạn thiết yếu đối với hệ thống tàu điện ngầm. Việc cung cấp thời gian khởi hành và đến chính xác giúp lịch trình tàu hoạt động mượt mà và đáng tin cậy, đồng thời quản lý lưu lượng hành khách và ngăn ngừa tình trạng quá tải. Lịch trình hiệu quả cũng phối hợp các kết nối với các phương thức vận chuyển khác, cải thiện kế hoạch vận hành bằng cách lập kế hoạch bảo trì và phân bổ nhân sự, và tối ưu hóa việc sử dụng tài nguyên như tàu và đội ngũ. Tổng thể, lịch trình đáng tin cậy dẫn đến sự hài lòng cao hơn của khách hàng và một hệ thống giao thông công cộng trơn tru, hiệu quả hơn.
+Trong đó, _xây dựng lịch trình_ là giai đoạn thiết yếu đối với hệ thống tàu điện ngầm. Việc cung cấp thời gian khởi hành và đến chính xác giúp lịch trình tàu hoạt động mượt mà và đáng tin cậy, đồng thời quản lý lưu lượng hành khách và ngăn ngừa tình trạng quá tải. Lịch trình hiệu quả cũng phối hợp các kết nối với các phương thức vận chuyển khác, cải thiện kế hoạch vận hành bằng cách lập kế hoạch bảo trì và phân bổ nhân sự, và tối ưu hóa việc sử dụng tài nguyên như số lượng tàu và đội ngũ nhân viên. Tổng thể, lịch trình đáng tin cậy dẫn đến sự hài lòng cao hơn của khách hàng và một hệ thống giao thông công cộng trơn tru, hiệu quả hơn.
 
 Tuy nhiên, lập lịch trình tàu hỏa là một nhiệm vụ vô cùng khó khăn và tốn kém, vì phải đáp ứng nhiều tiêu chí phức tạp. Trước hết, thời gian đệm (recovery times) cần được tính toán để bù đắp cho những gián đoạn trong hệ thống, như sự thay đổi tốc độ do thời tiết hoặc thiên tai, và tình trạng tàu khởi hành muộn so với dự kiến. Để tránh làm gián đoạn toàn bộ hệ thống, lịch trình phải bao gồm thời gian đệm phù hợp. Tiếp theo, thời gian giãn cách tối thiểu (minimum headway time) là cần thiết để đảm bảo an toàn khi hai tàu sử dụng chung một đường ray và phải khởi hành cách nhau một khoảng thời gian tối thiểu. Tính kết nối (connections between trains) cũng rất quan trọng, vì thời gian đến và khởi hành của các tàu tại cùng một bến đỗ cần phải liên tục để phục vụ nhu cầu nối chuyến của hành khách. Cuối cùng, thời gian bảo trì (turn around times at termination) phải được tính toán để bao gồm thời gian cần thiết cho việc bảo trì động cơ, tiếp nhiên liệu và thay ca nhân viên ở ga tàu cuối trước khi tàu quay trở lại.
 
@@ -372,8 +372,6 @@ Phần còn lại của khóa luận được tổ chức như sau:
 = Lập lịch sự kiện định kỳ <start>
 
 == Mạng sự kiện định kỳ
-
-Chương
 
 
 #definition[
@@ -815,7 +813,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
 
 
 #definition[
-  (Phép kéo theo): Mệnh đề kéo của hai mệnh đề $a, b$ là mệnh đề chỉ sai khi cả $a$ đúng $b$ sai. \
+  (Phép kéo theo): Mệnh đề kéo theo của hai mệnh đề $a, b$ là mệnh đề chỉ sai khi cả $a$ đúng $b$ sai. \
   _Kí hiệu_: $a => b$
 
   #figure(
@@ -836,7 +834,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
 
 
 #definition[
-  (Phép tương đương): Mệnh đề tương của hai mệnh đề $a, b$ là mệnh đề chỉ đúng khi cả $a$ và $b$ cùng đúng hoặc cùng sai. \
+  (Phép tương đương): Mệnh đề tương đương của hai mệnh đề $a, b$ là mệnh đề chỉ đúng khi cả $a$ và $b$ cùng đúng hoặc cùng sai. \
   _Kí hiệu_: $a <=> b$
 
   #figure(
@@ -1138,7 +1136,7 @@ Nhiều kĩ thuật đã được nghiên cứu nhằm cải thiện độ hiệ
 
 4. Những cải tiến khác về cơ sở dữ liệu, tiền xử lý, tận dụng khả năng xử lý song song @balyo2015hordesatmassivelyparallelportfolio@martins2012overview@hamadi2010manysat.
 
-Do vậy, các bộ giải SAT hiện nay đã có khả năng giải các bài toán cực kì phức tạp, với hàng triệu biến và mệnh đề. Hằng năm, các cuộc thi về bộ giải SAT được tổ chức nhằm cải thiện hiệu suất thuật toán, tiêu biểu như #link("https://satcompetition.github.io/2024/", "SAT competition"). Phần lớn những người tham gia công bố bộ giải SAT dưới dạng thử viện mã nguồn mở, có thể dễ dàng tích hợp và sử dung. Sau đây liệt kê một số Solver có ảnh hưởng quan trọng trong lịch sử phát triển của các bộ giải SAT:
+Do vậy, các bộ giải SAT hiện nay đã có khả năng giải các bài toán cực kì phức tạp, với hàng triệu biến và mệnh đề. Hằng năm, các cuộc thi về bộ giải SAT được tổ chức nhằm cải thiện hiệu suất thuật toán, tiêu biểu như #link("https://satcompetition.github.io/2024/", "SAT competition"). Phần lớn những người tham gia công bố bộ giải SAT dưới dạng thư viện mã nguồn mở, có thể dễ dàng tích hợp và sử dung. Sau đây liệt kê một số Solver có ảnh hưởng quan trọng trong lịch sử phát triển của các bộ giải SAT:
 
 - *CaDiCal*: CaDiCal là bộ giải SAT dựa trên thuật toán CDCL Mục tiêu chính của CaDiCal không phải hiệu năng, mà là một cơ sở thuật toán dễ hiểu và mở rộng. Vì vậy đặt nền móng cho nhiều bộ giải SAT khác sau này.
 
@@ -1186,7 +1184,7 @@ Do vậy, các bộ giải SAT hiện nay đã có khả năng giải các bài 
 = Mô hình bài toán PESP về bài toán SAT <pesp_reduction>
 
 Trong chương này, khóa luận sẽ trình bày thuật toán nhằm chuyển hóa một bài toán PESP thành bài toán SAT.
-Điều này có nghĩa là, khi cho trước một mạng lưới sự kiện định kỳ N, ta cần tìm ra một lịch trình hợp lệ hoặc chứng minh rằng không tồn tại một giải pháp như vậy thỏa mãn. Các thuộc tính vào ràng buộc của bài toán phải được mã hóa thành bài toán SAT, tức là một công thức mệnh đề ở dạng chuẩn tắc hội (CNF), và sau đó được xử lý bởi một bộ giải SAT.
+Điều này có nghĩa là, khi cho trước một mạng lưới sự kiện định kỳ N, ta cần tìm ra một lịch trình hợp lệ hoặc chứng minh rằng không tồn tại một giải pháp như vậy thỏa mãn. Các thuộc tính và ràng buộc của bài toán phải được mã hóa thành bài toán SAT, tức là một công thức mệnh đề ở dạng chuẩn tắc hội (CNF), và sau đó được xử lý bởi một bộ giải SAT.
 
 Nếu bộ giải SAT trả về UNSAT, chúng ta biết rằng không tồn tại một lịch trình hợp lệ cho mạng lưới sự kiện định kỳ N đã mã hóa. Ngược lại, nếu nhận được một nghiệm cho công thức mệnh đề, điều đó đảm bảo rằng có tồn tại một lịch trình hợp lệ cho N. Tính chính xác của thuật toán mã hóa các ràng buộc của bài toán về dạng chuẩn tắc hội và cách truy xuất lịch trình hợp lệ từ nghiệm sẽ được chứng minh ở phần sau.
 
@@ -1305,7 +1303,7 @@ Phương pháp mã hóa trực tiếp đảm bảo rằng chỉ một biến log
 
 === Mã hóa thứ tự <order_encode>
 
-Trái ngược với @direct, phần này giả định rằng miền hữu hạn có thứ tự. Ví dụ tốt nhất cho điều này là một tập con thực sự của tập số tự nhiên $NN$. Các số này luôn có thứ tự theo quan hệ "<". Trong phần tiếp theo, ta sẽ thảo luận cách mã hóa hiệu quả thuộc tính này vào một công thức mệnh đề. Vì trong khóa luận này, ta chỉ xét các biến có miền là một tập con,chính xác hơn là một khoảng, của các số tự nhiên $[a, b]$, nên ta biết cách áp dụng quan hệ thứ tự "<" của chúng. Nhìn chung, mọi tập hợp đều có thể xác định quan hệ thứ tự cụ thể. Tương tự, cùng tiếp cận phương pháp mã hóa này với một ví dụ.
+Trái ngược với @direct, phần này giả định rằng miền hữu hạn có thứ tự. Ví dụ tốt nhất cho điều này là một tập con của tập số tự nhiên $NN$. Các số này luôn có thứ tự theo quan hệ "<". Trong phần tiếp theo, ta sẽ thảo luận cách mã hóa hiệu quả thuộc tính này vào một công thức mệnh đề. Vì trong khóa luận này, ta chỉ xét các biến có miền là một tập con,chính xác hơn là một khoảng, của các số tự nhiên $[a, b]$, nên ta biết cách áp dụng quan hệ thứ tự "<" của chúng. Nhìn chung, mọi tập hợp đều có thể xác định quan hệ thứ tự cụ thể. Tương tự, cùng tiếp cận phương pháp mã hóa này với một ví dụ.
 
 #example[
   Cho $x in {1, 2, 3, 4, 5} = [1, 5] subset NN$. Ta có các mệnh đề đúng sau:
@@ -1364,7 +1362,7 @@ Vì vậy ta cần chứng minh luôn có thể suy diễn thông tin từ một
   $
 ]
 
-Do đó, ta có cách trích xuất giá trị của x từ một suy diễn $I$ như sau:
+Do đó, ta có cách trích xuất giá trị của $x$ từ một suy diễn $I$ như sau:
 
 #definition[
   Cho $x in X| X = {1, 2, 3, ..., n} | n in NN$ với $I tack.r.double "encode_order(X)"$. Khi đó tồn tại duy nhất một giá trị $k in X$ mà:
@@ -1432,7 +1430,7 @@ Do đó, ta có cách trích xuất giá trị của x từ một suy diễn $I$
 )
 
 
-Để mã hóa trực tiếp bài toán PESP thành biểu thức mệnh đề, trước tiên ta cần mã hóa các tiềm năng sử kiện $pi_i$. Nhắc lại @cor1, các tiềm năng sự kiện $pi_i$ đều thỏa mãn:
+Để mã hóa trực tiếp bài toán PESP thành biểu thức mệnh đề, trước tiên ta cần mã hóa các tiềm năng sự kiện $pi_i$. Nhắc lại @cor1, các tiềm năng sự kiện $pi_i$ đều thỏa mãn:
 
 #set math.equation(numbering: "(1)")
 
@@ -1549,7 +1547,7 @@ Tương tự mã hóa trực tiếp, khóa luận sẽ trình bày phương phá
 Trước hết, ta mã hóa các tiềm năng sự kiện như đã trình bày ở @order_encode.
 Sau đó ta sẽ mã hóa các ràng buộc trong miền xác định thứ tự. Cuối cùng, ta tổng hợp các mệnh đề và giải bằng bộ giải SAT.
 
-Để mã hóa trực tiếp bài toán PESP thành biểu thức mệnh đề, trước tiên ta cần mã hóa các tiềm năng sử kiện $pi_i$. Nhắc lại @cor1, các tiềm năng sự kiện $pi_i$ đều thỏa mãn:
+Để mã hóa trực tiếp bài toán PESP thành biểu thức mệnh đề, trước tiên ta cần mã hóa các tiềm năng sự kiện $pi_i$. Nhắc lại @cor1, các tiềm năng sự kiện $pi_i$ đều thỏa mãn:
 
 
 $
@@ -2402,7 +2400,7 @@ $
   abs(Omega_"order"^nu) &in O(t abs(nu))
 $ <vars_thing>
 
-Tiếp theo, ta cần xem xét mã hóa các ràng buộc $Psi_t^A t$. Do mã hóa trực tiếp loại trừ các căp không thỏa mãn $P_a$ nên ta có:
+Tiếp theo, ta cần xem xét mã hóa các ràng buộc $Psi_t^A t$. Do mã hóa trực tiếp loại trừ các cặp không thỏa mãn $P_a$ nên ta có:
 
 $
   abs(Psi^A_"direct") = sum_(a in A) abs(P_a)
@@ -2483,7 +2481,7 @@ N; D
   3; 30\
 ]
 
-Toàn bộ dữ liệu đầu vào gồm 18 file với độ khó tăng dần, định dạng như mô tả ở trên. Thông qua tiền sử lý sơ bộ, ta có thông tin cơ bản của dữ liệu đầu vào như sau:
+Toàn bộ dữ liệu đầu vào gồm 18 file với độ khó tăng dần, định dạng như mô tả ở trên. Thông qua tiền xử lý sơ bộ, ta có thông tin cơ bản của dữ liệu đầu vào như sau:
 
 #let results = csv("image/input_instances.csv")
 
