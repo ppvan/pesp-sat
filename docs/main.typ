@@ -1138,7 +1138,7 @@ Nhiều kĩ thuật đã được nghiên cứu nhằm cải thiện độ hiệ
 
 4. Những cải tiến khác về cơ sở dữ liệu, tiền xử lý, tận dụng khả năng xử lý song song @balyo2015hordesatmassivelyparallelportfolio@martins2012overview@hamadi2010manysat.
 
-Do vậy, các bộ giải SAT hiện nay đã có khả năng giải các bài toán cực kì phức tạp, với hàng triệu biến và mệnh đề. Hằng năm, các cuộc thi về bộ giải SAT được tổ chức nhằm cải thiện hiệu suất thuật toán, tiêu biểu như #link("https://satcompetition.github.io/2024/", "SAT competition"). Phần lớn những người tham gia công bố bộ giải SAT dưới dạng thư viện mã nguồn mở, có thể dễ dàng tích hợp và sử dung. Sau đây liệt kê một số Solver có ảnh hưởng quan trọng trong lịch sử phát triển của các bộ giải SAT:
+Do vậy, các bộ giải SAT hiện nay đã có khả năng giải các bài toán cực kì phức tạp, với hàng triệu biến và mệnh đề. Hằng năm, các cuộc thi về bộ giải SAT được tổ chức nhằm cải thiện hiệu suất thuật toán, tiêu biểu như #link("https://satcompetition.github.io/2024/", "SAT competition") #footnote[https://satcompetition.github.io/2024/]. Phần lớn những người tham gia công bố bộ giải SAT dưới dạng thư viện mã nguồn mở, có thể dễ dàng tích hợp và sử dung. Sau đây liệt kê một số Solver có ảnh hưởng quan trọng trong lịch sử phát triển của các bộ giải SAT:
 
 - *CaDiCal*: CaDiCal là bộ giải SAT dựa trên thuật toán CDCL Mục tiêu chính của CaDiCal không phải hiệu năng, mà là một cơ sở thuật toán dễ hiểu và mở rộng. Vì vậy đặt nền móng cho nhiều bộ giải SAT khác sau này.
 
@@ -1183,7 +1183,7 @@ Do vậy, các bộ giải SAT hiện nay đã có khả năng giải các bài 
 ) <fig_1>
 
 #pagebreak(weak: true)
-= Mô hình bài toán PESP về bài toán SAT <pesp_reduction>
+= Mô hình bài toán PESP về biểu diễn SAT <pesp_reduction>
 
 Trong chương này, khóa luận sẽ trình bày thuật toán nhằm chuyển hóa một bài toán PESP thành bài toán SAT.
 Điều này có nghĩa là, khi cho trước một mạng lưới sự kiện định kỳ N, ta cần tìm ra một lịch trình hợp lệ hoặc chứng minh rằng không tồn tại một giải pháp như vậy thỏa mãn. Các thuộc tính và ràng buộc của bài toán phải được mã hóa thành bài toán SAT, tức là một công thức mệnh đề ở dạng chuẩn tắc hội (CNF), và sau đó được xử lý bởi một bộ giải SAT.
@@ -1523,7 +1523,7 @@ Dễ thấy $Omega_"direct"^nu$ thỏa mãn dạng chuẩn tắc hội. Tương 
       node((1, 1), $"encode"(A)$)
       node((1, -1), $"encode"(nu)$)
       node((2, 0), $"encode"(nu, A, t_T)$)
-      node((3, 0), $"bộ giải SAT"$)
+      node((3, 0), $"SAT Solver"$)
       node((3, -1), $"No schedule"$)
       node((3, 1), $"Interpretation" I$)
       node((3, 2), $"Schedule" Pi_v$)
@@ -2445,9 +2445,9 @@ Vấn đề lập lịch tàu chạy (PTSP) trong thực tế còn phức tạp 
 Ta thu được thời gian biểu chính xác khi giải được bài toán PESP tương ứng.
 
 
-== Thu thập dữ liệu
+== Bộ dữ liệu thực nghiệm
 
-Dữ liệu thử nghiệm được thu thập từ #link("https://timpasslib.aalto.fi/pesplib.html", "PESPlib") @pesplib, một tập dữ liệu PESP đã được chuẩn hóa và xử lý nhằm đánh giá hiệu quả của các thuật toán giải PESP. PESPlib được cộng đồng học thuật đánh giá cao và được dùng làm tiêu chuẩn đánh giá trong nhiều nghiên cứu.@pesplib_ref_1 @pesplib_ref_2.
+Dữ liệu thử nghiệm được thu thập từ #link("https://timpasslib.aalto.fi/pesplib.html", "PESPlib") #footnote[https://timpasslib.aalto.fi/pesplib.html] @pesplib, một tập dữ liệu PESP đã được chuẩn hóa và xử lý nhằm đánh giá hiệu quả của các thuật toán giải PESP. PESPlib được cộng đồng học thuật đánh giá cao và được dùng làm tiêu chuẩn đánh giá trong nhiều nghiên cứu @pesplib_ref_1@pesplib_ref_2.
 Dữ liệu đầu vào gồm các file csv, có định dạng sau:
 
 
@@ -2499,9 +2499,9 @@ Toàn bộ dữ liệu đầu vào gồm 18 file với độ khó tăng dần, �
 == Kết quả và đánh giá
 
 
-Để tiến hành thử nghiệm hai phương pháp đã nêu ở @pesp_reduction, khoá luận đã cài đặt một công cụ dòng lệnh giải bài toán PESP có tên là #link("https://github.com/ppvan/pesp-sat", "pesp-sat").
+Để tiến hành thử nghiệm hai phương pháp đã nêu ở @pesp_reduction, khoá luận đã cài đặt một công cụ dòng lệnh giải bài toán PESP có tên là #link("https://github.com/ppvan/pesp-sat", "pesp-sat")#footnote[https://github.com/ppvan/pesp-sat] <repo>.
 
-Chương trình thử nghiệm được cài đặt bằng ngôn ngữ Go, sử dụng bộ giải SAT #link("https://github.com/go-air/gini", "Gini"). Công cụ hỗ trợ đa nền tảng, được kiểm thử kĩ lưỡng, độ bao phủ đạt 80%, mã nguồn lưu tại: #link("https://github.com/ppvan/pesp-sat", "ppvan/pesp-sat"). Tất cả tài liệu và dữ liệu liên quan, bao gồm mã nguồn công cụ thử nghiệm, tài liệu khóa luận và slide trình bày khóa luận được lưu trữ tại git repo này.
+Chương trình thử nghiệm được cài đặt bằng ngôn ngữ Go, sử dụng bộ giải SAT #link("https://github.com/go-air/gini", "Gini") #footnote[https://github.com/go-air/gini]. Công cụ hỗ trợ đa nền tảng, được kiểm thử kĩ lưỡng, độ bao phủ đạt 80%, mã nguồn lưu tại: #link("https://github.com/ppvan/pesp-sat", "ppvan/pesp-sat") #footnote(<repo>). Tất cả tài liệu và dữ liệu liên quan, bao gồm mã nguồn công cụ thử nghiệm, tài liệu khóa luận và slide trình bày khóa luận được lưu trữ tại git repo này.
 
 Để kiểm chứng chương trình thử nghiệm, vui lòng làm theo hướng dẫn trong README.md. Thực nghiệm sau đây được tiến hành trên máy tính (laptop) sau:
 
@@ -2526,7 +2526,7 @@ Khóa luận sẽ tiến hành đo thời gian chạy (ms), số mệnh đề, s
 #figure(
   table(
     columns: 9,
-    table.header([], [], [], table.cell([*Direct*], colspan: 3), table.cell([*Order*], colspan: 3)),
+    table.header([], [], [], table.cell([*Direct Encoding*], colspan: 3), table.cell([*Order Encoding*], colspan: 3)),
     [Index], [Events], [Cons], [Vars], [Clauses], [Time], [Vars], [Clauses], [Time],
     ..benmark.flatten(),
   ),
@@ -2534,18 +2534,20 @@ Khóa luận sẽ tiến hành đo thời gian chạy (ms), số mệnh đề, s
   placement: top,
 ) <benmark_1>
 
-#figure(image("image/chart-vars.svg"), caption: "Biểu đồ đường so sánh số biến của Direct và Order Encoding")
+#pagebreak()
+#figure(image("image/Vars_plot.png"), caption: "Biểu đồ đường so sánh số biến của Direct và Order Encoding")
 
 
-#figure(image("image/chart-clause.svg"), caption: "Biểu đồ đường so sánh số mệnh đề của Direct và Order Encoding")
+#figure(image("image/Cons_plot.png"), caption: "Biểu đồ đường so sánh số mệnh đề của Direct và Order Encoding")
 
 
-#figure(image("image/chart-time.svg"), caption: "Biểu đồ đường so sánh thời gian thực thi của Direct và Order Encoding")
+#figure(image("image/Time_plot.png"), caption: "Biểu đồ đường so sánh thời gian thực thi của Direct và Order Encoding")
 
 Quan sát bảng dữ liệu và các biểu đồ trên, ta thấy cả hai thuật toán đều tăng độ phức tạp nhất quán với độ phức tạp tăng dần của vấn đề PESP đầu vào. Khoảng cách giữa Direct và Order Encoding là khá rõ rệt (khoảng 7x-50x về thời gian, 15x-20x về số mệnh đề). Tuy nhiên về số biến, hai phương pháp tương đối đồng đều. Như vậy, phương pháp mã hóa Order tỏ ra tương đối ưu việt so với Direct, điều này có thể dễ dàng giải thích bởi Order encoding loại bỏ không gian tìm kiếm theo từng vùng thay vì từng điểm như Direct, dẫn đến số mệnh đề ít hơn. Hơn nữa, theo mô tả ở @pesp_reduction, các mệnh đề Order encoding chồng chéo lên nhau kiến vùng mâu thuẫn được tìm ra nhanh chóng bởi bộ giải SAT.
 
 Với sức mạnh phần cứng hiện tại, cả hai phương pháp đều giải ra khá nhanh (từ 100ms đến 24s) dù số mệnh đề lên đến hàng chục triệu, do giới hạn của dữ liệu đầu vào, ta chưa thống kê được giới hạn của hai giải thuật. Mặt khác, bài toán PESP sinh ra khá nhiều nghiệm thỏa mãn, dẫn đến nhu cầu tìm ra nghiệm tối ưu (bài toán lập lịch tàu chạy tối ưu). Tuy nhiên, việc tìm ra các nhân tố đánh giá lịch trình đang gặp nhiều khó khăn, cần nghiên cứu thêm yêu cầu thực tế và cải thiện mô hình toán học @new_pesp1 @YAN201952, không được trình bày đầy đủ trong khóa luận này. Đây là thiếu sót khóa luận chưa thể khắc phục, cần cải thiện trong tương lai.
 
+== Kết luận
 
 Khoá luận đã trình bày nghiên cứu mới nhất về bài toán lập lịch định kì(PESP) và phương hướng tiếp cận bài toán sử dụng định nghĩa hình thức và các bộ giải SAT. Hai giải thuật mã hóa đã được cài đặt và thực nghiệm nhằm giải các bài toán PESP. Kết quả thực nghiệm cho thấy phương pháp Order Encoding tỏ ra hiệu quả hơn nhiều so với phương pháp còn lại, thách thức nhiều giới hạn trong tương lai.
 
@@ -2561,4 +2563,6 @@ Trên đây là toàn bộ nghiên cứu của tôi trong thời gian qua, tài 
 #set heading(numbering: none)
 #counter(heading).update(100)
 
-#bibliography("citation.bib") <citation>
+
+#set text(lang: "en")
+#bibliography("citation.bib", title: "Tài liệu tham khảo") <citation>
