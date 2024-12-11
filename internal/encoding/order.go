@@ -1,6 +1,7 @@
 package encoding
 
 import (
+	"io"
 	"math"
 	"time"
 
@@ -80,6 +81,52 @@ func (e *OrderEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
 
 	e.solveTime = time.Since(start)
 	return schedule, nil
+}
+
+func (e *OrderEncoding) Write(g *gini.Gini, dst io.Writer) error {
+	e.maxVar = uint64(e.Pen.Events) * uint64(e.Pen.Period-1)
+	e.clause = 0
+
+	lit := func(index, value int) z.Lit {
+		return z.Var((index-1)*(e.Pen.Period-1) + value + 1).Pos()
+	}
+
+	for event := 1; event <= e.Pen.Events; event++ {
+		for value := 1; value < e.Pen.Period-1; value++ {
+			g.Add(lit(event, value-1).Not())
+			g.Add(lit(event, value))
+			g.Add(0)
+			e.clause += 1
+		}
+	}
+
+	for _, con := range e.Pen.Constraints {
+		x, y := con.FirstEvent, con.SecondEvent
+		regions := unfeasibleRegion(con)
+
+		for _, rect := range regions {
+			x1, x2, y1, y2 := rect[0], rect[1], rect[2], rect[3]
+			if x1 > 0 {
+				g.Add(lit(x, x1-1))
+			}
+			if x2 < e.Pen.Period-1 {
+				g.Add(lit(x, x2).Not())
+			}
+
+			if y1 > 0 {
+				g.Add(lit(y, y1-1))
+			}
+
+			if y2 < e.Pen.Period-1 {
+				g.Add(lit(y, y2).Not())
+			}
+			g.Add(0)
+			e.clause += 1
+		}
+
+	}
+
+	return g.Write(dst)
 }
 
 func (e *OrderEncoding) SolveAll() <-chan models.Schedule {

@@ -1,6 +1,7 @@
 package encoding
 
 import (
+	"io"
 	"time"
 
 	"github.com/go-air/gini"
@@ -64,6 +65,49 @@ func (e *DirectEncoding) Solve(g *gini.Gini) (models.Schedule, error) {
 
 	e.solveTime = time.Since(start)
 	return schedule, nil
+}
+
+func (e *DirectEncoding) Write(g *gini.Gini, dst io.Writer) error {
+	lit := func(index, value int) z.Lit {
+		return z.Var((index-1)*e.Pen.Period + value + 1).Pos()
+	}
+	e.maxVar = uint64(e.Pen.Events) * uint64(e.Pen.Period)
+	e.clause = 0
+	for event := 1; event <= e.Pen.Events; event++ {
+		for val := 0; val < e.Pen.Period; val++ {
+			g.Add(lit(event, val))
+		}
+		g.Add(0)
+		e.clause += 1
+
+		for val := 0; val < e.Pen.Period; val++ {
+			for otherVal := val + 1; otherVal < e.Pen.Period; otherVal++ {
+				g.Add(lit(event, val).Not())
+				g.Add(lit(event, otherVal).Not())
+				g.Add(0)
+				e.clause += 1
+			}
+		}
+
+	}
+
+	for _, con := range e.Pen.Constraints {
+		for val := 0; val < e.Pen.Period; val++ {
+			for otherVal := 0; otherVal < e.Pen.Period; otherVal++ {
+				if con.Hold(val, otherVal) {
+					continue
+				}
+
+				g.Add(lit(con.FirstEvent, val).Not())
+				g.Add(lit(con.SecondEvent, otherVal).Not())
+				g.Add(0)
+				e.clause += 1
+			}
+		}
+
+	}
+
+	return g.Write(dst)
 }
 
 func (e *DirectEncoding) SolveAll() <-chan models.Schedule {

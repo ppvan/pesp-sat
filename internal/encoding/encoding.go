@@ -3,6 +3,7 @@ package encoding
 import (
 	"errors"
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/go-air/gini"
@@ -21,11 +22,12 @@ type Statistics struct {
 
 func (s *Statistics) String() string {
 
-	return fmt.Sprintf("%v,%v,%v", s.MaxVar, s.Clause, s.SolveTime)
+	return fmt.Sprintf("Variables: %v\nClauses: %v\nSolved Time: %v (ms)", s.MaxVar, s.Clause, s.SolveTime.Milliseconds())
 }
 
 type Encoding interface {
 	Solve(g *gini.Gini) (models.Schedule, error)
 	SolveAll() <-chan models.Schedule
+	Write(g *gini.Gini, dst io.Writer) error
 	Stats() *Statistics
 }

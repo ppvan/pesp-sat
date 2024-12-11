@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Check if source and destination directories are provided
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <source_directory> <destination_directory>"
+    exit 1
+fi
+
+# Source and destination directories
+SOURCE_DIR="$1"
+DEST_DIR="$2"
+
+# Create destination directory if it doesn't exist
+mkdir -p "$DEST_DIR"
+
+# Find and process all .txt files recursively
+find "$SOURCE_DIR" -type f -name "*.txt" | while read -r file; do
+    # Create the corresponding destination path
+    relative_path="${file#$SOURCE_DIR/}"
+    dest_file="$DEST_DIR/$relative_path"
+    
+    # Create destination subdirectory if it doesn't exist
+    mkdir -p "$(dirname "$dest_file")"
+    
+    # Process the file with pesp-sat encode
+    ./../bin/pesp-sat encode "$file" > "${dest_file%.txt}.dimacs"
+    
+    echo "Processed: $file -> ${dest_file%.txt}.dimacs"
+done
