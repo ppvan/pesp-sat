@@ -83,12 +83,13 @@
 ]
 
 #set heading(numbering: "1.1")
+#set figure(supplement: "")
 
 
 #slide[
   #counter(heading).update(1)
   // #set text(size: 12pt)
-  #set figure(supplement: "")
+
   == Bài toán lập lịch tàu điện
   #side-by-side[
     #figure(image("../image/tokyo.jpg", height: 10em, width: 8em), caption: "Nhật")
@@ -104,27 +105,170 @@
   #counter(heading).update(1)
   == Bài toán lập lịch tàu điện
 
-  #side-by-side[
-    - Thời gian hồi phục
-    - Tính kết nối
-    - Thời gian bảo dưỡng cuối trạm
-    - Thời gian giãn cách tối thiểu
-  ][
-    #image("../image/placeholder2.png")
-  ]
+  #set align(center + horizon)
+
+  #diagram(
+    spacing: 5em,
+    {
+      let (trainA, station, trainB) = ((-1, 0), (0, 0), (1, 0))
+      node(trainA, $A$, stroke: 1pt, shape: rect)
+      node(station, $C$, stroke: 1pt, shape: rect)
+      node(trainB, $B$, stroke: 1pt, shape: rect)
+      edge(trainA, station, "-", stroke: 2pt + red)
+      edge(station, trainB, "-", stroke: 2pt + blue)
+      // edge(b, c, "->", $[2, 4]_8$)
+      // edge(a, c, "->", $[3, 5]_8$)
+    },
+  )
+
+  #v(3em)
+
+  Hai tàu A và B đều đi qua trạm C
+
 ]
+
 
 #slide[
   #counter(heading).update(1)
   == Bài toán lập lịch tàu điện
 
+  #set align(center + horizon)
+
+  #diagram(
+    spacing: 2em,
+    {
+      node((-4, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+      node((-1, 0), " ", shape: circle, stroke: 1pt, fill: white)
+      node((1, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+      node((4, 0), " ", shape: circle, stroke: 1pt, fill: white)
+      node((0, 0.5), "C", shape: rect)
+
+      edge((-4, 0), (-1, 0), "->", stroke: red + 1pt)
+      edge((1, 0), (4, 0), "->", stroke: blue + 1pt)
+
+
+      node((-4, 1), " ", shape: circle, stroke: 1pt, fill: white)
+      node((-1, 1), " ", shape: circle, stroke: 1pt, fill: yellow)
+      node((1, 1), " ", shape: circle, stroke: 1pt, fill: white)
+      node((4, 1), " ", shape: circle, stroke: 1pt, fill: yellow)
+
+
+      edge((-1, 1), (-4, 1), "->", stroke: red + 1pt)
+      edge((4, 1), (1, 1), "->", stroke: blue + 1pt)
+      edge((-1, 0), (1, 0), "->", stroke: (dash: "dashed", thickness: 1pt))
+      edge((1, 1), (-1, 1), "->", stroke: (dash: "dashed", thickness: 1pt))
+
+      edge((-1, 0), (-1, 1), "->", stroke: (dash: "dotted", thickness: 1pt))
+      edge((1, 1), (1, 0), "->", stroke: (dash: "dotted", thickness: 1pt))
+
+      edge((4, 0), (4, 1), "->", stroke: (dash: "dotted", thickness: 1pt))
+      // edge(a, c, "->", $[3, 5]_8$)
+    },
+  )
+
+  #v(2em)
+
+  #set text(size: 16pt)
+
+  #grid(
+    columns: 2,
+    column-gutter: 4em,
+    grid(
+      columns: 2,
+      column-gutter: 16pt,
+      row-gutter: 16pt,
+      align: left,
+      rows: 3,
+      circle(fill: white, stroke: 1pt), [Cập bến],
+      circle(fill: yellow, stroke: 1pt), [Rời ga],
+    ),
+    grid(
+      columns: 2,
+      column-gutter: 16pt,
+      row-gutter: 16pt,
+      align: left,
+      rows: 3,
+      diagram(
+        spacing: 2em,
+        {
+          node((-3, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+          node((-1, 0), " ", shape: circle, stroke: 1pt, fill: white)
+          edge((-3, 0), (-1, 0), "->", stroke: red + 1pt)
+        },
+      ),
+      [Tàu chạy],
+
+      diagram(
+        spacing: 2em,
+        {
+          node((-3, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+          node((-1, 0), " ", shape: circle, stroke: 1pt, fill: white)
+          edge((-3, 0), (-1, 0), "->", stroke: (thickness: 1pt, dash: "dashed"))
+        },
+      ),
+      [Đổi chuyến],
+
+      diagram(
+        spacing: 2em,
+        {
+          node((-3, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+          node((-1, 0), " ", shape: circle, stroke: 1pt, fill: white)
+          edge((-3, 0), (-1, 0), "->", stroke: (thickness: 1pt, dash: "dotted"))
+        },
+      ),
+      [Khứ hồi],
+    ),
+  )
+
+
+]
+
+
+
+#slide[
+  #counter(heading).update(1)
+  == Bài toán lập lịch tàu điện
+
+  // #v(2em)
+
   #side-by-side[
-    - Thời gian hồi phục
     - Tính kết nối
     - Thời gian bảo dưỡng cuối trạm
     - Thời gian giãn cách tối thiểu
+    - Thời gian hồi phục
   ][
-    #image("../image/placeholder2.png")
+    #set align(horizon)
+    #diagram(
+      spacing: 1.25em,
+      {
+        node((-4, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+        node((-1, 0), " ", shape: circle, stroke: 1pt, fill: white)
+        node((1, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+        node((4, 0), " ", shape: circle, stroke: 1pt, fill: white)
+        node((0, 0.5), "C", shape: rect)
+
+        edge((-4, 0), (-1, 0), "->", stroke: red + 1pt)
+        edge((1, 0), (4, 0), "->", stroke: blue + 1pt)
+
+
+        node((-4, 1), " ", shape: circle, stroke: 1pt, fill: white)
+        node((-1, 1), " ", shape: circle, stroke: 1pt, fill: yellow)
+        node((1, 1), " ", shape: circle, stroke: 1pt, fill: white)
+        node((4, 1), " ", shape: circle, stroke: 1pt, fill: yellow)
+
+
+        edge((-1, 1), (-4, 1), "->", stroke: red + 1pt)
+        edge((4, 1), (1, 1), "->", stroke: blue + 1pt)
+        edge((-1, 0), (1, 0), "->", stroke: (dash: "dashed", thickness: 1pt))
+        edge((1, 1), (-1, 1), "->", stroke: (dash: "dashed", thickness: 1pt))
+
+        edge((-1, 0), (-1, 1), "->", stroke: (dash: "dotted", thickness: 1pt))
+        edge((1, 1), (1, 0), "->", stroke: (dash: "dotted", thickness: 1pt))
+
+        edge((4, 0), (4, 1), "->", stroke: (dash: "dotted", thickness: 1pt))
+        // edge(a, c, "->", $[3, 5]_8$)
+      },
+    )
   ]
 ]
 
@@ -134,6 +278,7 @@
   == Mô hình PESP
 
   #side-by-side[PESP#footnote[Periodic Event Scheduling Problem] được giới thiệu bởi Serafini và Ukovich, nhằm giải quyết bài toán lập lịch tuần hoàn.
+
     #v(0.5em)
     /*
      * Mô hình PESP ràng buộc các sự kiện phải xảy ra trong nhưng giới hạn nhất định nhằm mô tả các yêu cầu nghiệp vụ.
@@ -147,22 +292,95 @@
     - $pi_C - pi_A in [0, 10]_60$
 
     #v(0.5em)
-    #set text(size: 16pt)
-    $[5, 15]_60 = ... union [-55, -45] union [5, 15] union [65, 75] union ...$
 
   ][
+
+    // #set text(size: 18pt)
     #diagram(
-      spacing: 6em,
+      spacing: 1.25em,
       {
-        let (a, b, c) = ((-1 / calc.sqrt(3), 0), (0, -1), (1 / calc.sqrt(3), 0))
-        node(a, $A$, stroke: 1pt)
-        node(b, $B$, stroke: 1pt)
-        node(c, $C$, stroke: 1pt)
-        edge(a, b, "->", $[5, 15]_60$)
-        edge(b, c, "->", $[0, 10]_60$)
-        edge(a, c, "->", $[0, 5]_60$)
+        node((-4, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+        node((-1, 0), " ", shape: circle, stroke: 1pt, fill: white)
+        node((1, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+        node((4, 0), " ", shape: circle, stroke: 1pt, fill: white)
+        node((0, 0.5), "C", shape: rect)
+
+        edge((-4, 0), (-1, 0), stroke: red + 1pt, "->", label: $[5, 15]$)
+        edge((1, 0), (4, 0), "->", stroke: blue + 1pt)
+
+
+        node((-4, 1), " ", shape: circle, stroke: 1pt, fill: white)
+        node((-1, 1), " ", shape: circle, stroke: 1pt, fill: yellow)
+        node((1, 1), " ", shape: circle, stroke: 1pt, fill: white)
+        node((4, 1), " ", shape: circle, stroke: 1pt, fill: yellow)
+
+
+        edge((-1, 1), (-4, 1), "->", stroke: red + 1pt)
+        edge((4, 1), (1, 1), "->", stroke: blue + 1pt)
+        edge((-1, 0), (1, 0), "->", stroke: (dash: "dashed", thickness: 1pt))
+        edge((1, 1), (-1, 1), "->", stroke: (dash: "dashed", thickness: 1pt))
+
+        edge((-1, 0), (-1, 1), "->", stroke: (dash: "dotted", thickness: 1pt))
+        edge((1, 1), (1, 0), "->", stroke: (dash: "dotted", thickness: 1pt), label: $[0, 10]$)
+
+        edge((4, 0), (4, 1), "->", stroke: (dash: "dotted", thickness: 1pt))
+        // edge(a, c, "->", $[3, 5]_8$)
       },
     )
+
+    #set text(size: 16pt)
+    // #v(1em)
+    #grid(
+      columns: 2,
+      column-gutter: 4em,
+      grid(
+        columns: 2,
+        column-gutter: 16pt,
+        row-gutter: 16pt,
+        align: left,
+        rows: 3,
+        circle(fill: white, stroke: 1pt), [Cập bến],
+        circle(fill: yellow, stroke: 1pt), [Rời ga],
+      ),
+      grid(
+        columns: 2,
+        column-gutter: 16pt,
+        row-gutter: 16pt,
+        align: left,
+        rows: 3,
+        diagram(
+          spacing: 2em,
+          {
+            node((-3, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+            node((-1, 0), " ", shape: circle, stroke: 1pt, fill: white)
+            edge((-3, 0), (-1, 0), "->", stroke: red + 1pt)
+          },
+        ),
+        [Tàu chạy],
+
+        diagram(
+          spacing: 2em,
+          {
+            node((-3, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+            node((-1, 0), " ", shape: circle, stroke: 1pt, fill: white)
+            edge((-3, 0), (-1, 0), "->", stroke: (thickness: 1pt, dash: "dashed"))
+          },
+        ),
+        [Đổi chuyến],
+
+        diagram(
+          spacing: 2em,
+          {
+            node((-3, 0), " ", shape: circle, stroke: 1pt, fill: yellow)
+            node((-1, 0), " ", shape: circle, stroke: 1pt, fill: white)
+            edge((-3, 0), (-1, 0), "->", stroke: (thickness: 1pt, dash: "dotted"))
+          },
+        ),
+        [Khứ hồi],
+      ),
+    )
+
+
   ]
 ]
 
@@ -682,6 +900,7 @@ Algorithm. TU Delft, 1994]
           }
         }
       }
+
 
       line((-1, 1), (6, 8))
       // content((3, 4), $pi_B - pi_A < 2 $, angle: 45deg)
