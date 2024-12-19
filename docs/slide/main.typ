@@ -31,9 +31,11 @@
 }
 
 
-#show: simple-theme.with(footer: context [
-  Trường Đại học Công nghệ - ĐHQGHN
-])
+#show: simple-theme.with(
+  footer: context [
+    Trường Đại học Công nghệ - ĐHQGHN
+  ],
+)
 
 #let author = "Phạm Văn Phúc"
 #let title = "Nghiên cứu bài toán PESP áp dụng để lập lịch giờ tàu điện chạy"
@@ -71,9 +73,9 @@
   #align(
     center + top,
     grid(
-      columns: (1fr),
-      align: (left+horizon, left+horizon),
-    //   rows: (1fr, 1fr),
+      columns: 1fr,
+      align: (left + horizon, left + horizon),
+      //   rows: (1fr, 1fr),
       row-gutter: 2em,
       column-gutter: 2em,
       [1. Giới thiệu & Đặt vấn đề], [2. Giải pháp cải tiến],
@@ -428,9 +430,27 @@ Algorithm. TU Delft, 1994]
 
   #side-by-side[
     Độ phức tạp thời gian cao, không thể giải những bài toán đủ khó đáp ứng nhu cầu thực tế.
+
+
   ][
-    #image("../image/bigo.png")
+    #set align(right)
+    #set figure(supplement: "Bảng")
+
+    #figure(
+      table(
+        columns: 2,
+        "Số ràng buộc", "Thời gian giải (s)",
+        "100", "50.54",
+        "500", "219.72",
+        "1000", "2453.61",
+        "2000", ">86,400 (24h)",
+        "4000", ">86,400 (24h)",
+        "10,000", ">86,400 (24h)",
+      ),
+      caption: "Thời gian giải PESP sử dụng CBC solver",
+    )
   ]
+
 ]
 
 
@@ -918,7 +938,7 @@ Algorithm. TU Delft, 1994]
   == Dữ liệu thực nghiệm
 
   PESPlib#footnote[https://timpasslib.aalto.fi/]:
-  - 22 file dữ liệu được chuẩn hóa
+  - 22 file dữ liệu được chuẩn hóa từ 4000-12,000 sự kiện
   - Được sử dụng trong nhiều nghiên cứu #footnote[M. Goerigk and A. Schöbel, “An empirical analysis of robustness concepts
 for timetabling,” Erlebach, vol. 14, pp. 100–113, 2010] #footnote[
   J.-W. Goossens, “Models and algorithms for railway line planning prob-
@@ -928,16 +948,24 @@ lems,” p. , 2004.
 
 
 #slide[
+  #show heading: set block(below: 1em)
   == Kết quả thực nghiệm
 
-  #image("../image/placeholder.png")
+  #set align(center + horizon)
+
+  #let result = csv("../image/time_benmark.csv", delimiter: ";")
+  #table(align: (left, right, right, right), inset: 5pt + 0%, columns: 4, ..result.flatten())
 ]
 
 
 #slide[
+  #show heading: set block(below: 1em)
   == Kết quả thực nghiệm
+  #set align(center + horizon)
 
-  #image("../image/placeholder.png")
+
+  #let result = csv("../image/benmark-2.csv", delimiter: ";")
+  #table(align: (left, right, right, right), inset: 5pt + 0%, columns: 4, ..result.flatten())
 ]
 
 #slide[
@@ -945,8 +973,9 @@ lems,” p. , 2004.
   #set heading(numbering: none)
   = Kết luận
   #v(2em)
-  - Cùng với sự tiến bộ của SAT Solver, ta có thể giải các bài toán PESP phức tạp trong một khoảng thời gian hợp lý.
-  - Phương pháp vẫn tiếp được cải tiến bởi nhiều nghiên cứu.
+  - Cùng với sự tiến bộ của SAT Solver, ta có thể giải các bài toán PESP phức tạp trong một khoảng thời gian hợp lý
+  - Phương pháp vẫn tiếp được cải tiến bởi nhiều nghiên cứu #footnote[Borndörfer, Ralf, Niels Lindner, and Sarah Roth. "A concurrent approach to the periodic event scheduling problem." - 2020]#footnote[B Masing, N Lindner, C Liebchen
+23rd symposium on algorithmic approaches for transportation modelling - 2023].
 ]
 
 // https://www.zib.de/userpage/lindner/concurrent-pesp-talk-norrk%C3%B6ping.pdf
