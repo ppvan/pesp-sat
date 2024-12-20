@@ -1,6 +1,7 @@
 package models
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -72,6 +73,100 @@ func TestIntervalString(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.interval.String(); got != tt.want {
 				t.Errorf("Interval.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIntervalNormalized(t *testing.T) {
+	tests := []struct {
+		name     string
+		interval Interval
+		want     Interval
+	}{
+		{
+			name: "simple interval within period",
+			interval: Interval{
+				Start:  2,
+				End:    5,
+				Period: 10,
+			},
+			want: Interval{
+				Start:  2,
+				End:    5,
+				Period: 10,
+			},
+		},
+		{
+			name: "interval exceeding period",
+			interval: Interval{
+				Start:  12,
+				End:    15,
+				Period: 10,
+			},
+			want: Interval{
+				Start:  2,
+				End:    5,
+				Period: 10,
+			},
+		},
+
+		{
+			name: "end less than start after normalization",
+			interval: Interval{
+				Start:  8,
+				End:    2,
+				Period: 10,
+			},
+			want: Interval{
+				Start:  -2,
+				End:    2,
+				Period: 10,
+			},
+		},
+		{
+			name: "zero period edge case",
+			interval: Interval{
+				Start:  5,
+				End:    8,
+				Period: 1,
+			},
+			want: Interval{
+				Start:  0,
+				End:    0,
+				Period: 1,
+			},
+		},
+		{
+			name: "start and end equal",
+			interval: Interval{
+				Start:  15,
+				End:    15,
+				Period: 10,
+			},
+			want: Interval{
+				Start:  5,
+				End:    5,
+				Period: 10,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.interval.Normalized()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Interval.Normalized() = %+v, want %+v", got, tt.want)
+			}
+
+			// Additional validation
+			if got.Period != tt.interval.Period {
+				t.Errorf("Period was modified: got %d, want %d", got.Period, tt.interval.Period)
+			}
+
+			// Validate that normalized values are actually within the period range
+			if got.End >= tt.interval.Period {
+				t.Errorf("Normalized End value %d is not less than Period %d", got.End, tt.interval.Period)
 			}
 		})
 	}

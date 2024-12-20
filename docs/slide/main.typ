@@ -938,7 +938,7 @@ Algorithm. TU Delft, 1994]
   == Dữ liệu thực nghiệm
 
   PESPlib#footnote[https://timpasslib.aalto.fi/]:
-  - 22 file dữ liệu được chuẩn hóa từ 4000-12,000 sự kiện
+  - 22 file dữ liệu được chuẩn hóa từ 4000-12,000 ràng buộc
   - Được sử dụng trong nhiều nghiên cứu #footnote[M. Goerigk and A. Schöbel, “An empirical analysis of robustness concepts
 for timetabling,” Erlebach, vol. 14, pp. 100–113, 2010] #footnote[
   J.-W. Goossens, “Models and algorithms for railway line planning prob-
@@ -983,3 +983,10 @@ lems,” p. , 2004.
 #centered-slide()[
   Trân trọng cảm ơn thầy cô đã lắng nghe
 ]
+
+
+
+#centered-slide()[
+  #image("../image/coverage.png")
+]
+
