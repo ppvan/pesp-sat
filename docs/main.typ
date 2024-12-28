@@ -155,7 +155,7 @@
   let author = "Phạm Văn Phúc"
   let title = "Nghiên cứu bài toán PESP áp dụng để lập lịch giờ tàu điện chạy"
 
-  let advisor = "Tô Văn Khánh"
+  let advisor = "TS. Tô Văn Khánh"
 
   // rect(width: 100%, height: 100%, "Hello")
 
@@ -325,6 +325,7 @@ Các nội dung trình bày trong khóa luận này là hoàn toàn trung thực
 = Mở đầu
 
 Lập kế hoạch cho hệ thống tàu điện ngầm là một công việc đầy khó khăn và thử thách, bao gồm nhiều giai đoạn khác nhau, như: nghiên cứu thị trường, thiết lập tuyến đường, thiết lập phương tiện, lập lịch tàu chạy và đào tạo nhân viên. Các giai đoạn lập kế hoạch này liên quan mật thiết đến nhau và thường được tiến hành đổ thác theo thứ tự. Tuy nhiên, có thể quay lại bước trước đó để tối ưu khi các yêu cầu nghiệp vụ được làm rõ hơn.
+Ta có thể thấy sơ đồ các bước lập kế hoạch cho hệ thống tàu điện như @intro_fig.
 
 #figure(
   image("image/railway-steps.svg"),
@@ -372,6 +373,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
 #counter(page).update(1)
 
 = Lập lịch sự kiện định kỳ <start>
+Bài toán lập lịch định kỳ được hình thành dựa trên nền tảng của các khái niệm cơ bản trong lĩnh vực toán học. Chương 1 sẽ trình bày các khái niệm nền tảng này, đồng thời xây dựng định nghĩa hoàn chỉnh cho bài toán lập lịch định kỳ.
 
 == Mạng sự kiện định kỳ
 
@@ -402,13 +404,13 @@ Phần còn lại của khóa luận được tổ chức như sau:
     subset Z \
   $
 
-  là đoạn mô-đun 8. Khi đó
+  là đoạn mô-đun 8. Khi đó ta có:
 
   $
     5 &in [3, 7] subset I \
     -10 &in [-13, -9] subset I \
     12 &in [11, 15] subset I
-  $
+  $ được minh họa trong @module_ex.
 
   #figure(
     cetz.canvas({
@@ -430,7 +432,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
       let labels = (
         (-10, $-10$),
         (5, $5$),
-      )
+      ) 
 
 
       let len = cetz.vector.dist(a, b)
@@ -458,7 +460,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
       }
     }),
     caption: "Minh họa đoạn mô-đun. -10 và 5 thuộc I",
-  )
+  ) <module_ex>
 ]
 
 
@@ -490,6 +492,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
     }
   $
 
+ $N$ có thể được mô tả bằng đồ thị như @pen_ex.
 
   #figure(
     diagram(
@@ -505,7 +508,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
       },
     ),
     caption: "Ví dụ minh họa mạng sự kiện định kỳ",
-  )
+  ) <pen_ex>
 
 ] <example-1.1.2>
 
@@ -579,7 +582,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
     pi_c - pi_a &= 3 - 6 = -3 in [3, 5]_8 \
   $
 
-  được minh họa trong hình dưới đây:
+  được minh họa trong @sche_ex:
   #figure(
     diagram(
       spacing: 10em,
@@ -594,7 +597,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
       },
     ),
     caption: "Ví dụ minh họa mạng lịch trình hợp lệ",
-  )
+  ) <sche_ex>
 ]
 
 
@@ -622,7 +625,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
     pi_c - pi_a &= 3 - 6 = -3 in [3, 5]_8 \
   $
 
-  được minh họa trong hình dưới đây:
+  được minh họa trong @valid_sche_ex:
   #figure(
     diagram(
       spacing: 10em,
@@ -637,7 +640,7 @@ Phần còn lại của khóa luận được tổ chức như sau:
       },
     ),
     caption: "Ví dụ minh họa mạng lịch trình hợp lệ",
-  )
+  ) <valid_sche_ex>
 ]
 
 #theorem[
@@ -718,6 +721,8 @@ Dễ thấy, PESP là một vấn đề quyết định@kozen2012automata. Từ 
 
 = Kiến thức nền tảng
 
+Chương 2 cung cấp các kiến thức nền tảng về logic mệnh đề, bao gồm các thành phần cơ bản để xây dựng các biểu thức chuẩn tắc hội (CNF). Ngoài ra, chương này cũng giới thiệu về bộ giải SAT cùng các tiến bộ quan trọng trong các thuật toán liên quan.
+
 == Logic mệnh đề
 === Mệnh đề
 
@@ -754,6 +759,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
 
 #definition[
   (Phủ định): Mệnh đề phủ định của mệnh đề $a$ là mệnh đề có chân trị đối lập với $a$.\
+  Ta có bảng chân trị của phép phủ định được liệt kê trong @logic_not.\
   _Kí hiệu_: $not a$.
 
   #figure(
@@ -778,6 +784,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
 
 #definition[
   (Phép hội): Mệnh đề hội của hai mệnh đề $a, b$ là mệnh đề chỉ đúng khi cả $a, b$ đều đúng. \
+  Ta có bảng chân trị của phép hội được liệt kê trong @logic_and. \
   _Kí hiệu_: $a and b$
 
   #figure(
@@ -797,6 +804,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
 
 #definition[
   (Phép tuyển): Mệnh đề tuyển của hai mệnh đề $a, b$ là mệnh đề chỉ sai khi cả $a, b$ đều sai. \
+  Ta có bảng chân trị của phép tuyển được liệt kê trong @logic_or.\
   _Kí hiệu_: $a or b$
 
   #figure(
@@ -816,6 +824,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
 
 #definition[
   (Phép kéo theo): Mệnh đề kéo theo của hai mệnh đề $a, b$ là mệnh đề chỉ sai khi cả $a$ đúng $b$ sai. \
+  Ta có bảng chân trị của phép kéo theo được liệt kê trong @logic_infer.\
   _Kí hiệu_: $a => b$
 
   #figure(
@@ -829,7 +838,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
       "1", "1", "1",
     ),
     caption: "Bảng chân trị của phép kéo theo",
-  )
+  ) <logic_infer>
 ]
 
 
@@ -837,6 +846,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
 
 #definition[
   (Phép tương đương): Mệnh đề tương đương của hai mệnh đề $a, b$ là mệnh đề chỉ đúng khi cả $a$ và $b$ cùng đúng hoặc cùng sai. \
+  Ta có bảng chân trị của phép tương đương được liệt kê trong @logic_eqv.\
   _Kí hiệu_: $a <=> b$
 
   #figure(
@@ -850,7 +860,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
       "1", "1", "1",
     ),
     caption: "Bảng chân trị của phép tương đương",
-  )
+  ) <logic_eqv>
 ]
 
 === Biểu thức logic
@@ -897,7 +907,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
 ]
 
 #example[
-  Theo định nghĩa, ta có: $a => b <=> not a or b$
+  Theo định nghĩa, ta có: $a => b <=> not a or b$, được liệt kê trong @eqv_ex.
   #figure(
     table(
       align: center + horizon,
@@ -909,7 +919,7 @@ Tương tự với số học, ta cũng có phép toán giữa các mệnh đề
       "1", "1", "1", "1",
     ),
     caption: "Bảng chân trị của hai biểu thức tương đương",
-  )
+  ) <eqv_ex>
 ]
 
 
@@ -1084,7 +1094,7 @@ Nhằm cung cấp nền tảng kiến thức, sau đây khóa luận sẽ trình
 #example[
   Ví dụ về biểu thức UNSAT
 
-  Cho $g = (x or y) and (not x or y) and (x or not y) and (not x or not y)$, không tồn tại suy diễn nào để $g^I = "true"$.
+  Cho $g = (x or y) and (not x or y) and (x or not y) and (not x or not y)$, không tồn tại suy diễn nào để $g^I = "true"$. Kết quả được liệt kê trong @unsat_ex.
 
   #figure(
     table(
@@ -1097,14 +1107,14 @@ Nhằm cung cấp nền tảng kiến thức, sau đây khóa luận sẽ trình
       "1", "1", "0",
     ),
     caption: "Bảng chân trị của biểu thức UNSAT",
-  )
+  ) <unsat_ex>
 
 ]
 
 
 === Bộ giải SAT
 
-Bài toán SAT là bài toán thuộc lớp NP xuất hiện sớm nhất, đồng thời là bài toán đầu tiên được chứng minh là NP-complete @sat_np. Vì vậy, không tồn tại giải thuật tối ưu giải bài toán SAT có độ phức tạp đa thức. Tuy nhiên, nhiều nghiên cứu đã được tiến hành nhằm xây dựng chương trình giải bài toán SAT, thường gọi là các bộ giải SAT. Đầu vào chương trình thường là biểu thức logic dạng chuẩn tắc hội (CNF). Nếu biểu thức thỏa mãn được, đưa ra kết luận SAT và một nghiệm bất kỳ kèm chứng minh. Nếu không tồn tại nghiệm thoả mãn, kết luận UNSAT.
+Bài toán SAT là bài toán thuộc lớp NP xuất hiện sớm nhất, đồng thời là bài toán đầu tiên được chứng minh là NP-complete @sat_np. Vì vậy, không tồn tại giải thuật tối ưu giải bài toán SAT có độ phức tạp đa thức. Tuy nhiên, nhiều nghiên cứu đã được tiến hành nhằm xây dựng chương trình giải bài toán SAT, thường gọi là các bộ giải SAT. Đầu vào chương trình thường là biểu thức logic dạng chuẩn tắc hội (CNF). Nếu biểu thức thỏa mãn được, đưa ra kết luận SAT và một nghiệm bất kỳ kèm chứng minh. Nếu không tồn tại nghiệm thoả mãn, kết luận UNSAT, như ta thấy trong @sat_dia
 
 #figure(
   diagram(
@@ -1126,7 +1136,7 @@ Bài toán SAT là bài toán thuộc lớp NP xuất hiện sớm nhất, đồ
     },
   ),
   caption: "Sơ đồ đầu vào/đầu ra của bộ giải SAT",
-)
+) <sat_dia>
 
 Nhiều kĩ thuật đã được nghiên cứu nhằm cải thiện độ hiệu quả các bộ giải SAT theo thời gian, tiêu biểu như:
 
@@ -1429,10 +1439,9 @@ Do đó, ta có cách trích xuất giá trị của $x$ từ một suy diễn $
     },
   ),
   caption: "Sơ đồ tổng quan giải bài toán PESP với mã hóa trực tiếp",
-)
+) <solv_dia>
 
-
-Để mã hóa trực tiếp bài toán PESP thành biểu thức mệnh đề, trước tiên ta cần mã hóa các tiềm năng sự kiện $pi_i$. Nhắc lại @cor1, các tiềm năng sự kiện $pi_i$ đều thỏa mãn:
+Sơ đồ các bước giải bài toán PESP sử dụng SAT được mô tả trong @solv_dia. Để mã hóa trực tiếp bài toán PESP thành biểu thức mệnh đề, trước tiên ta cần mã hóa các tiềm năng sự kiện $pi_i$. Nhắc lại @cor1, các tiềm năng sự kiện $pi_i$ đều thỏa mãn:
 
 #set math.equation(numbering: "(1)")
 
@@ -1540,14 +1549,14 @@ Dễ thấy $Omega_"direct"^nu$ thỏa mãn dạng chuẩn tắc hội. Tương 
     },
   ),
   caption: "Sơ đồ tổng quan giải bài toán PESP với mã hóa thứ tự",
-)
+) <order_dia>
 
 
 
 
 Tương tự mã hóa trực tiếp, khóa luận sẽ trình bày phương pháp mã hóa thứ tự gồm hai phần chính.
 Trước hết, ta mã hóa các tiềm năng sự kiện như đã trình bày ở @order_encode.
-Sau đó ta sẽ mã hóa các ràng buộc trong miền xác định thứ tự. Cuối cùng, ta tổng hợp các mệnh đề và giải bằng bộ giải SAT.
+Sau đó ta sẽ mã hóa các ràng buộc trong miền xác định thứ tự. Cuối cùng, ta tổng hợp các mệnh đề và giải bằng bộ giải SAT như ta thấy trong @order_dia.
 
 Để mã hóa trực tiếp bài toán PESP thành biểu thức mệnh đề, trước tiên ta cần mã hóa các tiềm năng sự kiện $pi_i$. Nhắc lại @cor1, các tiềm năng sự kiện $pi_i$ đều thỏa mãn:
 
@@ -1794,7 +1803,7 @@ Do $F$ là một mệnh đề chuẩn tắc hội, ta có được một mệnh 
 Như vậy ta đã biết cách loại bỏ một hình chữ nhật khỏi không gian tìm kiếm. Vấn đề còn lại là tìm tất cả các hình chữ nhật nhằm lấp đầy vùng không thỏa mãn.
 
 
-Cùng xem lại @order_diagram ở một góc nhìn khác. Ta thấy hai miền nghiệm tương ứng với $[2. 4], [-6, -4]$ và khoảng vô nghiệm giữa chúng $(-4, 2)$. Sau đây ta sẽ định nghĩa các hàm số nhằm phủ miền này bằng tập hợp các hình chữ nhật ở @order_diagram. Bằng cách tương tự, ta cũng có thể phủ hai vùng vô nghiệm còn lại($(4, 8), (-8, -6)$).
+Quan sát @no_tru, mô tả vùng vô nghiệm ở một góc nhìn khác. Ta thấy hai miền nghiệm tương ứng với $[2. 4], [-6, -4]$ và khoảng vô nghiệm giữa chúng $(-4, 2)$ là không gian giữa hai hàm số bậc nhất. Sau đây ta sẽ định nghĩa các hàm số nhằm phủ miền này bằng tập hợp các hình chữ nhật ở @order_diagram. Bằng cách tương tự, ta cũng có thể phủ hai vùng vô nghiệm còn lại($(4, 8), (-8, -6)$).
 
 
 #figure(
@@ -1897,7 +1906,7 @@ Cùng xem lại @order_diagram ở một góc nhìn khác. Ta thấy hai miền 
 
   }),
   caption: [Bản chất của miền vô nghiệm$((A, B), [2, 4]_8)$],
-)
+) <no_tru>
 
 
 #definition[

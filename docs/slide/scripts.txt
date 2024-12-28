@@ -1,0 +1,50 @@
+Thưa các thầy cô trong hội đồng, sau đây em xin trình bày về phương pháp giải bài toán lập lịch định kỳ (PESP) sử dụng phương pháp SAT
+
+Em là Phạm Văn Phúc, lớp K66CC, ngành Công nghệ thông tin
+Tiếp theo là nội dung chính của buổi thuyết trình hôm nay
+- Đặt vấn đề
+- Giải pháp cải tiến
+- Thực nghiệm
+- Kết luận
+
+Hiện nay, xây dựng hệ thống tàu điện tốc độ cao là giải pháp tất yếu cho các vấn đề độ thị hóa, như tập trung dân cư, chi phí logicsic.
+Ví dụ ta có hệ thống tàu điện của Nhật Bản, của Đức hoặc sắp tới đây là cao tốc Bắc Nam
+Các hệ thống tàu điện ngày càng phức tạp, vì vậy việc lập lịch nhằm đáp ứng các yêu cầu thực tế là bài toán được quan tâm trong nhiều nghiên cứu.
+Để hiểu sơ bộ về bài toán, ta đi qua ví dụ sau
+Hai tàu A và B đều đi qua trạm C, cụ thể hơn là các sự kiện khởi hành, cập bến, thời gian khứ hồi. Lịch trình cần phải đáp ứng nhiều yêu cầu khác nhau như 
+- Tính kết nối: Phục vụ hành khách có thể đi tàu A đến C, sau đó lên tàu B đi tiếp
+- Thời gian bảo dưỡng cuối trạm: thay ca nhân viên, bảo dưỡng ... cuối trạm
+- Thời gian giãn tối thiểu (cùng ray)
+- Thời gian hồi phục: Cho phép độ trễ nhỏ trên hệ thống
+
+Để mô hình các yêu cầu thực tế này thì hai nhà nghiên cứu này đã đề xuất mô hình PESP. Bằng cách ràng buộc các sự kiện như cập bến, rời ga, thời gian đổi chuyến nằm trong một khoảng thời gian nhất định
+Ví dụ như khoảng cách giữa khởi hành và cập bến, thời gian tàu dừng ở ga có thể được ràng buộc như trên hình
+
+PESP thuộc bài toán thỏa mãn ràng buộc (CSP) như bài toán 8 quân hậu hay mã đi tuần
+Dễ thấy PESP tổng quát hóa bài toán Vertex Coloring. Ở đây ta phải gán thời điểm vào các sự kiện A,B,C này để thỏa mãn ràng buộc trên các cạnh. Vì vậy 
+ PESP là bài toán NP-hard
+
+Các giải pháp để giải gồm có
+- Thuật toán quay lui
+- Thuật toán local search
+- Quy hoạch số nguyên
+
+Tuy nhiên, các phương pháp này chưa đủ nhanh để đáp ứng nhu càu thực tế, ở đây em có thời gian giải bài toán PESP bằng thuật toán quy hoạch số nguyên, khoàng 2000 ràng buộc thì thời gian đã khá lớn, trên thực tế thì số ràng buộc rơi vào khoảng 4000 -> 10000 ràng buộc
+
+Trái lại, những năm gần đây SAT solver rất phát triển, hiện tại đã giải được hàng triệu mệnh đề, và được áp dụng để giải nhiều bài toán lập lịch tương tự như
+
+Vậy nên ý tưởng sử dụng SAT solver để giải bài toán PESP, về cơ bản như đặt biến phụ. Ta chuyển bài toán PESP về không gian SAT và giải lại kết quả 
+
+Mấu chốt ở bước mã hóa, ở đây em cài đặt hai pp là mã hóa trực tiếp, tức là với một ràng buộc a như sau, ta sinh ra các mệnh đề loại tất cả các điểm không thỏa ràng buộc.
+
+
+=> Chiến lược tốt hơn
+Lớn hơn 1 điểm là một đa giác, vậy ta có thể sử dụng phương pháp mã hóa khác để sinh ra các mệnh loại các đa giác không thỏa mãn
+
+Cuối cùng là thực nghiệm, về bộ dữ liệu thực nghiệm, là PESPlib, được chuẩn hóa và sử dụng trong nhiều nghiên cứu
+
+Sau đây là kết quả thực nghiệm, thời gian giải của hai phương pháp mã hóa
+
+Kết luận, với sự tiến bộ của SAT Solver, ta có thể giải bài toán PESP trong thời gian hợp lý, đáp ứng nhu càu thực tế =
+
+Phương pháp vẫn được cải tiến về hiệu năng cũng như mô hình để mở rộng trong bài toán tối ưu lịch trình, ví dụ như tối ưu thời gian di chuyển, chi phí vận hành....
